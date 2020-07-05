@@ -1,0 +1,7 @@
+Convert Gabor to math.js.
+
+Or [gpu.js](http://gpu.rocks)
+
+For stereo abstracter (mmap):
+https://www.npmjs.com/package/mmap-object
+https://github.com/allenluce/mmap-object

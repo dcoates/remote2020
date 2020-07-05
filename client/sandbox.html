@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>RemoteViewport Sandbox</title>
+        <link rel="stylesheet" href="sandbox.css">
+    </head>
+    <body style="background-color:#808080">  
+
+		<div class="split left">
+            <div id="text">
+                <textarea name="commands" id="commands">Please enter commands</textarea>
+                <textarea name="commands" id="log" readonly="readonly" style="height:20%">Log</textarea>
+            </div>
+
+            <div class="buttons">
+                <p id="pCanvasSize">Size</p>
+                <button type="button" id="demo1" onclick="demo1()">Demo 1 (Acuity)</button>
+                <button type="button" id="demo2" onclick="demo2()">Demo 2 (CSF)</button>
+                <button type="button" id="btnRun" onclick="doit();">RUN!</button>
+                <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
+                <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
+                <br>
+                    <span id="lblStair">Staircase (0):</span>
+                    <input type="checkbox" id="chkStair">
+
+                <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
+
+            </div>
+		</div>
+
+		<div class="split right" id="rightcan">
+        <canvas id="myCanvas">
+		</div>
+
+        <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
+
+        <script src="grating.js"></script>
+        <script src="stims.js"></script>
+
+        <script type="text/javascript">
+
+            function reportSize() {
+                var rightcan = document.getElementById("rightcan");
+                wid=rightcan.clientWidth;
+                height=rightcan.clientHeight;
+                canv.width=wid;
+                canv.height=height;
+                xc=wid/2;
+                yc=height/2;
+
+                document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
+
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; // <-- pull the page back up to the top
+                //document.body.style.overflow = 'hidden'; // <-- relevant addition
+            }
+
+            // Global variables
+            var c = document.getElementById("myCanvas");
+            var canv = document.getElementById("myCanvas");
+            var ctx = canv.getContext("2d");
+            var wid=768
+            var height=768;
+            var xc=wid/2;
+            var yc=height/2;
+            var conn = null;
+            var commands=null;
+            var commands_split=null;
+            var flip_durations=[];
+            var globalAnimationID=null;
+            var indexAction=0;
+            var indexFrame=0;
+
+            //c = document.getElementById("myCanvas");
+            //ctx = c.getContext("2d");
+
+            function doit() {
+                var chkFullScr = document.getElementById("chkFullScr");
+                if (chkFullScr.checked) {
+                    openFullscreen();
+                }
+
+                // parse commands
+                commands=document.getElementById("commands").value;
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
+
+            function demo1() {
+                document.getElementById("commands").value=
+                "clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(10,2,'black');\nflip(1);\n\nfixation(10,2,'black');\ndraw_letter('E',90,0,120,8,'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(10,2,'black');flip(1);  \ncloseFullscreen();flip(0)"
+            }
+
+            function demo2() {
+                document.getElementById("commands").value=
+                "make_grating(20,2.0); clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30); flip(1); \
+                animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(10,2,'black');flip(1);  \ncloseFullscreen();flip(0)"
+            }
+
+            function animateLoop() {
+                if (indexAction<actions.length) {
+                    stats.begin()
+                    eval(actions[indexAction])
+                    stats.end()
+                    indexFrame += 1;
+                    if (indexFrame>=flip_durations[indexAction]) {
+                        indexFrame = 0;
+                        indexAction += 1;
+                    }
+
+                    globalAnimationID = requestAnimationFrame(animateLoop);
+                } else { // no more actions left
+                    // reset, in case we want to run again
+                    indexAction = 0;
+                    indexFrame = 0;
+
+                    cancelAnimationFrame(globalAnimationID);
+
+                }
+            }
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.getElementById("myCanvas");
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+        // Main Javascript entry:
+        reportSize();//call once to set initial size
+        window.addEventListener('resize', reportSize);
+        audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
+
+        var stats = new Stats();
+        stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        stats.dom.style.position="absolute";
+        stats.dom.style.top="90%";
+        document.body.appendChild( stats.dom );
+
+        var stairCmd=null;
+
+
+        var letter_orientation=0;
+
+        var stair_trial=0;
+        var stair_size=20;
+        var consecutive_corrects=0;
+        const stair_max=10;
+        const stair_N=3; // N-up-1down
+        var trial_log="";
+
+        function stair_restart() {
+            var chkStair = document.getElementById("chkStair");
+            chkStair.checked = true;
+
+            stair_trial=0;
+            stair_size=20;
+            consecutive_corrects=0;
+
+            stair_step(); // Do 1
+        }
+
+        function stair_step() {
+            letter_orientation=getRandomInt(3)*90;
+            document.getElementById("commands").value=`clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30);flip(1);\nfixation(10,2,'black');\ndraw_letter('E',${letter_orientation},0,150,${stair_size},'black');\nflip(10);\nclear('#c0c0c0');\nfixation(10,2,'black');flip(1);` 
+            doit();
+
+            stair_trial += 1;
+            var lblStair = document.getElementById("lblStair");
+            lblStair.innerHTML = `Staircase (${stair_trial})`;
+        }
+
+        function key_handler(event) {
+            var ori_resp;
+            switch (event.keyCode) {
+                case 37: //L
+                    ori_resp=180; break;
+                case 38: //U
+                    ori_resp=90; break;
+                case 39: //R
+                    ori_resp=0; break;
+                case 40: //D
+                    ori_resp=270; break;
+                }
+            var chkStair = document.getElementById("chkStair");
+
+            // N-up-1-down logic
+            if (chkStair.checked) {
+                if (ori_resp==letter_orientation) {
+                    consecutive_corrects+=1;
+                    if (consecutive_corrects==(stair_N-1) ){
+                        stair_size /= 2.0;
+                        consecutive_corrects=0;
+                    }
+                } else {
+                    stair_size *= 2.0;
+                    consecutive_corrects=0;
+                }
+
+                stair_step();
+            }
+
+        };
+
+        // Keyboard listener
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+
+        </script>
+    </body>
+</html>
