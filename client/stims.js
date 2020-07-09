@@ -23,7 +23,24 @@
                             down(posx,posy,siz,color);
                             break;
                        }
+                    if (document.getElementById("chkFlanked").checked) {
+                        ctx.beginPath();
+                        ctx.lineWidth=siz;
+                        ctx.strokeStyle=color;
+                        ctx.moveTo(xc-siz*5+posx, yc-siz*2+posy);
+                        ctx.lineTo(xc-siz*5+posx, yc+siz*3+posy);
+
+                        ctx.moveTo(xc+siz*5+posx, yc-siz*2+posy);
+                        ctx.lineTo(xc+siz*5+posx, yc+siz*3+posy);
+
+                        ctx.moveTo(xc-siz*2.5+posx, yc-siz*5+posy);
+                        ctx.lineTo(xc+siz*2.5+posx, yc-siz*5+posy);
+
+                        ctx.moveTo(xc-siz*2.5+posx, yc+siz*5+siz+posy);
+                        ctx.lineTo(xc+siz*2.5+posx, yc+siz*5+siz+posy);
+                        ctx.stroke()
                     }
+                }
                 }
 
                 function fixation(siz,wid,colr) {
