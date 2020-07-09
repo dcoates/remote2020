@@ -23,6 +23,12 @@
                             down(posx,posy,siz,color);
                             break;
                        }
+                    if (document.getElementById("chkEFlanked").checked) {
+                            right(posx-siz*7.5,posy,siz,color);
+                            left(posx+siz*7.5,posy,siz,color);
+                            up(posx,posy-siz*7.5,siz,color);
+                            down(posx,posy+siz*7.5,siz,color);
+                    }
                     if (document.getElementById("chkFlanked").checked) {
                         ctx.beginPath();
                         ctx.lineWidth=siz;
