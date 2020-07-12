@@ -3,32 +3,44 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
-        <title>RemoteViewport Sandbox</title>
+        <title>remote2020 Sandbox</title>
         <link rel="stylesheet" href="sandbox.css">
+        <link href="prism.css" rel="stylesheet" />
     </head>
     <body style="background-color:#808080">  
 
 		<div class="split left">
             <div id="text">
-                <textarea name="commands" id="commands">Please enter commands</textarea>
-                <textarea name="commands" id="log" readonly="readonly" style="height:20%">Log</textarea>
+                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+
+                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
+                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+
+                <button type="button" id="demo2" onclick="demo2()">CSF</button>
+
+                <textarea name="commands" id="commands" style="height:300px;width:90%">Trial code</textarea>
+                <table style="width:100%;height:200px;border-top:1px">
+                    <tr><td width=70%>
+                    <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    </tr>
+                </table>
             </div>
 
             <div class="buttons">
-                <p id="pCanvasSize">Size</p>
-                <button type="button" id="demo1" onclick="demo1()">Demo 1 (Acuity)</button>
-                <button type="button" id="demo2" onclick="demo2()">Demo 2 (CSF)</button>
-                <button type="button" id="btnRun" onclick="doit();">RUN!</button>
+                <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
                 <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
                 <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
                 <br>
                     <span id="lblStair">Staircase (0):</span>
                     <input type="checkbox" id="chkStair">
+                    <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
+                    <label for="staircase_trials">Staircase Trials:</label>
+                    <input type="text" id="staircase_trials" name="staircase_trials" value="30" style="width:40px">
 
-                <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
-
-                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
-                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+                <p id="pCanvasSize">Size</p>
             </div>
 		</div>
 
@@ -41,8 +53,14 @@
 
         <script src="grating.js"></script>
         <script src="stims.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="prism.js"></script>
 
         <script type="text/javascript">
+
+            function clear_log() {
+                document.getElementById("log").innerHTML="";
+            }
 
             function reportSize() {
                 var rightcan = document.getElementById("rightcan");
@@ -75,11 +93,12 @@
             var globalAnimationID=null;
             var indexAction=0;
             var indexFrame=0;
+            var trial_params={};
 
             //c = document.getElementById("myCanvas");
             //ctx = c.getContext("2d");
 
-            function doit() {
+            function do_trial() {
                 var chkFullScr = document.getElementById("chkFullScr");
                 if (chkFullScr.checked) {
                     openFullscreen();
@@ -87,6 +106,11 @@
 
                 // parse commands
                 commands=document.getElementById("commands").value;
+
+                // First replace the meta parameters (since 1 string)
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params )
+
                 actions=commands.split("flip")
                 flip_durations=[];
                 for (i=1; i<actions.length; i++) {
@@ -112,19 +136,22 @@
 
             function demo1() {
                 document.getElementById("commands").value=
-                "clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(10,2,'black');\nflip(1);\n\nfixation(10,2,'black');\ndraw_letter('E',90,0,120,8,'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(10,2,'black');flip(1);  \ncloseFullscreen();flip(0)"
+                "clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
             }
 
             function demo2() {
                 document.getElementById("commands").value=
-                "make_grating(20,2.0); clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30); flip(1); \
-                animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(10,2,'black');flip(1);  \ncloseFullscreen();flip(0)"
+                "make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30); flip(1); \
+                animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(0,0,10,2,'black');flip(1);"
             }
 
             function animateLoop() {
+                //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
                     stats.begin()
-                    eval(actions[indexAction])
+                    //filled=fillTemplate(actions[indexAction],eval(trial_params) )
+                    eval( actions[indexAction] );
                     stats.end()
                     indexFrame += 1;
                     if (indexFrame>=flip_durations[indexAction]) {
@@ -199,12 +226,9 @@
         var stairCmd=null;
 
 
-        var letter_orientation=0;
-
         var stair_trial=0;
-        var stair_size=20;
+        var stair_size=8;
         var consecutive_corrects=0;
-        const stair_max=10;
         const stair_N=3; // N-up-1down
         var trial_log="";
 
@@ -213,20 +237,26 @@
             chkStair.checked = true;
 
             stair_trial=0;
-            stair_size=20;
+            stair_size=8; // TODO
             consecutive_corrects=0;
 
             stair_step(); // Do 1
         }
 
         function stair_step() {
-            letter_orientation=getRandomInt(3)*90;
-            document.getElementById("commands").value=`clear('#c0c0c0');\nfixation(10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30);flip(1);\nfixation(10,2,'black');\ndraw_letter('E',${letter_orientation},0,150,${stair_size},'black');\nflip(10);\nclear('#c0c0c0');\nfixation(10,2,'black');flip(1);` 
-            doit();
+            //letter_orientation=getRandomInt(3)*90;
+            //document.getElementById("commands").value=`clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30);flip(1);\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,150,${stair_size},'black');\nflip(10);\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);` 
+            do_trial();
 
             stair_trial += 1;
             var lblStair = document.getElementById("lblStair");
             lblStair.innerHTML = `Staircase (${stair_trial})`;
+
+            // see if trials maxed out
+            stair_max=parseInt(document.getElementById("staircase_trials").value)
+            if (stair_trial>stair_max) {
+                document.getElementById("chkStair").checked=false;
+            }
         }
 
         function key_handler(event) {
@@ -241,11 +271,13 @@
                 case 40: //D
                     ori_resp=270; break;
                 }
+
             var chkStair = document.getElementById("chkStair");
 
             // N-up-1-down logic
             if (chkStair.checked) {
-                if (ori_resp==letter_orientation) {
+                var correct=(ori_resp==trial_params['orientation']);
+                if (correct) {
                     consecutive_corrects+=1;
                     if (consecutive_corrects==(stair_N-1) ){
                         stair_size /= 2.0;
@@ -255,7 +287,12 @@
                     stair_size *= 2.0;
                     consecutive_corrects=0;
                 }
+                // Log response
+                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
+                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
 
+                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
+                    stair_size+"\n}"
                 stair_step();
             }
 

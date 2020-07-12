@@ -49,14 +49,14 @@
                 }
                 }
 
-                function fixation(siz,wid,colr) {
+                function fixation(x,y,siz,wid,colr) {
                     ctx.beginPath();
                     ctx.lineWidth=wid;
                     ctx.strokeStyle=colr;
-                    ctx.moveTo(xc, yc-siz);
-                    ctx.lineTo(xc, yc+siz);
-                    ctx.moveTo(xc-siz, yc);
-                    ctx.lineTo(xc+siz, yc);
+                    ctx.moveTo(x+xc, y+yc-siz);
+                    ctx.lineTo(x+xc, y+yc+siz);
+                    ctx.moveTo(x+xc-siz, y+yc);
+                    ctx.lineTo(x+xc+siz, y+yc);
                     ctx.stroke()
                 }
 
