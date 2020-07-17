@@ -277,6 +277,11 @@
             // N-up-1-down logic
             if (chkStair.checked) {
                 var correct=(ori_resp==trial_params['orientation']);
+
+                // Log response
+                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
+                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
+
                 if (correct) {
                     consecutive_corrects+=1;
                     if (consecutive_corrects==(stair_N-1) ){
@@ -287,9 +292,7 @@
                     stair_size *= 2.0;
                     consecutive_corrects=0;
                 }
-                // Log response
-                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
+
 
                 document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
                     stair_size+"\n}"
