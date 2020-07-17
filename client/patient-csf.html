@@ -37,6 +37,40 @@
             </tr>
             <canvas id="canvas">
         </table>
+            <div id="text">
+                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+
+                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
+                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+
+                <button type="button" id="demo2" onclick="demo2()">CSF</button>
+
+                <textarea name="commands" id="commands" style="height:300px;width:90%">Trial code</textarea>
+                <table style="width:100%;height:200px;border-top:1px">
+                    <tr><td width=70%>
+                    <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="buttons">
+                <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+                <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
+                <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
+                <br>
+                    <span id="lblStair">Staircase (0):</span>
+                    <input type="checkbox" id="chkStair">
+                    <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
+                    <label for="staircase_trials">Staircase Trials:</label>
+                    <input type="text" id="staircase_trials" name="staircase_trials" value="30" style="width:40px">
+
+                <p id="pCanvasSize">Size</p>
+            </div>
+		</div>
+
 
         <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
@@ -124,73 +158,6 @@
                         alert('' + err);
                     });
                 };
-
-                function up(bar) {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(20, 20, wid, height);
-
-                    ctx.beginPath();
-                    ctx.moveTo(xc-bar*2, yc-bar*2);
-                    ctx.lineTo(xc-bar*2, yc+bar*2);
-                    ctx.lineTo(xc+bar*2, yc+bar*2);
-                    ctx.lineTo(xc+bar*2, yc-bar*2);
-                    ctx.moveTo(xc, yc-bar*2);
-                    ctx.lineTo(xc, yc+bar*2);
-
-                    ctx.lineWidth=bar;
-                    ctx.strokeStyle="black";
-                    ctx.stroke()
-                };
-
-
-                function down(bar) {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(20, 20, wid, height);
-                    ctx.beginPath();
-                    ctx.moveTo(xc+bar*2, yc+bar*2);
-                    ctx.lineTo(xc+bar*2, yc-bar*2);
-                    ctx.lineTo(xc-bar*2, yc-bar*2);
-                    ctx.lineTo(xc-bar*2, yc+bar*2);
-                    ctx.moveTo(xc, yc-bar*2);
-                    ctx.lineTo(xc, yc+bar*2);
-                    ctx.lineWidth=bar;
-                    ctx.strokeStyle="black";
-                    ctx.stroke()
-                };
-
-                function left(bar) {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(20, 20, wid, height);
-
-                    ctx.beginPath();
-                    ctx.moveTo(xc-bar*2, yc-bar*2);
-                    ctx.lineTo(xc+bar*2, yc-bar*2);
-                    ctx.lineTo(xc+bar*2, yc+bar*2);
-                    ctx.lineTo(xc-bar*2, yc+bar*2);
-                    ctx.moveTo(xc-bar*2,yc);
-                    ctx.lineTo(xc+bar*2,yc);
-
-                    ctx.lineWidth=bar;
-                    ctx.strokeStyle="black";
-                    ctx.stroke()
-                };
-
-                function right(bar) {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(20, 20, wid, height);
-
-                    ctx.beginPath();
-                    ctx.moveTo(xc+bar*2, yc-bar*2);
-                    ctx.lineTo(xc-bar*2, yc-bar*2);
-                    ctx.lineTo(xc-bar*2, yc+bar*2);
-                    ctx.lineTo(xc+bar*2, yc+bar*2);
-                    ctx.moveTo(xc+bar*2,yc);
-                    ctx.lineTo(xc-bar*2,yc);
-
-                    ctx.lineWidth=bar;
-                    ctx.strokeStyle="black";
-                    ctx.stroke()
-                };
 		function closeFullscreen() {
 		  if (document.exitFullscreen) {
 		    document.exitFullscreen();
@@ -204,7 +171,7 @@
 		}
 
                 var c = document.getElementById("canvas");
-                var ctx = c.getContext("2d");
+                var ctx = c.getContext("webgl");
                 var wid=768
                 var height=768;
                 var xc=wid/2;
@@ -222,36 +189,16 @@
                         console.log("Data recieved");
                         var cueString = "<span class=\"cueMsg\">Cue: </span>";
                         code=data.substring(0,1)
-                        value=data.substring(1)
+                        remainder=data.substring(1)
                         switch (code) {
-                            case '1':
-                                openFullscreen()
+                            case 'c':
+                                document.getElementById("commands").value=remainder;
                                 break;
-                            case '0':
-                                closeFullscreen()
+                            case 't':
+                                document.getElementById("trial").value=remainder;
                                 break;
-                            case 'L':
-                                left(value);
-                                break;
-                            case 'R':
-                                right(value);
-                                break;
-                            case 'U':
-                                up(value);
-                                break;
-                            case 'D':
-                                down(value);
-                                break;
-                            case 'G':
-                                contr=value;
-                                break;
-                            case 'O':
-                                ori=value;
-				break;
-                            case 'F':
-                                var sf=value;
-                                make_grating(sf,contr);
-                                do_grating();
+                            case 'g':
+                                document.getElementById("trial").value=remainder;
                                 break;
                             default:
                                 addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
@@ -366,5 +313,54 @@
 		};
 
         </script>
+
+        // Shaders
+  <script type="x-shader/x-vertex" id="vertex-shader">
+#version 100
+precision highp float;
+
+attribute vec2 position;
+varying vec2 v_texCoord;
+
+void main() {
+  gl_Position = vec4(position*1.0, 0.0, 1.0);
+  gl_PointSize = 192.0;
+  v_texCoord = position;
+}
+  </script>
+  <script type="x-shader/x-fragment" id="fragment-shader">
+#version 100
+precision mediump float;
+//attribute vec2 position;
+
+varying vec2 v_texCoord;
+
+uniform float sf_div;
+
+void main() {
+  //vec2 fragmentPosition = (gl_PointCoord*3.0-1.0)/2.0-v_texCoord;
+  //vec2 fragmentPosition = gl_PointCoord-0.5;
+  vec2 fragmentPosition = v_texCoord*vec2(1.0,-1.0)*2.0 + gl_PointCoord-vec2(0.5,0.5);
+  //vec2 fragmentPosition = position2;
+  float distance = length(fragmentPosition);
+  float distanceSqrd = distance * distance;
+  float sigma=0.08;
+  float theta=-3.1416/10.0; 
+  //float sf_div=85.0;
+
+  vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
+                      sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
+
+  float grating=sin(posRotate[0]*sf_div);
+  float mag= grating*exp(-distanceSqrd/sigma);
+  mag = mag/10.0 + 0.5;
+  //float mag= 0.1/distanceSqrd;
+  gl_FragColor = vec4(mag,mag,mag, 1.0 );
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/By_example/Textures_from_code
+// https://www.cs.cornell.edu/courses/cs4620/2017sp/cs4621/lecture08/
+</script>
+
     </body>
 </html>

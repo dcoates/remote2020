@@ -1,0 +1,73 @@
+
+
+
+
+<html>
+<head>
+<script type='text/javascript' src='https://greggman.github.com/webgl-fundamentals/webgl/resources/webgl-utils.js'></script>
+</head>
+<canvas id='canvas'></canvas>
+</html><script id = "2d-vertex-shader"
+type = "x-shader/x-vertex" >
+  attribute vec2 position;
+
+void main() {
+    gl_Position = vec4(position, 0, 1);
+    gl_PointSize = 128.0;
+  } </script>
+
+  <script id = "2d-fragment-shader"
+type = "x-shader/x-fragment" >
+precision mediump float;
+  void main() {
+vec2 fragmentPosition = 2.0*gl_PointCoord - 1.0;
+  float distance = length(fragmentPosition);
+  float distanceSqrd = distance * distance;
+  gl_FragColor = vec4(
+    0.2/distanceSqrd,
+    0.1/distanceSqrd,
+    0.0, 1.0 );
+
+    //gl_FragColor = vec4(0, gl_PointCoord[1], 0, 1); // green
+    //gl_FragColor = vec4(0, 0.5, 0, 1); // green
+  } </script>
+
+<script type="text/javascript">
+var canvas = document.getElementById("canvas");
+var gl = canvas.getContext("experimental-webgl");
+
+// setup a GLSL program
+var vertexShader = createShaderFromScriptElement(gl, "2d-vertex-shader");
+var fragmentShader = createShaderFromScriptElement(gl, "2d-fragment-shader");
+var program = createProgram(gl, [vertexShader, fragmentShader]);
+gl.useProgram(program);
+
+// look up where the vertex data needs to go.
+var positionLocation = gl.getAttribLocation(program, "a_position");
+
+// Create a buffer and put a single clipspace rectangle in
+// it (2 triangles)
+var buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array([
+    -1.0, -1.0,
+    1.0, -1.0,
+    -1.0, 1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    1.0, 1.0
+  ]),
+  gl.STATIC_DRAW);
+gl.enableVertexAttribArray(positionLocation);
+gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+// draw
+gl.drawArrays(gl.TRIANGLES, 0, 6)
+
+// https://www.html5rocks.com/en/tutorials/webgl/webgl_fundamentals/
+// https://webglfundamentals.org/webgl/lessons/webgl-smallest-programs.html
+</script>
+
+</html>
