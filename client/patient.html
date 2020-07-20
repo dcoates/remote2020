@@ -104,6 +104,8 @@
                         console.log("Connected to: " + conn.peer);
                         status.innerHTML = "Connected";
                         ready();
+
+                        c.send('hi 0 1 2 3')
                     });
                     peer.on('disconnected', function () {
                         status.innerHTML = "Connection lost. Please reconnect";

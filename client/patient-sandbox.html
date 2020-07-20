@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>remote2020 - patient</title>
+        <link rel="stylesheet" href="sandbox.css">
+        <link href="prism.css" rel="stylesheet" />
+    </head>
+    <body style="background-color:#808080">  
+
+		<div class="split left">
+                <button type="button" id="get_id" onclick="get_id()">Get ID</button>
+                <button type="button" id="begin" onclick="begin()">Begin!</button>
+
+                <div id="receiver-id" style="font-weight: bold;" title="id">ID:</div>
+                <div id="status" style="font-weight: bold;" title="status">Status:</div>
+
+                <br><br>
+
+            <div id="text">
+                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+
+                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
+                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+
+                <button type="button" id="demo2" onclick="demo2()">CSF</button>
+
+                <textarea name="commands" id="commands" style="height:300px;width:90%">Trial code</textarea>
+                <table style="width:100%;height:200px;border-top:1px">
+                    <tr><td width=70%>
+                    <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="buttons">
+                <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+                <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
+                <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
+                <br>
+                    <span id="lblStair">Staircase (0):</span>
+                    <input type="checkbox" id="chkStair">
+                    <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
+                    <label for="staircase_trials">Staircase Trials:</label>
+                    <input type="text" id="staircase_trials" name="staircase_trials" value="30" style="width:40px">
+
+                <p id="pCanvasSize">Size</p>
+            </div>
+		</div>
+
+            <canvas id="canvas">Canvas</canvas>
+        <p>Something</p>
+
+        <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
+
+        <script src="stims.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="prism.js"></script>
+        <script src="grating_shader.js" type="text/javascript"> </script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+
+        <script type="text/javascript">
+
+            function clear_log() {
+                document.getElementById("log").innerHTML="";
+            }
+
+            if (document.addEventListener)
+            {
+                 document.addEventListener('fullscreenchange', fullscreenHandler, false);
+                 document.addEventListener('mozfullscreenchange', fullscreenHandler, false);
+                 document.addEventListener('MSFullscreenChange', fullscreenHandler, false);
+                 document.addEventListener('webkitfullscreenchange', fullscreenHandler, false);
+            }
+
+            function fullscreenHandler()
+            {
+                if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)
+                {
+
+                    // Get the canvas element form the page
+                    var canvas = document.getElementById("canvas");
+                     
+                    /* Rresize the canvas to occupy the full page, 
+                           by getting the widow width and height and setting it to canvas*/
+                         
+                    canvas.width  = window.innerWidth;
+                    canvas.height = window.innerHeight;
+
+                    console.log('yes')
+                    dims="DIMS: " +canvas.width+' '+canvas.height;
+                    console.log(dims)
+
+                    //var ctx = canvas.getContext("2d");
+
+                    square(500,'white');
+                    ctx.font = "30px Arial";
+                    ctx.fillText(dims, 10, 50);
+                    ctx.fillText("Please wait", 10, 100);
+                } else {
+                    console.log('no')
+                }
+
+            }
+
+            // REMOTE STUFF
+            var lastPeerId = null;
+            var peer = null; // Own peer object
+            var peerId = null;
+            var recvId = document.getElementById("receiver-id");
+            var status = document.getElementById("status");
+            var conn = null;
+
+            function get_id() {
+                mypeer_init();
+            }
+
+            function begin() {
+                openFullscreen();
+                if (!(conn === null) ) {
+                    conn.send("BEGIN ");
+                }
+                square(300,'green'); // this definitely does not work (asynch?)
+            }
+
+                /**
+                 * Create the Peer object for our end of the connection.
+                 *
+                 * Sets up callbacks that handle any events related to our
+                 * peer object.
+                 */
+                 function mypeer_init() {
+                    var recvId = document.getElementById("receiver-id");
+                    var status = document.getElementById("status");
+
+                    // Create own peer object with connection to shared PeerJS server
+                    peer = new Peer(null, { //'uh2', {
+                        host: '185.146.28.139',
+                        //host: '192.168.12.1',
+                        port: '9000',
+                        path: '/myapp',
+                        debug: 2
+                    });
+
+                    peer.on('open', function (id) {
+                        // Workaround for peer.reconnect deleting previous id
+                        if (peer.id === null) {
+                            console.log('Received null id from peer open');
+                            peer.id = lastPeerId;
+                        } else {
+                            lastPeerId = peer.id;
+                        }
+
+                        console.log('myID: ' + peer.id);
+                        recvId.innerHTML = "myID: " + peer.id;
+                        status.innerHTML = "Awaiting connection...";
+                    });
+                    peer.on('connection', function (c) {
+                        // Allow only a single connection
+                        if (conn && conn.open) {
+                            c.on('open', function() {
+                                c.send("Already connected to another client");
+                                setTimeout(function() { c.close(); }, 500);
+                            });
+                            return;
+                        }
+
+                        conn = c;
+                        console.log("Connected to: " + conn.peer);
+                        status.innerHTML = "Connected from " + conn.peer;
+                        ready();
+                    });
+                    peer.on('disconnected', function () {
+                        status.innerHTML = "Connection lost. Please reconnect";
+                        console.log('Connection lost. Please reconnect');
+
+                        // Workaround for peer.reconnect deleting previous id
+                        peer.id = lastPeerId;
+                        peer._lastServerId = lastPeerId;
+                        peer.reconnect();
+                    });
+                    peer.on('close', function() {
+                        conn = null;
+                        status.innerHTML = "Connection destroyed. Please refresh";
+                        console.log('Connection destroyed');
+                    });
+                    peer.on('error', function (err) {
+                        console.log(err);
+                        alert('' + err);
+                    });
+                };
+                /**
+                 * Triggered once a connection has been achieved.
+                 * Defines callbacks to handle incoming data and connection events.
+                 */
+                function ready() {
+
+                    conn.on('data', function (data) {
+                        console.log("Data received");
+                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                        code=data.substring(0,1)
+                        value=data.substring(1)
+                        switch (code) {
+                            case '1':
+                                openFullscreen()
+                                break;
+                            case '0':
+                                closeFullscreen()
+                                break;
+                            case 'L':
+                                left(value);
+                                break;
+                            case 'R':
+                                right(value);
+                                break;
+                            case 'U':
+                                up(value);
+                                break;
+                            case 'D':
+                                down(value);
+                                break;
+                            case 'G':
+                                contr=value;
+                                break;
+                            case 'O':
+                                ori=value;
+				break;
+                            case 'F':
+                                var sf=value;
+                                make_grating(sf,contr);
+                                do_grating();
+                                break;
+                            default:
+                                console.log(data);
+                                //addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
+                                break;
+
+                        };
+                    });
+                    conn.on('close', function () {
+                        status.innerHTML = "Connection reset<br>Awaiting connection...";
+                        conn = null;
+                    });
+                }
+
+            function reportSize() {
+                var rightcan = document.getElementById("rightcan");
+                wid=rightcan.clientWidth;
+                height=rightcan.clientHeight;
+                canv.width=wid;
+                canv.height=height;
+                xc=wid/2;
+                yc=height/2;
+
+                document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
+
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; // <-- pull the page back up to the top
+                //document.body.style.overflow = 'hidden'; // <-- relevant addition
+            }
+
+            // Global variables
+            var c = document.getElementById("canvas");
+            var canv = document.getElementById("canvas");
+            var ctx = canv.getContext("2d");
+            var wid=768
+            var height=768;
+            var xc=wid/2;
+            var yc=height/2;
+            var conn = null;
+            var commands=null;
+            var commands_split=null;
+            var flip_durations=[];
+            var globalAnimationID=null;
+            var indexAction=0;
+            var indexFrame=0;
+            var trial_params={};
+
+            // shader grating stuff:
+            var gl, program; // these are used in grating_shader.
+            // window.addEventListener("load", setupWebGL, false); //now we call explicit and swtich context
+
+            //c = document.getElementById("canvas");
+            //ctx = c.getContext("2d");
+
+            function do_trial() {
+                var chkFullScr = document.getElementById("chkFullScr");
+                if (chkFullScr.checked) {
+                    openFullscreen();
+                }
+
+                // parse commands
+                commands=document.getElementById("commands").value;
+
+                // First replace the meta parameters (since 1 string)
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params )
+
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
+
+            function demo1() {
+                document.getElementById("commands").value=
+                "clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
+            }
+
+            function demo2() {
+                //document.getElementById("commands").value=
+                //"make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30); flip(1); \
+                //animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(0,0,10,2,'black');flip(1);"
+
+                // Clone the canvas to unhook the canvas
+                var newCvs = c.cloneNode(false);
+                c.parentNode.replaceChild(newCvs, c);
+                c = newCvs;
+
+                setupWebGL();
+                showShaderGrating();
+            }
+
+            function animateLoop() {
+                //var trial_params=document.getElementById("trial").value;
+                if (indexAction<actions.length) {
+                    stats.begin()
+                    //filled=fillTemplate(actions[indexAction],eval(trial_params) )
+                    eval( actions[indexAction] );
+                    stats.end()
+                    indexFrame += 1;
+                    if (indexFrame>=flip_durations[indexAction]) {
+                        indexFrame = 0;
+                        indexAction += 1;
+                    }
+
+                    globalAnimationID = requestAnimationFrame(animateLoop);
+                } else { // no more actions left
+                    // reset, in case we want to run again
+                    indexAction = 0;
+                    indexFrame = 0;
+
+                    cancelAnimationFrame(globalAnimationID);
+
+                }
+            }
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.getElementById("canvas");
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+        // Main Javascript entry:
+        //reportSize();//call once to set initial size
+        //window.addEventListener('resize', reportSize);
+        audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
+
+        var stats = new Stats();
+        stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        stats.dom.style.position="absolute";
+        stats.dom.style.top="90%";
+        document.body.appendChild( stats.dom );
+
+        var stairCmd=null;
+
+
+        var stair_trial=0;
+        var stair_size=8;
+        var consecutive_corrects=0;
+        const stair_N=3; // N-up-1down
+
+        function stair_restart() {
+            var chkStair = document.getElementById("chkStair");
+            chkStair.checked = true;
+
+            stair_trial=0;
+            stair_size=8; // TODO
+            consecutive_corrects=0;
+
+            stair_step(); // Do 1
+        }
+
+        function stair_step() {
+            //letter_orientation=getRandomInt(3)*90;
+            //document.getElementById("commands").value=`clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30);flip(1);\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,150,${stair_size},'black');\nflip(10);\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);` 
+            do_trial();
+
+            stair_trial += 1;
+            var lblStair = document.getElementById("lblStair");
+            lblStair.innerHTML = `Staircase (${stair_trial})`;
+
+            // see if trials maxed out
+            stair_max=parseInt(document.getElementById("staircase_trials").value)
+            if (stair_trial>stair_max) {
+                document.getElementById("chkStair").checked=false;
+            }
+        }
+
+        function key_handler(event) {
+            var ori_resp;
+            switch (event.keyCode) {
+                case 37: //L
+                    ori_resp=180; break;
+                case 38: //U
+                    ori_resp=90; break;
+                case 39: //R
+                    ori_resp=0; break;
+                case 40: //D
+                    ori_resp=270; break;
+                }
+
+            var chkStair = document.getElementById("chkStair");
+
+            // N-up-1-down logic
+            if (chkStair.checked) {
+                var correct=(ori_resp==trial_params['orientation']);
+                // Log response
+                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
+                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
+
+                if (correct) {
+                    consecutive_corrects+=1;
+                    if (consecutive_corrects==(stair_N-1) ){
+                        stair_size /= 2.0;
+                        consecutive_corrects=0;
+                    }
+                } else {
+                    stair_size *= 2.0;
+                    consecutive_corrects=0;
+                }
+
+                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
+                    stair_size+"\n}"
+                stair_step();
+            };
+        };
+
+        function square(sid,colr) {
+            var c = document.getElementById("canvas");
+            var ctx = c.getContext("2d");
+
+            ctx.fillStyle = colr;
+
+            var wid=canvas.width;
+            var height=canvas.height;
+            // Center it
+            ctx.fillRect(wid/2-sid/2, height/2-sid/2, sid, sid);
+            };
+
+
+
+        // Keyboard listener
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+        </script> // end of Javascript
+
+        // Shaders
+  <script type="x-shader/x-vertex" id="vertex-shader">
+#version 100
+precision highp float;
+
+attribute vec2 position;
+varying vec2 v_texCoord;
+
+void main() {
+  gl_Position = vec4(position*1.0, 0.0, 1.0);
+  gl_PointSize = 192.0;
+  v_texCoord = position;
+}
+  </script>
+  <script type="x-shader/x-fragment" id="fragment-shader">
+#version 100
+precision mediump float;
+//attribute vec2 position;
+
+varying vec2 v_texCoord;
+
+uniform float sf_div;
+
+void main() {
+  //vec2 fragmentPosition = (gl_PointCoord*3.0-1.0)/2.0-v_texCoord;
+  //vec2 fragmentPosition = gl_PointCoord-0.5;
+  vec2 fragmentPosition = v_texCoord*vec2(1.0,-1.0)*2.0 + gl_PointCoord-vec2(0.5,0.5);
+  //vec2 fragmentPosition = position2;
+  float distance = length(fragmentPosition);
+  float distanceSqrd = distance * distance;
+  float sigma=0.08;
+  float theta=-3.1416/10.0; 
+  //float sf_div=85.0;
+
+  vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
+                      sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
+
+  float grating=sin(posRotate[0]*sf_div);
+  float mag= grating*exp(-distanceSqrd/sigma);
+  mag = mag/10.0 + 0.5;
+  //float mag= 0.1/distanceSqrd;
+  gl_FragColor = vec4(mag,mag,mag, 1.0 );
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/By_example/Textures_from_code
+// https://www.cs.cornell.edu/courses/cs4620/2017sp/cs4621/lecture08/
+</script>
+
+    </body>
+</html>

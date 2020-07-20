@@ -1,4 +1,4 @@
-        //<canvas id="myCanvas" style="width:1600px, height:1200px">  initial-scale:1.0">
+        //<canvas id="canvas" style="width:1600px, height:1200px">  initial-scale:1.0">
 
         // S6: 2560x1440
 
@@ -38,7 +38,7 @@
 
                 fram=(fram+1)%(anim_frames-1)+1;
 
-                //document.getElementById("myCanvas").style.transform = "rotate(22deg)";
+                //document.getElementById("canvas").style.transform = "rotate(22deg)";
                 
                 fram_total += 1;
 
@@ -49,7 +49,7 @@
                 } else {
                     fram_total=0;
                     cancelAnimationFrame(globalID);
-                    var elem = document.getElementById("myCanvas");
+                    var elem = document.getElementById("canvas");
                     //document.exitFullscreen()
                     //
                     // Erase:
@@ -61,13 +61,13 @@
             }
 
             function do_grating() {
-                var elem = document.getElementById("myCanvas");
+                var elem = document.getElementById("canvas");
                 globalID = requestAnimationFrame(animator);
             }
 
             function createCanvas(h, w) {
                 //var c = document.createElement("canvas");
-                var c = document.getElementById("myCanvas");
+                var c = document.getElementById("canvas");
                 //c.width = w;
                 //c.height = h;
                 return c;
@@ -101,7 +101,7 @@
             myw=256; 
             myh=256; 
 
-            var c = document.getElementById("myCanvas");
+            var c = document.getElementById("canvas");
             var ctx = c.getContext("2d");
             //var ctx = document.body.appendChild(createCanvas(myh, myw)).getContext("2d");
             //var ImDat = ctx.createImageData(myw, myh);
