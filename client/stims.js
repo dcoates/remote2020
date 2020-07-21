@@ -127,3 +127,8 @@
                 o.start(audio.currentTime)
                 o.stop(audio.currentTime+duration*0.001)
             }
+
+            function getRandomInt(max) {
+                return Math.floor(Math.random() * Math.floor(max));
+            }
+

@@ -16,6 +16,10 @@
 
                 <div id="my-id" style="font-weight: bold;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
+                <div id="status2" style="font-weight: bold;" title="status2">Status2:</div>
+                <button type="button" id="btnSend" onclick="send_trial();">SEND 1 Trial!</button>
+                    <span id="lblRemoteStair">Remote Staircase (0):</span>
+                    <input type="checkbox" id="chkRemoteStair">
 
                 <br><br>
 
@@ -31,9 +35,10 @@
                 <table style="width:100%;height:200px;border-top:1px">
                     <tr><td width=70%>
                     <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                    <textarea name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
                         </td><td>
                     <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
-                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
                     </tr>
                 </table>
             </div>
@@ -71,7 +76,13 @@
         <script type="text/javascript">
 
             function clear_log() {
-                document.getElementById("log").innerHTML="";
+                document.getElementById("log").innerHTML="trial,size,ori,resp,correct,is_reversal,num_reversals";
+            }
+
+            var metap = [];
+            function get_metap() {
+                // TODO: A callback when it changes instead?
+                eval( document.getElementById("metap").value );
             }
 
             // REMOTE STUFF
@@ -82,6 +93,7 @@
             var recvId = document.getElementById("receiver-id");
             var id_mine = document.getElementById("my-id");
             var stat = document.getElementById("status");
+            var stat2 = document.getElementById("status2");
 
             function myinit() {
                 mypeer_init();
@@ -195,6 +207,13 @@
                     conn.on('data', function (data) {
                         //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
                         console.log(data); // TODO: SAVE
+
+                        if (data.startsWith('FS')) {
+                            stat.innerHTML = data;
+                        }
+                        if (data.startsWith('KB')) {
+                            do_kb( parseInt(data.substr(3) ));
+                        }
                     });
                     conn.on('close', function () {
                         stat.innerHTML = "Connection closed";
@@ -294,9 +313,12 @@
             var xc=wid/2;
             var yc=height/2;
             var conn = null;
+
+            // Command/Action stuff
             var commands=null;
             var commands_split=null;
             var flip_durations=[];
+            var actions=[];
             var globalAnimationID=null;
             var indexAction=0;
             var indexFrame=0;
@@ -308,6 +330,19 @@
 
             //c = document.getElementById("canvas");
             //ctx = c.getContext("2d");
+
+            function send_trial() {
+                // parse commands
+                commands=document.getElementById("commands").value;
+
+                // First replace the meta parameters (since 1 string);
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params );
+                var msg="T "+commands;
+			    conn.send(msg);
+
+                }
+
             function do_trial() {
                 var chkFullScr = document.getElementById("chkFullScr");
                 if (chkFullScr.checked) {
@@ -346,8 +381,9 @@
 
             function demo1() {
                 document.getElementById("commands").value=
-                "clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
+                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8,\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
+                document.getElementById("metap").value="metap={\n\torientation: getRandomInt(3)*90,\n\tsize: 8,\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
             }
 
             function demo2() {
@@ -448,6 +484,8 @@
         var stair_size=8;
         var consecutive_corrects=0;
         const stair_N=3; // N-up-1down
+        var MAX_REVERSALS=0;
+        var nReversals=0;
 
         function stair_restart() {
             var chkStair = document.getElementById("chkStair");
@@ -456,29 +494,47 @@
             stair_trial=0;
             stair_size=8; // TODO
             consecutive_corrects=0;
+            nReversals=0;
 
+            get_metap(); // make sure to load in meta parameters TODO:fixme
             stair_step(); // Do 1
         }
 
         function stair_step() {
-            //letter_orientation=getRandomInt(3)*90;
-            //document.getElementById("commands").value=`clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30);flip(1);\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,150,${stair_size},'black');\nflip(10);\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);` 
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+
             do_trial();
+
+            if (document.getElementById("chkRemoteStair") ) {
+                send_trial()
+            }
 
             stair_trial += 1;
             var lblStair = document.getElementById("lblStair");
-            lblStair.innerHTML = `Staircase (${stair_trial})`;
+            lblStair.innerHTML = `Staircase ${stair_trial} ${nReversals}`;
 
             // see if trials maxed out
-            stair_max=parseInt(document.getElementById("staircase_trials").value)
-            if (stair_trial>stair_max) {
+            //stair_max=parseInt(document.getElementById("staircase_trials").value)
+            //if (stair_trial>stair_max) {
+                //document.getElementById("chkStair").checked=false;
+            //}
+
+            if (nReversals>metap.staircase_reversals.length ) {
                 document.getElementById("chkStair").checked=false;
             }
+
         }
 
+        var prev_corr=true; // assume first one correct?
+
         function key_handler(event) {
+            do_kb(event.keyCode);
+        }
+
+        function do_kb(keycode) {
             var ori_resp;
-            switch (event.keyCode) {
+            switch (keycode) {
                 case 37: //L
                     ori_resp=180; break;
                 case 38: //U
@@ -490,25 +546,46 @@
                 }
 
             var chkStair = document.getElementById("chkStair");
+            var isReversal = false;
 
             // N-up-1-down logic
             if (chkStair.checked) {
                 var correct=(ori_resp==trial_params['orientation']);
-                // Log response
-                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
 
+                var step_size=metap.staircase_reversals[nReversals];
                 if (correct) {
                     consecutive_corrects+=1;
                     if (consecutive_corrects==(stair_N-1) ){
-                        stair_size /= 2.0;
+                        stair_size /= step_size;
                         consecutive_corrects=0;
+                        if (! (prev_corr)) {
+                            isReversal=true; // first reversal after an error
+                        } else {
+                            isReversal=false; // still going up
+                        }
+                        prev_corr=true;
+                    } else {
+                        // First correct of sequence, shouldn't yet change prev_corr, etc.
+                        ;
                     }
                 } else {
-                    stair_size *= 2.0;
+                    stair_size *= step_size;
                     consecutive_corrects=0;
+                    if (prev_corr) {
+                        isReversal=true; // first wrong after previous correct is considered reversal
+                    }
+                    prev_corr=false;
                 }
 
+                if (isReversal) {
+                    nReversals += 1;
+                }
+
+                // Log response
+                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
+                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
+
+                // Set up trial parameters, which are merged with the code to do 1 trial
                 document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
                     stair_size+"\n}"
                 stair_step();

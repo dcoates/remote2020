@@ -8,11 +8,6 @@
                 return 0;
             }
 
-            function getRandomInt(max) {
-                return Math.floor(Math.random() * Math.floor(max));
-            }
-
-
             var anim_frames=10;
             var duration_frames=20;
             var fram=0;

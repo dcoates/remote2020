@@ -24,7 +24,7 @@
                     <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
                         </td><td>
                     <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
-                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal</textarea>
                     </tr>
                 </table>
             </div>
@@ -230,6 +230,8 @@
         var stair_size=8;
         var consecutive_corrects=0;
         const stair_N=3; // N-up-1down
+        const MAX_REVERSALS=6; // N-up-1down
+        var nReversals=0;
         var trial_log="";
 
         function stair_restart() {
@@ -238,6 +240,7 @@
 
             stair_trial=0;
             stair_size=8; // TODO
+            nReversals=0;
             consecutive_corrects=0;
 
             stair_step(); // Do 1
@@ -254,7 +257,8 @@
 
             // see if trials maxed out
             stair_max=parseInt(document.getElementById("staircase_trials").value)
-            if (stair_trial>stair_max) {
+            //if (stair_trial>stair_max) {
+            if (nReversals>MAX_REVERSALS) {
                 document.getElementById("chkStair").checked=false;
             }
         }
@@ -278,24 +282,33 @@
             if (chkStair.checked) {
                 var correct=(ori_resp==trial_params['orientation']);
 
-                // Log response
-                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
-
+                var prevSize=stair_size;
+                var isreversal=0;
                 if (correct) {
                     consecutive_corrects+=1;
                     if (consecutive_corrects==(stair_N-1) ){
                         stair_size /= 2.0;
                         consecutive_corrects=0;
+                        isreversal=1;
                     }
                 } else {
                     stair_size *= 2.0;
                     consecutive_corrects=0;
+                    isreversal=1;
                 }
 
+                if (isreversal) {
+                    nReversals += 1;
+                }
+
+                // Log response
+                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
+                    stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isreversal;
 
                 document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
                     stair_size+"\n}"
+
+                // Continue to next one (may exit if we are done, exceeding trials or reversals)
                 stair_step();
             }
 

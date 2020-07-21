@@ -84,7 +84,7 @@
                 {
 
                     // Get the canvas element form the page
-                    var canvas = document.getElementById("canvas");
+                    canvas = document.getElementById("canvas");
                      
                     /* Rresize the canvas to occupy the full page, 
                            by getting the widow width and height and setting it to canvas*/
@@ -92,16 +92,28 @@
                     canvas.width  = window.innerWidth;
                     canvas.height = window.innerHeight;
 
+                    // set globals which are used by stims.js
+                    wid=canvas.width;
+                    height=canvas.height;
+                    xc=wid/2;
+                    yc=height/2;
+
                     console.log('yes')
                     dims="DIMS: " +canvas.width+' '+canvas.height;
                     console.log(dims)
 
-                    //var ctx = canvas.getContext("2d");
+                    ctx = canvas.getContext("2d");
 
                     square(200,'white');
                     ctx.font = "30px Arial";
-                    ctx.fillText(dims, 10, 50);
-                    ctx.fillText("Please wait", 10, 100);
+                    ctx.fillText(peer.id, 10, 50);
+                    ctx.fillText(dims, 10, 100);
+                    ctx.fillText("Please wait", 10, 150);
+
+                    if (!(conn === null) ) {
+                        conn.send("FS "+canvas.width+" "+canvas.height);
+                    }
+
                 } else {
                     console.log('no')
                 }
@@ -122,10 +134,6 @@
 
             function begin() {
                 openFullscreen();
-                if (!(conn === null) ) {
-                    conn.send("BEGIN ");
-                }
-                square(300,'green'); // this definitely does not work (asynch?)
             }
 
                 /**
@@ -212,29 +220,12 @@
                             case '0':
                                 closeFullscreen()
                                 break;
-                            case 'L':
-                                left(value);
+                            case 'T':
+                                console.log(value);
+                                commands=value;
+                                rcv_trial();
                                 break;
-                            case 'R':
-                                right(value);
-                                break;
-                            case 'U':
-                                up(value);
-                                break;
-                            case 'D':
-                                down(value);
-                                break;
-                            case 'G':
-                                contr=value;
-                                break;
-                            case 'O':
-                                ori=value;
-				break;
-                            case 'F':
-                                var sf=value;
-                                make_grating(sf,contr);
-                                do_grating();
-                                break;
+
                             default:
                                 console.log(data);
                                 //addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
@@ -247,6 +238,40 @@
                         conn = null;
                     });
                 }
+
+            // Command/Action stuff
+            var commands=null;
+            var commands_split=null;
+            var flip_durations=[];
+            var actions=[];
+            var globalAnimationID=null;
+            var indexAction=0;
+            var indexFrame=0;
+            var trial_params={};
+
+            function rcv_trial() {
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
 
             function reportSize() {
                 var rightcan = document.getElementById("rightcan");
@@ -267,19 +292,13 @@
             // Global variables
             var c = document.getElementById("canvas");
             var canv = document.getElementById("canvas");
+            var canvas = document.getElementById("canvas");
             var ctx = canv.getContext("2d");
             var wid=768
             var height=768;
             var xc=wid/2;
             var yc=height/2;
             var conn = null;
-            var commands=null;
-            var commands_split=null;
-            var flip_durations=[];
-            var globalAnimationID=null;
-            var indexAction=0;
-            var indexFrame=0;
-            var trial_params={};
 
             // shader grating stuff:
             var gl, program; // these are used in grating_shader.
@@ -326,7 +345,7 @@
 
             function demo1() {
                 document.getElementById("commands").value=
-                "clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#c0c0c0');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#c0c0c0');\nfixation(0,0,10,2,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
             }
 
@@ -457,42 +476,11 @@
         }
 
         function key_handler(event) {
-            var ori_resp;
-            switch (event.keyCode) {
-                case 37: //L
-                    ori_resp=180; break;
-                case 38: //U
-                    ori_resp=90; break;
-                case 39: //R
-                    ori_resp=0; break;
-                case 40: //D
-                    ori_resp=270; break;
-                }
+            console.log(event.keyCode);
+            if (!(conn === null) ) {
+                conn.send("KB "+event.keyCode);
+            }
 
-            var chkStair = document.getElementById("chkStair");
-
-            // N-up-1-down logic
-            if (chkStair.checked) {
-                var correct=(ori_resp==trial_params['orientation']);
-                // Log response
-                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct;
-
-                if (correct) {
-                    consecutive_corrects+=1;
-                    if (consecutive_corrects==(stair_N-1) ){
-                        stair_size /= 2.0;
-                        consecutive_corrects=0;
-                    }
-                } else {
-                    stair_size *= 2.0;
-                    consecutive_corrects=0;
-                }
-
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
-                    stair_size+"\n}"
-                stair_step();
-            };
         };
 
         function square(sid,colr) {
