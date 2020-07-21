@@ -534,7 +534,9 @@
         var prev_corr=true; // assume first one correct?
 
         function key_handler(event) {
-            do_kb(event.keyCode);
+            if (!(document.getElementById("chkRemoteStair").checked) ) {
+                do_kb(event.keyCode);
+            }
         }
 
         function do_kb(keycode) {
