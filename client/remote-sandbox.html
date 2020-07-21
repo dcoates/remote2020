@@ -384,8 +384,8 @@
             function demo1() {
                 document.getElementById("commands").value=
                 "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
-                    document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize: 8\n}";
-                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.26,1.26,1.26,1.26]\n}"
+                    document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:10\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.26,1.26,1.26,1.26],\n\tstair_start:10\n}"
             }
 
             function demo2() {
@@ -483,7 +483,7 @@
 
 
         var stair_trial=0;
-        var stair_size=8;
+        var stair_size=null;
         var consecutive_corrects=0;
         const stair_N=3; // N-up-1down
         var MAX_REVERSALS=0;
@@ -493,12 +493,13 @@
             var chkStair = document.getElementById("chkStair");
             chkStair.checked = true;
 
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+
             stair_trial=0;
-            stair_size=8; // TODO
+            stair_size=metap.stair_start; 
             consecutive_corrects=0;
             nReversals=0;
 
-            get_metap(); // make sure to load in meta parameters TODO:fixme
             stair_step(); // Do 1
         }
 
@@ -513,7 +514,7 @@
 
             do_trial();
 
-            if (document.getElementById("chkRemoteStair") ) {
+            if (document.getElementById("chkRemoteStair").checked ) {
                 send_trial()
             }
 
@@ -560,8 +561,9 @@
             // N-up-1-down logic
             if (chkStair.checked) {
                 var correct=(ori_resp==trial_params['orientation']);
-
                 var step_size=metap.staircase_reversals[nReversals];
+                var prev_size=stair_size;
+
                 if (correct) {
                     consecutive_corrects+=1;
                     if (consecutive_corrects==(stair_N-1) ){
@@ -592,7 +594,7 @@
 
                 // Log response
                 document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
+                    stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
                 var oriNew=getRandomInt(3)*90
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 document.getElementById("trial").value=`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
