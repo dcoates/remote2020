@@ -382,8 +382,8 @@
             function demo1() {
                 document.getElementById("commands").value=
                 "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8,\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
-                document.getElementById("metap").value="metap={\n\torientation: getRandomInt(3)*90,\n\tsize: 8,\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize: 8,\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2,2,1.5,1.5,1.25,1.25]\n}"
             }
 
             function demo2() {
@@ -501,6 +501,11 @@
         }
 
         function stair_step() {
+            // First replace the meta parameters (since 1 string);
+            //trial_params=eval(document.getElementById("trial").value);
+                // First replace the meta parameters (since 1 string);
+                //trial_params=eval(document.getElementById("trial").value);
+                //commands=fillTemplate(commands,trial_params );
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
 
@@ -584,9 +589,9 @@
                 // Log response
                 document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
                     stair_trial+","+stair_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
-
+                var oriNew=getRandomInt(3)*90
                 // Set up trial parameters, which are merged with the code to do 1 trial
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize:"+
+                document.getElementById("trial").value=`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                     stair_size+"\n}"
                 stair_step();
             }
