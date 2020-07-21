@@ -21,6 +21,8 @@
                     <span id="lblRemoteStair">Remote Staircase (0):</span>
                     <input type="checkbox" id="chkRemoteStair">
 
+                <input type="checkbox" id="chkKeys"><label for='chkKeys'>Capture Keys</label>
+
                 <br><br>
 
             <div id="text">
@@ -534,7 +536,7 @@
         var prev_corr=true; // assume first one correct?
 
         function key_handler(event) {
-            if (!(document.getElementById("chkRemoteStair").checked) ) {
+            if ((document.getElementById("chkKeys").checked) ) {
                 do_kb(event.keyCode);
             }
         }
