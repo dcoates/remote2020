@@ -6,7 +6,7 @@
                     ctx.fillRect(0, 0, wid, height);
                 }
 
-                function draw_letter(which,ori,posx,posy,siz,color) {
+                function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
                     siz=Math.ceil(siz);
                     if (which=='E') {
                        switch (ori) {
@@ -23,27 +23,29 @@
                             down(posx,posy,siz,color);
                             break;
                        }
-                    if (document.getElementById("chkEFlanked").checked) {
-                            right(posx-siz*7.5,posy,siz,color);
-                            left(posx+siz*7.5,posy,siz,color);
-                            up(posx,posy-siz*7.5,siz,color);
-                            down(posx,posy+siz*7.5,siz,color);
+                    //if (document.getElementById("chkEFlanked").checked) {
+                    if (esep>=0) {
+                            right(posx-siz*esep,posy,siz,color);
+                            left(posx+siz*esep,posy,siz,color);
+                            up(posx,posy-siz*esep,siz,color);
+                            down(posx,posy+siz*esep,siz,color);
                     }
-                    if (document.getElementById("chkFlanked").checked) {
+                    //if (document.getElementById("chkFlanked").checked) {
+                    if (barsep>=0) {
                         ctx.beginPath();
                         ctx.lineWidth=siz;
                         ctx.strokeStyle=color;
-                        ctx.moveTo(xc-siz*5+posx, yc-siz*2+posy);
-                        ctx.lineTo(xc-siz*5+posx, yc+siz*3+posy);
+                        ctx.moveTo(xc-siz*barsep+posx, yc-siz*barsep/2.0+posy);
+                        ctx.lineTo(xc-siz*barsep+posx, yc+siz*barsep/2.0+posy);
 
-                        ctx.moveTo(xc+siz*5+posx, yc-siz*2+posy);
-                        ctx.lineTo(xc+siz*5+posx, yc+siz*3+posy);
+                        ctx.moveTo(xc+siz*barsep+posx, yc-siz*barsep/2.0+posy);
+                        ctx.lineTo(xc+siz*barsep+posx, yc+siz*barsep/2.0+posy);
 
-                        ctx.moveTo(xc-siz*2.5+posx, yc-siz*5+posy);
-                        ctx.lineTo(xc+siz*2.5+posx, yc-siz*5+posy);
+                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc-siz*barsep+posy);
+                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc-siz*barsep+posy);
 
-                        ctx.moveTo(xc-siz*2.5+posx, yc+siz*5+siz+posy);
-                        ctx.lineTo(xc+siz*2.5+posx, yc+siz*5+siz+posy);
+                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
+                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
                         ctx.stroke()
                     }
                 }

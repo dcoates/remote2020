@@ -7,10 +7,9 @@
         <link rel="stylesheet" href="sandbox.css">
         <link href="prism.css" rel="stylesheet" />
     </head>
-    <body style="background-color:#808080">  
+    <body style="background-color:#808080" onload="load_code()">  
 
 		<div class="split left">
-                    <button type="button" id="init" onclick="myinit()">Initialize</button>
                     <input type="text" id="receiver-id" title="Enter ID">
                     <button id="connect-button">Connect</button>
 
@@ -27,9 +26,6 @@
 
             <div id="text">
                 <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
-
-                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
-                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
 
                 <button type="button" id="demo2" onclick="demo2()">CSF</button>
 
@@ -85,6 +81,10 @@
             function get_metap() {
                 // TODO: A callback when it changes instead?
                 eval( document.getElementById("metap").value );
+            }
+
+            function load_code() {
+                myinit();
             }
 
             // REMOTE STUFF
@@ -386,9 +386,9 @@
 
             function demo1() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
                     document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:10\n}";
-                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.26,1.26,1.26,1.26],\n\tstair_start:10\n}"
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:10\n}"
             }
 
             function demo2() {
@@ -602,7 +602,16 @@
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 document.getElementById("trial").value=`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                     stair_size+"\n}"
-                stair_step();
+
+                // Finished ?
+                if (nReversals>=metap.staircase_reversals.length ) {
+                    document.getElementById("chkStair").checked=false;
+                    var lblStair = document.getElementById("lblStair");
+                    lblStair.innerHTML = `FINISHED`;
+                    beep(1,440,80);
+                } else {
+                    stair_step();
+                }
             }
 
         };
@@ -657,6 +666,11 @@ void main() {
 
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/By_example/Textures_from_code
 // https://www.cs.cornell.edu/courses/cs4620/2017sp/cs4621/lecture08/
+
+                //<input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
+                //<input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+                    //<button type="button" id="init" onclick="myinit()">Initialize</button>
+
 </script>
 
     </body>
