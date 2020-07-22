@@ -225,6 +225,7 @@
                         status.innerHTML = "Connected from " + conn.peer;
                         ctx.fillStyle='blue';
                         ctx.fillText(conn.peer, 130, 50);
+                        setTimeout( function() {conn.send("FS "+canvas.width+" "+canvas.height);}, 500 );
                         ready();
                     });
                     peer.on('disconnected', function () {
@@ -265,7 +266,7 @@
                                 closeFullscreen()
                                 break;
                             case 'T':
-                                console.log(value);
+                                //console.log(value);
                                 commands=value;
                                 rcv_trial();
                                 break;

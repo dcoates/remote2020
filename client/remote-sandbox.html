@@ -211,7 +211,7 @@
                         console.log(data); // TODO: SAVE
 
                         if (data.startsWith('FS')) {
-                            stat.innerHTML = data;
+                            stat2.innerHTML = "Patient screen: "+ data;
                         }
                         if (data.startsWith('KB')) {
                             do_kb( parseInt(data.substr(3) ));
