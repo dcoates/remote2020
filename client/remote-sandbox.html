@@ -326,6 +326,8 @@
             var indexFrame=0;
             var trial_params={};
 
+            var in_trial=false;
+
             // shader grating stuff:
             var gl, program; // these are used in grating_shader.
             // window.addEventListener("load", setupWebGL, false); //now we call explicit and swtich context
@@ -378,6 +380,7 @@
                 // Start the animation
                 indexAction=0;
                 indexFrame=0;
+                in_trial=true;
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
@@ -420,11 +423,11 @@
                     // reset, in case we want to run again
                     indexAction = 0;
                     indexFrame = 0;
-
                     cancelAnimationFrame(globalAnimationID);
-
+                    in_trial=false;
                 }
             }
+
 		function openFullscreen() {
 
             if (document.fullscreenElement) {

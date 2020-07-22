@@ -4,10 +4,10 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
         <title>remote2020 - patient</title>
-        <link rel="stylesheet" href="sandbox.css">
+        <link rel="stylesheet" href="sandbox_bare.css">
         <link href="prism.css" rel="stylesheet" />
     </head>
-    <body style="background-color:#808080">  
+    <body style="background-color:#808080" onload="load_code()">  
 
 		<div class="split left">
                 <button type="button" id="get_id" onclick="get_id()">Get ID</button>
@@ -52,7 +52,7 @@
             </div>
 		</div>
 
-            <canvas id="canvas">Canvas</canvas>
+        <canvas id="canvas">Canvas</canvas>
         <p>Something</p>
 
         <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
@@ -104,9 +104,11 @@
 
                     ctx = canvas.getContext("2d");
 
-                    square(200,'white');
+                    clear('white')
+                    square(200,'black');
+                    ctx.fillStyle = 'black';
                     ctx.font = "30px Arial";
-                    ctx.fillText(peer.id, 10, 50);
+                    //ctx.fillText(peer.id, 10, 50); // asynch; maybe not set yet
                     ctx.fillText(dims, 10, 100);
                     ctx.fillText("Please wait", 10, 150);
 
@@ -134,6 +136,44 @@
 
             function begin() {
                 openFullscreen();
+            }
+
+            function load_code() {
+                mypeer_init();
+
+                    // Get the canvas element form the page
+                    canvas = document.getElementById("canvas");
+                     
+                    /* Rresize the canvas to occupy the full page, 
+                           by getting the widow width and height and setting it to canvas*/
+                         
+                    canvas.width  = window.innerWidth;
+                    canvas.height = window.innerHeight;
+
+                    // set globals which are used by stims.js
+                    wid=canvas.width;
+                    height=canvas.height;
+                    xc=wid/2;
+                    yc=height/2;
+
+                    console.log('yes')
+                    dims="DIMS: " +canvas.width+' '+canvas.height;
+                    console.log(dims)
+
+                    ctx = canvas.getContext("2d");
+
+                    clear('white')
+                    square(200,'black');
+                    ctx.fillStyle = 'black';
+                    ctx.font = "30px Arial";
+                    //ctx.fillText(peer.id, 10, 50);
+                    ctx.fillText(dims, 10, 100);
+                    ctx.fillText("Please wait", 10, 150);
+
+                    if (!(conn === null) ) {
+                        conn.send("FS "+canvas.width+" "+canvas.height);
+                    }
+
             }
 
                 /**
@@ -167,6 +207,8 @@
                         console.log('myID: ' + peer.id);
                         recvId.innerHTML = "myID: " + peer.id;
                         status.innerHTML = "Awaiting connection...";
+                        ctx.fillStyle='black';
+                        ctx.fillText(peer.id, 10, 50);
                     });
                     peer.on('connection', function (c) {
                         // Allow only a single connection
@@ -181,6 +223,8 @@
                         conn = c;
                         console.log("Connected to: " + conn.peer);
                         status.innerHTML = "Connected from " + conn.peer;
+                        ctx.fillStyle='blue';
+                        ctx.fillText(conn.peer, 130, 50);
                         ready();
                     });
                     peer.on('disconnected', function () {
@@ -227,7 +271,7 @@
                                 break;
 
                             default:
-                                console.log(data);
+                                //console.log(data);
                                 //addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
                                 break;
 
@@ -251,11 +295,10 @@
             var in_trial=false;
 
             function rcv_trial() {
-
                 // Mutex to make sure we don't clobber action list while in a trial
                 if (in_trial) {
-                    setTimeout(rcv_trial, 500) // wait a half second, to see if trial is done
-                    return();
+                    setTimeout(rcv_trial, 500); // wait a half second, repeat until trial is done 
+                    return;
                 }
 
                 actions=commands.split("flip")
@@ -278,7 +321,7 @@
                 // Start the animation
                 indexAction=0;
                 indexFrame=0;
-                in_trial=True;
+                in_trial=true;
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
