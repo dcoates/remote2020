@@ -502,17 +502,12 @@
             stair_size=metap.stair_start; 
             consecutive_corrects=0;
             nReversals=0;
+            prev_corr=true; // assume first one correct
 
             stair_step(); // Do 1
         }
 
         function stair_step() {
-            // First replace the meta parameters (since 1 string);
-            //trial_params=eval(document.getElementById("trial").value);
-                // First replace the meta parameters (since 1 string);
-                //trial_params=eval(document.getElementById("trial").value);
-                //commands=fillTemplate(commands,trial_params );
-
             get_metap(); // make sure to load in meta parameters TODO:fixme
 
             do_trial();
@@ -525,19 +520,13 @@
             var lblStair = document.getElementById("lblStair");
             lblStair.innerHTML = `Staircase ${stair_trial} ${nReversals}`;
 
-            // see if trials maxed out
-            //stair_max=parseInt(document.getElementById("staircase_trials").value)
-            //if (stair_trial>stair_max) {
-                //document.getElementById("chkStair").checked=false;
-            //}
-
             if (nReversals>metap.staircase_reversals.length ) {
                 document.getElementById("chkStair").checked=false;
             }
 
         }
 
-        var prev_corr=true; // assume first one correct?
+        var prev_corr=true; 
 
         function key_handler(event) {
             if ((document.getElementById("chkKeys").checked) ) {
@@ -598,7 +587,9 @@
                 // Log response
                 document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
                     stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
-                var oriNew=getRandomInt(3)*90
+
+                // Get next one:
+                var oriNew=getRandomInt(4)*90
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 document.getElementById("trial").value=`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                     stair_size+"\n}"
