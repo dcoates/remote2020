@@ -115,22 +115,15 @@
                     ctx.strokeStyle=colr;
                     ctx.stroke()
                 };
+        function square(sid,colr) {
+            var c = document.getElementById("canvas");
+            var ctx = c.getContext("2d");
+            var wid=canvas.width;
+            var height=canvas.height;
 
-            function beep(vol, freq, duration){
-                o=audio.createOscillator()
-                o.frequency.value=freq
-                o.type="sine"
+            ctx.fillStyle = colr;
 
-                g=audio.createGain()
-                g.gain.value=vol*0.01
-                o.connect(g)
-
-                g.connect(audio.destination)
-                o.start(audio.currentTime)
-                o.stop(audio.currentTime+duration*0.001)
-            }
-
-            function getRandomInt(max) {
-                return Math.floor(Math.random() * Math.floor(max));
-            }
+            // Center it
+            ctx.fillRect(wid/2-sid/2, height/2-sid/2, sid, sid);
+            };
 

@@ -1,40 +1,214 @@
+    // HTML-defined callbacks:
+    // 'open' 'connection' 'disconnect' 'close' 'error'
+//  // 'reset' 'data'
+//
+//
+
+/*
+ * handlers should look like this:
+ *
+    this.notify.id('id',peer.id);
+    this.notify.lost('Connection lost. Please reconnect');
+    this.notify.lost('Connect Destroyed. Please refresh.');
+    this.notify.error(err);
+    this.notify.connect('connect',conn.peer);
+        this.notify.peer_info(data);
+    this.notify.unpair('');
+    receive
+    */
+
+    class MyPeer {
+
+            constructor(handler) {
+                this.notify=handler;
+            }
+
+/**
+                 * Create the Peer object for our end of the connection.
+                 *
+                 * Sets up callbacks that handle any events related to our
+                 * peer object.
+                 */
+                 init() {
+                    var self=this;
+
+                    // Create own peer object with connection to shared PeerJS server
+                    this.peer = new Peer(null, { //'uh2', {
+                        host: '185.146.28.139',
+                        //host: '192.168.12.1',
+                        port: '9000',
+                        path: '/myapp',
+                        debug: 2
+                    });
+                    var peer=this.peer;
+                    peer.on('open', function (id) {
+                        //var peer=this.peer;
+                        // Workaround for peer.reconnect deleting previous id
+                        if (self.peer.id === null) {
+                            log.info('Received null id from peer open');
+                            self.peer.id = self.lastPeerId;
+                        } else {
+                            self.lastPeerId = self.peer.id;
+                        }
+
+                        log.info('myID: ' + self.peer.id);
+                        self.notify.id(self.peer.id);
+                    });
+                    peer.on('connection', function (c) {
+                        // Allow only a single connection
+                        if (conn && conn.open) {
+                            c.on('open', function() {
+                                c.send("Already connected to another client");
+                                setTimeout(function() { c.close(); }, 500);
+                            });
+                            return;
+                        }
+
+                        conn = c;
+                        log.info("Connected to: " + conn.peer);
+                        self.notify.connect(conn.peer);
+                        self.ready();
+                    });
+                    peer.on('disconnected', function () {
+                        this.notify.lost('Connection lost. Please reconnect');
+                        log.info('Connection lost. Please reconnect');
+
+                        // Workaround for peer.reconnect deleting previous id
+                        peer.id = this.lastPeerId;
+                        peer._lastServerId = lastPeerId;
+                        peer.reconnect();
+                    });
+                    peer.on('close', function() {
+                        conn = null;
+                        this.notify.lost('Connect Destroyed. Please refresh.');
+                        log.info('Connection destroyed');
+                    });
+                    peer.on('error', function (err) {
+                        log.info(err);
+                        alert('' + err);
+                        this.notify.error(err);
+                    });
+                };
                 /**
                  * Create the connection between the two Peers.
                  *
                  * Sets up callbacks that handle any events related to the
                  * connection and data received on it.
                  */
-                function join() {
+                join(friend) {
 
                     // Close old connection
-                    if (conn) {
-                        conn.close();
+                    if (this.conn) {
+                        this.conn.close();
                     }
 
-                    console.log("trying to join " + recvIdInput.value);
+                    log.info("trying to join " + friend);
 
                     // Create connection to destination peer specified in the input field
-                    conn = peer.connect(recvIdInput.value, {
+                    this.conn = this.peer.connect(friend, {
                         reliable: true
                     });
+                    var conn=this.conn;
 
-                    console.log(conn);
+                    log.info(conn);
 
+                    // Inside the callback 'this' is wrong, so give it this 'self' alias to correct OO 'this'
+                    // https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
+                    var self=this;
                     conn.on('open', function () {
-                        status.innerHTML = "Connected to: " + conn.peer;
-                        console.log("Connected to: " + conn.peer);
+                        log.info("Connected to: " + conn.peer);
+                        self.notify.connect(conn.peer);
 
+                        // TODO:
                         // Check URL params for comamnds that should be sent immediately
-                        var command = getUrlParam("command");
-                        if (command)
-                            conn.send(command);
+                        //var command = getUrlParam("command");
+                        //if (command)
+                            //conn.send(command);
                     });
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
-                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        log.info(data); // TODO: SAVE
+
+                        if (data.startsWith('FS')) {
+                            self.notify.peer_info(data);
+                            //set_html(html3,"Patient screen: "+ data);
+                        } else if (data.startsWith('KB')) {
+                            self.notify.keyboard(parseInt(data.substr(3) ));
+                        } else {
+                            self.notify.receive(data);
+                        }
                     });
                     conn.on('close', function () {
-                        status.innerHTML = "Connection closed";
+                        self.notify.unpair('');
                     });
                 };
+                /**
+                 * Triggered once a connection has been achieved.
+                 * Defines callbacks to handle incoming data and connection events.
+                 */
+                ready() {
+
+                    conn.on('data', function (data) {
+                        log.info("Data recieved");
+                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                        code=data.substring(0,1)
+                        value=data.substring(1)
+                        switch (code) {
+                            case '1':
+                                openFullscreen()
+                                break;
+                            case '0':
+                                closeFullscreen()
+                                break;
+                            case 'L':
+                                left(value);
+                                break;
+                            case 'R':
+                                right(value);
+                                break;
+                            case 'U':
+                                up(value);
+                                break;
+                            case 'D':
+                                down(value);
+                                break;
+                            case 'G':
+                                contr=value;
+                                break;
+                            case 'O':
+                                ori=value;
+				break;
+                            case 'F':
+                                var sf=value;
+                                make_grating(sf,contr);
+                                do_grating();
+                                break;
+                            default:
+                                addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
+                                break;
+                        };
+                    });
+                    conn.on('close', function () {
+                        stat.innerHTML = "Connection reset<br>Awaiting connection...";
+                        conn = null;
+                    });
+                }
+
+                /**
+                 * Send a signal via the peer connection and add it to the log.
+                 * This will only occur if the connection is still alive.
+                 */
+                 send(message) {
+                    var conn=this.conn;
+                    if (conn && conn.open) {
+                        conn.send(message);
+                        log.info(message + " signal sent");
+                        //addMessage(cueString + sigName);
+                    } else {
+                        log.info('Connection is closed');
+                    }
+                }
+
+    }
 
