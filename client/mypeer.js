@@ -151,14 +151,14 @@
 
                     var self=this;
 
-                    conn.on('data', function (data) {
+                    self.conn.on('data', function (data) {
                         log.info("Data received");
                         var cueString = "<span class=\"cueMsg\">Cue: </span>";
                         var code=data.substring(0,1)
                         var value=data.substring(1)
                         self.notify.receive(data);
                     });
-                    conn.on('close', function () {
+                    self.conn.on('close', function () {
                         stat.innerHTML = "Connection reset<br>Awaiting connection...";
                         conn = null;
                     });
