@@ -157,7 +157,6 @@
                         var code=data.substring(0,1)
                         var value=data.substring(1)
                         self.notify.receive(data);
-                        };
                     });
                     conn.on('close', function () {
                         stat.innerHTML = "Connection reset<br>Awaiting connection...";
