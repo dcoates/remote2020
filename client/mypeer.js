@@ -56,7 +56,7 @@
                     });
                     peer.on('connection', function (c) {
                         // Allow only a single connection
-                        if (conn && conn.open) {
+                        if (self.conn && self.conn.open) {
                             c.on('open', function() {
                                 c.send("Already connected to another client");
                                 setTimeout(function() { c.close(); }, 500);
@@ -64,29 +64,29 @@
                             return;
                         }
 
-                        conn = c;
-                        log.info("Connected to: " + conn.peer);
-                        self.notify.connect(conn.peer);
+                        self.conn = c;
+                        log.info("Connected to: " + self.conn.peer);
+                        self.notify.connect(self.conn.peer);
                         self.ready();
                     });
                     peer.on('disconnected', function () {
-                        this.notify.lost('Connection lost. Please reconnect');
+                        self.notify.lost('Connection lost. Please reconnect');
                         log.info('Connection lost. Please reconnect');
 
                         // Workaround for peer.reconnect deleting previous id
-                        peer.id = this.lastPeerId;
+                        peer.id = self.lastPeerId;
                         peer._lastServerId = lastPeerId;
                         peer.reconnect();
                     });
                     peer.on('close', function() {
                         conn = null;
-                        this.notify.lost('Connect Destroyed. Please refresh.');
+                        self.notify.lost('Connect Destroyed. Please refresh.');
                         log.info('Connection destroyed');
                     });
                     peer.on('error', function (err) {
                         log.info(err);
                         alert('' + err);
-                        this.notify.error(err);
+                        self.notify.error(err);
                     });
                 };
                 /**
