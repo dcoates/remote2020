@@ -321,10 +321,10 @@
             function animateLoop() {
                 //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
-                    stats.begin()
+                    //stats.begin()
                     //filled=fillTemplate(actions[indexAction],eval(trial_params) )
                     eval( actions[indexAction] );
-                    stats.end()
+                    //stats.end()
                     indexFrame += 1;
                     if (indexFrame>=flip_durations[indexAction]) {
                         indexFrame = 0;
