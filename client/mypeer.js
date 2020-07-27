@@ -149,44 +149,14 @@
                  */
                 ready() {
 
+                    var self=this;
+
                     conn.on('data', function (data) {
-                        log.info("Data recieved");
+                        log.info("Data received");
                         var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                        code=data.substring(0,1)
-                        value=data.substring(1)
-                        switch (code) {
-                            case '1':
-                                openFullscreen()
-                                break;
-                            case '0':
-                                closeFullscreen()
-                                break;
-                            case 'L':
-                                left(value);
-                                break;
-                            case 'R':
-                                right(value);
-                                break;
-                            case 'U':
-                                up(value);
-                                break;
-                            case 'D':
-                                down(value);
-                                break;
-                            case 'G':
-                                contr=value;
-                                break;
-                            case 'O':
-                                ori=value;
-				break;
-                            case 'F':
-                                var sf=value;
-                                make_grating(sf,contr);
-                                do_grating();
-                                break;
-                            default:
-                                addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
-                                break;
+                        var code=data.substring(0,1)
+                        var value=data.substring(1)
+                        self.notify.receive(data);
                         };
                     });
                     conn.on('close', function () {
