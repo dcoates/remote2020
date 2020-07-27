@@ -48,9 +48,9 @@
                 <br>
                     <span id="lblStair">Staircase (0):</span>
                     <input type="checkbox" id="chkStair">
-                    <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
-                    <label for="staircase_trials">Staircase Trials:</label>
-                    <input type="text" id="staircase_trials" name="staircase_trials" value="30" style="width:40px">
+                    <button type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
+                    <input type="checkbox" id="chkMOCS">
+                    <button type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
                 <p id="pCanvasSize">Size</p>
             </div>
@@ -63,15 +63,14 @@
 
         <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
-
+        <script src="prism.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
-
-        <script src="grating.js"></script>
+        <script src="staircase.js"></script>
         <script src="stims.js"></script>
-        <script src="prism.js"></script>
-        <script src="grating_shader.js" type="text/javascript"> </script>
         <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="grating.js"></script>
+        <script src="grating_shader.js" type="text/javascript"> </script>
 
         <script type="text/javascript">
             function clear_log() {
@@ -122,7 +121,7 @@
 
                 //canvas.className = "fullscreen"
                 //document.body.scrollTop = 0; // <-- pull the page back up to the top
-                //document.body.style.overflow = 'hidden'; // <-- relevant addition
+                //document.body.style.overflow = 'hidden'; // -- relevant addition
             }
 
             // Global variables
@@ -206,7 +205,7 @@
                 document.getElementById("commands").value=
                 "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
                     document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:10\n}";
-                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:10\n}"
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:10,\nmocs_spacings:[1.25,1.75,2,3,5,99],\n\tmocs_repeats:2}";
             }
 
             function demo2() {
@@ -300,53 +299,34 @@
         stats.dom.style.top="90%";
         document.body.appendChild( stats.dom );
 
-        var stairCmd=null;
+        var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
 
-        var stair_trial=0;
-        var stair_size=null;
-        var consecutive_corrects=0;
-        const stair_N=3; // N-up-1down
-        var MAX_REVERSALS=0;
-        var nReversals=0;
-
-        function stair_restart() {
-            var chkStair = document.getElementById("chkStair");
-            chkStair.checked = true;
+        function do_stair_restart() {
+            set_checked('chkStair',true);
+            set_checked('chkMOCS',false);
+            set_html("lblStair","Staircase 0 0");
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
-
-            stair_trial=0;
-            stair_size=metap.stair_start; 
-            consecutive_corrects=0;
-            nReversals=0;
-            prev_corr=true; // assume first one correct
-
-            stair_step(); // Do 1
-        }
-
-        function stair_step() {
-            get_metap(); // make sure to load in meta parameters TODO:fixme
-
+            theStaircase.restart(parseInt(metap.stair_start));
             do_trial();
-
-            if (document.getElementById("chkRemoteStair").checked ) {
-                send_trial()
-            }
-
-            stair_trial += 1;
-            var lblStair = document.getElementById("lblStair");
-            lblStair.innerHTML = `Staircase ${stair_trial} ${nReversals}`;
-
-            if (nReversals>metap.staircase_reversals.length ) {
-                document.getElementById("chkStair").checked=false;
-            }
-
         }
 
-        var prev_corr=true; 
+        function do_mocs_restart() {
+            set_checked('chkStair',false);
+            set_checked('chkMOCS',true);
+            set_html("lblStair","MOCS X");
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats);
+            do_trial();
+        }
+
+        // Keyboard stuff:
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
 
         function key_handler(event) {
-            if ((document.getElementById("chkKeys").checked) ) {
+            if (get_checked("chkKeys") ) {
                 do_kb(event.keyCode);
             }
         }
@@ -364,68 +344,19 @@
                     ori_resp=270; break;
                 }
 
-            var chkStair = document.getElementById("chkStair");
-            var isReversal = false;
-
-            // N-up-1-down logic
-            if (chkStair.checked) {
+            if (get_checked("chkStair")) {
                 var correct=(ori_resp==trial_params['orientation']);
-                var step_size=metap.staircase_reversals[nReversals];
-                var prev_size=stair_size;
-
-                if (correct) {
-                    consecutive_corrects+=1;
-                    if (consecutive_corrects==(stair_N-1) ){
-                        stair_size /= step_size;
-                        consecutive_corrects=0;
-                        if (! (prev_corr)) {
-                            isReversal=true; // first reversal after an error
-                        } else {
-                            isReversal=false; // still going up
-                        }
-                        prev_corr=true;
-                    } else {
-                        // First correct of sequence, shouldn't yet change prev_corr, etc.
-                        ;
-                    }
-                } else {
-                    stair_size *= step_size;
-                    consecutive_corrects=0;
-                    if (prev_corr) {
-                        isReversal=true; // first wrong after previous correct is considered reversal
-                    }
-                    prev_corr=false;
-                }
-
-                if (isReversal) {
-                    nReversals += 1;
-                }
-
-                // Log response
-                document.getElementById("log").innerHTML=document.getElementById("log").innerHTML+"\n"+
-                    stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+nReversals;
-
-                // Get next one:
-                var oriNew=getRandomInt(4)*90
-                // Set up trial parameters, which are merged with the code to do 1 trial
-                document.getElementById("trial").value=`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
-                    stair_size+"\n}"
-
-                // Finished ?
-                if (nReversals>=metap.staircase_reversals.length ) {
-                    document.getElementById("chkStair").checked=false;
-                    var lblStair = document.getElementById("lblStair");
-                    lblStair.innerHTML = `FINISHED`;
-                    beep(1,440,80);
-                } else {
-                    stair_step();
-                }
+                theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
             }
-
+            if (get_checked("chkMOCS")) {
+                var correct=(ori_resp==trial_params['orientation']);
+                theMOCS.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+            }
         };
 
         // Keyboard listener
-        document.addEventListener('keydown', function(event) {key_handler(event);} );
         </script> // end of Javascript
 
         // Shaders
@@ -483,3 +414,4 @@ void main() {
 
     </body>
 </html>
+

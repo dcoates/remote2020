@@ -17,6 +17,10 @@ function set_value(html,value) {
     document.getElementById(html).value=value;
 }
 
+function set_checked(html,value) {
+    document.getElementById(html).checked=value;
+}
+
 function get_html(html) {
     return document.getElementById(html).innerHTML;
 }
@@ -24,6 +28,9 @@ function get_html(html) {
 
 function get_value(html) {
     return document.getElementById(html).value;
+}
+function get_checked(html,value) {
+    return document.getElementById(html).checked;
 }
 
 

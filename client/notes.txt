@@ -2,6 +2,9 @@ Convert Gabor to math.js.
 
 Or [gpu.js](http://gpu.rocks)
 
+Remote debugging:
+chrome://inspect#devices
+
 For stereo abstracter (mmap):
 https://www.npmjs.com/package/mmap-object
 https://github.com/allenluce/mmap-object
@@ -9,12 +12,46 @@ https://github.com/allenluce/mmap-object
 Design for desktop displays from 1024×768 through 1920×1080
 Design for mobile displays from 360×640 through 414×896
 Design for tablet displays from 601×962 through 1280×800
+https://www.hobo-web.co.uk/best-screen-size/
 
 Table
 <button column>|<graphing widget>
+
+dynamic growing graph:
+http://bl.ocks.org/simenbrekken/6634070
+
+Do we need for it be slick and grow if they run more trials?
+i.e., start at 30, then possibly start shrinking if staircase gets bigger... Would be cute
 
 Table (keys)
 <arrows>
 
 Display of their screen: see [[ ctx.scale(2,2)  ]]
 
+https://www.encodedna.com/javascript/dynamically-create-html-elements-using-createElement-method.htm
+snippets for dynamic button creation:
+
+        for (var c = 0; c <= arrValue.length - 1; c++) {
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < arrHead.length; j++) {
+                var td = document.createElement('td');          // TABLE DEFINITION.
+                td = tr.insertCell(-1);
+                td.innerHTML = arrValue[c][j];                  // ADD VALUES TO EACH CELL.
+            }
+        }
+
+        // NOW CREATE AN INPUT BOX TYPE BUTTON USING createElement() METHOD.
+        var button = document.createElement('input');
+
+        // SET INPUT ATTRIBUTE 'type' AND 'value'.
+        button.setAttribute('type', 'button');
+        button.setAttribute('value', 'Read Table Data');
+
+        // ADD THE BUTTON's 'onclick' EVENT.
+        button.setAttribute('onclick', 'GetTableValues()');
+
+        // FINALLY ADD THE NEWLY CREATED TABLE AND BUTTON TO THE BODY.
+        document.body.appendChild(table);
+        document.body.appendChild(button);
+    }jj
