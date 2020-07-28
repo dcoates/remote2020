@@ -138,6 +138,11 @@
                     beep(1,440,80);
                 } else {
                     this.next(); // execute next
+
+                    if ( get_checked("chkRemoteStair")) {
+                        send_trial() // TODO , spaghetti
+                    }
+
                     do_trial(); // TODO: figure out better place for this
                 }
             };
