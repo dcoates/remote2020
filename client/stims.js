@@ -14,6 +14,7 @@
 					ctx.setTransform(scale, 0, 0, scale, posx+xc, posy+yc); // sets scale and origin
 					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 					ctx.drawImage(image, -siz/2, -siz/2, siz, siz);
+                    ctx.resetTransform();
     				ctx.restore(); 
                 }
 
