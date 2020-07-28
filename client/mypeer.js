@@ -132,7 +132,6 @@
 
                         if (data.startsWith('FS')) {
                             self.notify.peer_info(data);
-                            //set_html(html3,"Patient screen: "+ data);
                         } else if (data.startsWith('KB')) {
                             self.notify.keyboard(parseInt(data.substr(3) ));
                         } else {
@@ -159,7 +158,7 @@
                         self.notify.receive(data);
                     });
                     self.conn.on('close', function () {
-                        stat.innerHTML = "Connection reset<br>Awaiting connection...";
+                        self.notify.error("Connection reset<br>Awaiting connection...");
                         conn = null;
                     });
                 }

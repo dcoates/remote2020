@@ -59,63 +59,6 @@
         <script src="mypeer.js" type="text/javascript"> </script>
 
         <script type="text/javascript">
-
-            function clear_log() {
-                document.getElementById("log").innerHTML="";
-            }
-
-            if (document.addEventListener)
-            {
-                 document.addEventListener('fullscreenchange', fullscreenHandler, false);
-                 document.addEventListener('mozfullscreenchange', fullscreenHandler, false);
-                 document.addEventListener('MSFullscreenChange', fullscreenHandler, false);
-                 document.addEventListener('webkitfullscreenchange', fullscreenHandler, false);
-            }
-
-            function fullscreenHandler()
-            {
-                if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)
-                {
-
-                    // Get the canvas element form the page
-                    canvas = document.getElementById("canvas");
-                     
-                    /* Rresize the canvas to occupy the full page, 
-                           by getting the widow width and height and setting it to canvas*/
-                         
-                    canvas.width  = window.innerWidth;
-                    canvas.height = window.innerHeight;
-
-                    // set globals which are used by stims.js
-                    wid=canvas.width;
-                    height=canvas.height;
-                    xc=wid/2;
-                    yc=height/2;
-
-                    console.log('yes')
-                    dims="DIMS: " +canvas.width+' '+canvas.height;
-                    console.log(dims)
-
-                    ctx = canvas.getContext("2d");
-
-                    clear('white')
-                    square(200,'black');
-                    ctx.fillStyle = 'black';
-                    ctx.font = "30px Arial";
-                    //ctx.fillText(peer.id, 10, 50); // asynch; maybe not set yet
-                    ctx.fillText(dims, 10, 100);
-                    ctx.fillText("Please wait", 10, 150);
-
-                    if (!(conn === null) ) {
-                        conn.send("FS "+canvas.width+" "+canvas.height);
-                    }
-
-                } else {
-                    console.log('no')
-                }
-
-            }
-
             var thePeer=null;
 
             function get_id() {
@@ -145,7 +88,7 @@
                 yc=height/2;
 
                 console.log('yes')
-                dims="DIMS: " +canvas.width+' '+canvas.height;
+                dims="Dims: " +canvas.width+' '+canvas.height;
                 console.log(dims)
 
                 ctx = canvas.getContext("2d");
@@ -154,14 +97,8 @@
                 square(200,'black');
                 ctx.fillStyle = 'black';
                 ctx.font = "30px Arial";
-                //ctx.fillText(peer.id, 10, 50);
                 ctx.fillText(dims, 10, 100);
                 ctx.fillText("Please wait", 10, 150);
-
-                if (!(conn === null) ) {
-                    // TODO: Probably unnecessary?
-                    conn.send("FS "+canvas.width+" "+canvas.height);
-                }
             }
 
             // How we respond to peer commands
@@ -186,13 +123,13 @@
                 var handler={
                     id: function(s) {
                         ctx.fillStyle='black';
-                        ctx.fillText(s, 10, 50);
+                        ctx.fillText('ID: '+s, 10, 50);
                     },
                     lost: function(s) {alert(s);},
                     error: function(s) {alert(s);},
                     connect: function(s) {
                         ctx.fillStyle='green';
-                        ctx.fillText('Partner: '+s, 130, 50);
+                        ctx.fillText('Partner: '+s, 170, 50);
                         setTimeout( function() {thePeer.send("FS "+canvas.width+" "+canvas.height);}, 500 );
                     },
                     peer_info: function(s) {},          //shouldn't ever receive this
@@ -341,48 +278,6 @@
                     in_trial=false;
                 }
             }
-		function openFullscreen() {
-
-            if (document.fullscreenElement) {
-                return;
-            }
-
-                  var elem = document.getElementById("canvas");
-		  if (elem.requestFullscreen) {
-		    elem.requestFullscreen();
-		  } else if (elem.mozRequestFullScreen) { /* Firefox */
-		    elem.mozRequestFullScreen();
-		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-		    elem.webkitRequestFullscreen();
-		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
-		    elem.msRequestFullscreen();
-		  }
-    		elem.width = document.body.clientWidth; //document.width is obsolete
-    		elem.height = document.body.clientHeight; //document.height is obsolete
-
-			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
-			//conn.send(s);
-		};
-
-		function closeFullscreen() {
-            try {
-              /*if (document.exitFullscreen) {
-                document.exitFullscreen();
-              } else
-                */
-                
-              if (document.mozCancelFullScreen) { /* Firefox */
-                document.mozCancelFullScreen();
-              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-                document.webkitExitFullscreen();
-              } else if (document.msExitFullscreen) { /* IE/Edge */
-                document.msExitFullscreen();
-              } 
-            } catch (error) {
-                  //console.error(error);
-                  console.log('Error: Exit Fullscr');
-            }
-		}
 
         audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
 
