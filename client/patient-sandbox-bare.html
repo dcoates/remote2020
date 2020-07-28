@@ -283,8 +283,8 @@
 
         function key_handler(event) {
             //console.log(event.keyCode);
-            if (!(conn === null) ) {
-                conn.send("KB "+event.keyCode);
+            if (!(thePeer === null) ) {
+                thePeer.send("KB "+event.keyCode);
             }
 
         };
