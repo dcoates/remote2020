@@ -16,7 +16,7 @@
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
                 <div id="status2" style="font-weight: bold;" title="status2">Status2:</div>
                 <button type="button" id="btnSend" onclick="send_trial();">SEND 1 Trial!</button>
-                    <span id="lblRemoteStair">Remote Staircase (0):</span>
+                    <span id="lblRemoteStair">Send Remote:</span>
                     <input type="checkbox" id="chkRemoteStair">
 
                 <input type="checkbox" id="chkKeys"><label for='chkKeys'>Capture Keys</label>
@@ -151,10 +151,9 @@
             //ctx = c.getContext("2d");
 
             function send_trial() {
-                // parse commands
-                commands=document.getElementById("commands").value;
-
-                // First replace the meta parameters (since 1 string);
+                // get commands
+                var commands=document.getElementById("commands").value;
+                // Replace the meta parameters (since 1 string);
                 trial_params=eval(document.getElementById("trial").value);
                 commands=fillTemplate(commands,trial_params );
                 var msg="T "+commands;
@@ -162,6 +161,10 @@
             }
 
             function do_trial() {
+                if ( get_checked("chkRemoteStair")) {
+                    send_trial(); 
+                }
+
                 var chkFullScr = document.getElementById("chkFullScr");
                 if (chkFullScr.checked) {
                     openFullscreen();
@@ -306,7 +309,7 @@
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
             theStaircase.restart(parseInt(metap.stair_start));
-            do_trial();
+            theStaircase.next(); // show first trial
         }
 
         function do_mocs_restart() {
@@ -316,7 +319,7 @@
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
             theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats);
-            do_trial();
+            theMOCS.next(); // show first trial
         }
 
         // Keyboard stuff:

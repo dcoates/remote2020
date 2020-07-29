@@ -12,14 +12,9 @@
                 this.prev_corr=true; // assume first one correcta (still going "down")
             }
 
-            stair_step() {
+            next() {
                 get_metap(); // TODO: we shouldn't access any UI stuff in here
-
                 do_trial();  // TODO: refactor out of UI
-
-                if ( get_checked("chkRemoteStair")) {
-                    send_trial() // TODO , spaghetti
-                }
 
                 this.stair_trial += 1;
                 set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals}`);
@@ -82,8 +77,7 @@
                         set_html("lblStair","FINISHED");
                         beep(1,440,80);
                     } else {
-                        this.stair_step(); // execute next
-                        do_trial(); // TODO: figure out better place for this
+                        this.next(); // execute next
                     }
                 }
             };
@@ -106,9 +100,6 @@
                     remaining.push(level1);
                 });
                 this.remaining=remaining;
-
-                this.next();
-                do_trial();
                 };
 
             total_remaining() {
@@ -138,12 +129,6 @@
                     beep(1,440,80);
                 } else {
                     this.next(); // execute next
-
-                    if ( get_checked("chkRemoteStair")) {
-                        send_trial() // TODO , spaghetti
-                    }
-
-                    do_trial(); // TODO: figure out better place for this
                 }
             };
 
@@ -156,5 +141,7 @@
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                         this.remaining[this.index_which]['which']+"\n}");
+
+                do_trial(); // TODO: figure out better place for this
             };
         }; // MOCS class
