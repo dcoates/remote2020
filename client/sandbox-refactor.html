@@ -8,13 +8,15 @@
     </head>
     <body style="background-color:#808080" onload="load_code()">  
 
-		<div class="split left" id='lefter'>
+		<div class="split left" id='lefty'>
                     <input type="text" id="receiver-id" title="Enter ID">
                     <button id="connect-button" onclick="do_connect()">Connect</button>
 
                 <div id="my-id" style="font-weight: bold;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
                 <div id="status2" style="font-weight: bold;" title="status2">Status2:</div>
+
+
                 <button type="button" id="btnSend" onclick="send_trial();">SEND 1 Trial!</button>
                     <span id="lblRemoteStair">Send Remote:</span>
                     <input type="checkbox" id="chkRemoteStair">
@@ -23,51 +25,50 @@
 
                 <br><br>
 
-            <div id="text">
-                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
-                <button type="button" id="demo2" onclick="demo2()">CSF</button>
-                <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
-
-                <textarea name="commands" id="commands" style="height:300px;width:90%">Trial code</textarea>
-                <table style="width:100%;height:200px;border-top:1px">
-                    <tr><td width=70%>
-                    <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
-                    <textarea name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
-                        </td><td>
-                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
-                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="buttons">
-                <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
-                <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
-                <br>
                     <span id="lblStair">Staircase (0):</span>
                     <input type="checkbox" id="chkStair">
                     <button type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
                     <input type="checkbox" id="chkMOCS">
                     <button type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
-                <p id="pCanvasSize">Size</p>
-            </div>
+                <br><br>
+
+                <input type="button" id="btnSetup" onclick="setup()" class="button-setup">
+
+                <button mode="adv" type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+                <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
+                <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+
+                <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
+                    <tr><td width=100% id='td_graph'><div class="graph"></div></td></tr>
+
+                </table>
+
+                <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
+                <table mode="adv" style="width:100%;height:200px;border-top:1px">
+                    <tr><td width=70%>
+                    <textarea  name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                    <textarea  name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
+                    </tr>
+                </table>
 		</div>
 
 		<div class="split right" id="rightcan">
             <canvas id="canvas">Canvas</canvas>
 		</div>
 
+        <script src="https://d3js.org/d3.v3.min.js"></script>
         <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
-        <script src="prism.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
         <script src="staircase.js"></script>
         <script src="stims.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
         <script src="grating.js"></script>
-        <script src="grating_shader.js" type="text/javascript"> </script>
 
         <script type="text/javascript">
             function clear_log() {
@@ -82,6 +83,8 @@
 
             function load_code() {
                 peer_init();
+                demo1(); // preload E acuity
+                build_table(); // create graph table
             };
 
             function peer_init() {
@@ -114,11 +117,48 @@
                 xc=wid/2;
                 yc=height/2;
 
-                document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
+                //document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
 
                 //canvas.className = "fullscreen"
                 //document.body.scrollTop = 0; // <-- pull the page back up to the top
                 //document.body.style.overflow = 'hidden'; // -- relevant addition
+            }
+
+            function build_table() {
+                var table=document.getElementById('table_graph');
+                var td_graph=document.getElementById('td_graph');
+                const nrows=10;
+                td_graph.colSpan=nrows+1;
+
+                tr = table.insertRow(-1);
+                for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+
+                    var td = document.createElement('td');          // TABLE DEFINITION.
+                    td = tr.insertCell(-1);
+
+                    var button = document.createElement('input');
+                    button.setAttribute('type', 'button');
+                    button.setAttribute('value', nrow);
+                    button.setAttribute('onclick', 'GetTableValues()');
+                    td.appendChild(button);
+                }
+            }
+
+            function setup() {
+                mode_setup=(mode_setup==false); // toggle
+
+                if (true) {
+                    var lefty=document.getElementById('lefty');
+                    [].forEach.call(lefty.children, a => {
+                        if (a.getAttribute("mode")=="adv") {
+                            a.hidden=mode_setup;
+                        } else if (a.getAttribute("mode")=="graph") {
+                            a.hidden=!mode_setup;
+                        }
+                    });
+                } else {
+                    ;
+                };
             }
 
             // Global variables
@@ -130,6 +170,8 @@
             var xc=wid/2;
             var yc=height/2;
             var conn = null;
+
+            var mode_setup=false;
 
             // Command/Action stuff
             var commands=null;
@@ -165,10 +207,10 @@
                     send_trial(); 
                 }
 
-                var chkFullScr = document.getElementById("chkFullScr");
-                if (chkFullScr.checked) {
-                    openFullscreen();
-                }
+                //var chkFullScr = document.getElementById("chkFullScr");
+                //if (chkFullScr.checked) {
+                    //openFullscreen();
+                //}
 
                 // parse commands
                 commands=document.getElementById("commands").value;

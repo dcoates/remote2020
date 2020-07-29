@@ -69,7 +69,7 @@ textarea {
 
 .buttons {
     position:absolute;
-    top:75%;
+    top:10%;
     left:15px;
 }
 
@@ -87,3 +87,15 @@ canvas{
     /*box-sizing: border-box; */
 }
 
+input.button-setup {
+    background-image: url(./wheels.png); 
+    background-color: #909040; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: 1;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 28px;           /* make this the size of your image */
+    padding-left: 24px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+	border-radius: 4px;
+}
