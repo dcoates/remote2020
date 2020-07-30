@@ -5,10 +5,12 @@
         <meta name="viewport" content="width=device-width">
         <title>remote2020 - doctor</title>
         <link rel="stylesheet" href="sandbox.css">
+        <link rel="stylesheet" href="graph.css">
     </head>
     <body style="background-color:#808080" onload="load_code()">  
 
 		<div class="split left" id='lefty'>
+
                     <input type="text" id="receiver-id" title="Enter ID">
                     <button id="connect-button" onclick="do_connect()">Connect</button>
 
@@ -33,14 +35,16 @@
 
                 <br><br>
 
-                <input type="button" id="btnSetup" onclick="setup()" class="button-setup">
+                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
+                <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
 
-                <button mode="adv" type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+                <button mode="adv" type="button" id="demo1" onclick="demo1()">Tumbling-E (fovea)</button>
+                <button mode="adv" type="button" id="demo1p" onclick="demo1p()">Tumbling-E (5deg)</button>
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
                 <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
 
                 <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
-                    <tr><td width=100% id='td_graph'><div class="graph"></div></td></tr>
+                    <tr><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
 
                 </table>
 
@@ -51,6 +55,7 @@
                     <textarea  name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
                         </td><td>
                     <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <button type="button" id="btnExport" onclick="navigator.clipboard.writeText(get_html('log'))">Copy</button>
                     <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
                     </tr>
                 </table>
@@ -60,7 +65,7 @@
             <canvas id="canvas">Canvas</canvas>
 		</div>
 
-        <script src="https://d3js.org/d3.v3.min.js"></script>
+		<script src="https://d3js.org/d3.v4.js"></script>
         <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
@@ -69,6 +74,7 @@
         <script src="stims.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
         <script src="grating.js"></script>
+        <script src="graph.js"></script>
 
         <script type="text/javascript">
             function clear_log() {
@@ -124,6 +130,12 @@
                 //document.body.style.overflow = 'hidden'; // -- relevant addition
             }
 
+			function table_button_click(which) {
+			    var thisid='count-'+which;
+				console.log(thisid);
+				set_html(thisid,parseInt(get_html(thisid))+1);
+			}
+
             function build_table() {
                 var table=document.getElementById('table_graph');
                 var td_graph=document.getElementById('td_graph');
@@ -131,29 +143,38 @@
                 td_graph.colSpan=nrows+1;
 
                 tr = table.insertRow(-1);
+                tr.width="360px";
                 for (var nrow = 0; nrow <= nrows- 1; nrow++) {
 
-                    var td = document.createElement('td');          // TABLE DEFINITION.
+                    var td = document.createElement('td');
                     td = tr.insertCell(-1);
 
                     var button = document.createElement('input');
                     button.setAttribute('type', 'button');
                     button.setAttribute('value', nrow);
-                    button.setAttribute('onclick', 'GetTableValues()');
+                    button.setAttribute('onclick', 'table_button_click('+nrow+')');
                     td.appendChild(button);
+                }
+                tr = table.insertRow(-1);
+                for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+
+                    var td = document.createElement('td');
+                    td = tr.insertCell(-1);
+					td.id='count-'+nrow;
+					td.innerHTML="0";
                 }
             }
 
-            function setup() {
-                mode_setup=(mode_setup==false); // toggle
+            function set_mode(show,hide) {
+                //mode_setup=(mode_setup==false); // toggle
 
                 if (true) {
                     var lefty=document.getElementById('lefty');
                     [].forEach.call(lefty.children, a => {
-                        if (a.getAttribute("mode")=="adv") {
-                            a.hidden=mode_setup;
-                        } else if (a.getAttribute("mode")=="graph") {
-                            a.hidden=!mode_setup;
+                        if (a.getAttribute("mode")==hide) {
+                            a.hidden=true;
+                        } else if (a.getAttribute("mode")==show) {
+                            a.hidden=false;
                         }
                     });
                 } else {
@@ -171,7 +192,7 @@
             var yc=height/2;
             var conn = null;
 
-            var mode_setup=false;
+            var mode_setup="E";
 
             // Command/Action stuff
             var commands=null;
@@ -397,63 +418,7 @@
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
             }
         };
-
-        // Keyboard listener
-        </script> // end of Javascript
-
-        // Shaders
-  <script type="x-shader/x-vertex" id="vertex-shader">
-#version 100
-precision highp float;
-
-attribute vec2 position;
-varying vec2 v_texCoord;
-
-void main() {
-  gl_Position = vec4(position*1.0, 0.0, 1.0);
-  gl_PointSize = 192.0;
-  v_texCoord = position;
-}
-  </script>
-  <script type="x-shader/x-fragment" id="fragment-shader">
-#version 100
-precision mediump float;
-//attribute vec2 position;
-
-varying vec2 v_texCoord;
-
-uniform float sf_div;
-
-void main() {
-  //vec2 fragmentPosition = (gl_PointCoord*3.0-1.0)/2.0-v_texCoord;
-  //vec2 fragmentPosition = gl_PointCoord-0.5;
-  vec2 fragmentPosition = v_texCoord*vec2(1.0,-1.0)*2.0 + gl_PointCoord-vec2(0.5,0.5);
-  //vec2 fragmentPosition = position2;
-  float distance = length(fragmentPosition);
-  float distanceSqrd = distance * distance;
-  float sigma=0.08;
-  float theta=-3.1416/10.0; 
-  //float sf_div=85.0;
-
-  vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
-                      sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
-
-  float grating=sin(posRotate[0]*sf_div);
-  float mag= grating*exp(-distanceSqrd/sigma);
-  mag = mag/10.0 + 0.5;
-  //float mag= 0.1/distanceSqrd;
-  gl_FragColor = vec4(mag,mag,mag, 1.0 );
-}
-
-// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/By_example/Textures_from_code
-// https://www.cs.cornell.edu/courses/cs4620/2017sp/cs4621/lecture08/
-
-                //<input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
-                //<input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
-                    //<button type="button" id="init" onclick="myinit()">Initialize</button>
-
 </script>
-
     </body>
 </html>
 

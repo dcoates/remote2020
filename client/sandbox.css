@@ -89,9 +89,22 @@ canvas{
 
 input.button-setup {
     background-image: url(./wheels.png); 
-    background-color: #909040; /* make the button transparent */
+    background-color: #909090; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: 1;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 28px;           /* make this the size of your image */
+    padding-left: 24px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+	border-radius: 4px;
+}
+
+input.button-tumbling_e {
+    background-image: url(./tumbling_e.png); 
+    background-color: #ffffff; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 7px 7px;  
     border: 1;           /* assuming we don't want any borders */
     cursor: pointer;        /* make the cursor like hovering over an <a> element */
     height: 28px;           /* make this the size of your image */
