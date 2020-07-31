@@ -37,6 +37,7 @@ function get_checked(html,value) {
 function beep(vol, freq, duration){
 
     return; 
+
     if (false) {
     o=audio.createOscillator()
     o.frequency.value=freq
