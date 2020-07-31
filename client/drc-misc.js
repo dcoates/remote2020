@@ -35,6 +35,9 @@ function get_checked(html,value) {
 
 
 function beep(vol, freq, duration){
+
+    return; 
+    if (false) {
     o=audio.createOscillator()
     o.frequency.value=freq
     o.type="sine"
@@ -46,6 +49,7 @@ function beep(vol, freq, duration){
     g.connect(audio.destination)
     o.start(audio.currentTime)
     o.stop(audio.currentTime+duration*0.001)
+    }
 }
 
 function getRandomInt(max) {

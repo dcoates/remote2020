@@ -391,7 +391,7 @@
         // Main Javascript entry:
         reportSize();//call once to set initial size
         window.addEventListener('resize', reportSize);
-        audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
+        //audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
 
         var stats = new Stats();
         stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
