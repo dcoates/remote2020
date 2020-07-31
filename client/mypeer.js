@@ -169,6 +169,7 @@
                  */
                  send(message) {
                     var conn=this.conn;
+                    log.info(message);
                     if (conn && conn.open) {
                         conn.send(message);
                         log.info(message + " signal sent");
