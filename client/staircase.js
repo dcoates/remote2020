@@ -10,6 +10,7 @@
                 this.stair_size=size; // TODO
                 this.nReversals=0;
                 this.prev_corr=true; // assume first one correcta (still going "down")
+                this.trial_history=[];
             }
 
             next() {
@@ -64,6 +65,16 @@
                     // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
                     set_html("log",get_html("log")+"\n"+
                         this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+this.nReversals);
+
+                    var trial1={'num':this.stair_trial, 'size':prev_size, 'ori': trial_params['orientation'],
+                        'resp': ori_resp, 'is_correct': correct, 'is_reversal': isReversal, 'num_reversals':
+                        this.nReversals, 'dir_reversal_down': this.prev_corr, 'x': this.stair_trial, 'y': prev_size};
+						// Make aliases for x and y just to make drawing easier
+
+                    this.trial_history.push(trial1);
+					app1(this.trial_history); // TODO
+					//update(this.trial_history);
+					//update(this.trial_history); // need two... ?
 
                     // Get next one:
                     var oriNew=getRandomInt(4)*90

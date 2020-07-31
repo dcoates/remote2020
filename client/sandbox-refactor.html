@@ -50,8 +50,7 @@
 
 
                 <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
-                    <tr><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
-
+                    <tr><td width="30pix"></td><td width="30pix"></td><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
 
                 <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
@@ -87,16 +86,23 @@
                 set_html('log',"trial,size,ori,resp,correct,is_reversal,num_reversals");
             }
 
-            var metap = [];
+            var metap = []; // GLOBAL
             function get_metap() {
                 // TODO: A callback when it changes instead?
                 eval( document.getElementById("metap").value );
             }
 
+            var queryDict = {} // GLOBAL
             function load_code() {
                 peer_init();
                 demo1(); // preload E acuity
                 build_table(); // create graph table
+
+                location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+
+                if (queryDict['mode']=='graph') {
+                    set_mode("graph","adv");
+                }
             };
 
             function peer_init() {
@@ -137,7 +143,7 @@
             }
 
 			function table_button_click(which) {
-			    var thisid='count-'+which;
+			    var thisid='count_'+which;
 				console.log(thisid);
 				set_html(thisid,parseInt(get_html(thisid))+1);
 			}
@@ -146,28 +152,32 @@
                 var table=document.getElementById('table_graph');
                 var td_graph=document.getElementById('td_graph');
                 const nrows=10;
-                td_graph.colSpan=nrows+1;
+                td_graph.rowSpan=nrows+1;
 
-                tr = table.insertRow(-1);
-                tr.width="360px";
+                //tr.width="360px";
                 for (var nrow = 0; nrow <= nrows- 1; nrow++) {
 
+                    tr = table.insertRow(-1);
                     var td = document.createElement('td');
-                    td = tr.insertCell(-1);
-
+                    td = tr.insertCell(0);
                     var button = document.createElement('input');
                     button.setAttribute('type', 'button');
-                    button.setAttribute('value', nrow);
-                    button.setAttribute('onclick', 'table_button_click('+nrow+')');
+                    button.setAttribute('value', 9-nrow);
+                    button.setAttribute('onclick', 'table_button_click('+(9-nrow)+')');
                     td.appendChild(button);
-                }
-                tr = table.insertRow(-1);
-                for (var nrow = 0; nrow <= nrows- 1; nrow++) {
 
-                    var td = document.createElement('td');
-                    td = tr.insertCell(-1);
-					td.id='count-'+nrow;
-					td.innerHTML="0";
+                    td = tr.insertCell(0);
+                    td.id='count_'+(9-nrow);
+                    td.innerHTML="0";
+                }
+                if (false) { // If on bottom, need this (horizontal-arranged stimuli)
+                    tr = table.insertRow(-1);
+                    for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+                        var td = document.createElement('td');
+                        td = tr.insertCell(-1);
+					    td.id='count_'+nrow;
+					    td.innerHTML="0";
+                    }
                 }
             }
 

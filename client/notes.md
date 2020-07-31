@@ -14,6 +14,9 @@ Design for mobile displays from 360×640 through 414×896
 Design for tablet displays from 601×962 through 1280×800
 https://www.hobo-web.co.uk/best-screen-size/
 
+# save graph:
+https://github.com/canvg/canvg
+
 non-desktop non-fullscreen S8: 412x718 (with html bar, etc.)
 
 Table

@@ -14,11 +14,11 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 //Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
+//d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
 
     // Add X axis --> it is a date format
     var x = d3.scaleLinear()
-      .domain([1,100])
+      .domain([0,100])
       .range([ 0, width_graph ]);
     svg.append("g")
       .attr("transform", "translate(0," + height_graph + ")")
@@ -26,32 +26,178 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
 
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, 1.0])
+      .domain([0, 100.0])
       .range([ height_graph, 0 ]);
-    svg.append("g")
-      .call(d3.axisLeft(y));
 
-    // Show confidence interval
-    //svg.append("path")
-      //.datum(data)
-      //.attr("fill", "#cce5df")
-      //.attr("stroke", "none")
-      //.attr("d", d3.area()
-        //.x(function(d) { return x(d.x) })
-        //.y0(function(d) { return y(d.CI_right)/10.0})
-        //.y1(function(d) { return y(d.CI_left)/10.0})
-        //)
+data=[{x:0,y:0.5},{x:1,y:6.0},{x:2,y:3.0}];
+// Define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.x); })
+	.y(function(d) { return y(d.y); })
+	//.is_correct(function(d) { return d.is_correct; });
 
+function app1(data) {
     // Add the line
     svg.append("path")
-      .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", 1.5)
-      .attr("d", d3.line()
-        .x(function(d) { return x(d.x) })
-        .y(function(d) { return parseFloat(y(d.y))/1.0 })
-        )
+      .attr("stroke", "black") //{function(d) {
+			//if (d.is_correct) {
+				//return "green";
+			//} else {
+				//return "red";
+			//}
+			//} )
+      .attr("stroke-width", 3.0)
+	  //.attr("class","line")
+      //.datum(data)
+      //.attr("d", d3.line()
+        //.x(function(d) { return x(d.x) })
+        //.y(function(d) { return y(d.y) })
+        //);
+      .attr("d", valueline(data) )
+}
 
-})
+function render(dat) {
+    path = svg.selectAll('path').data(dat)
+    path.attr('d', function(d){return valueline(d)}) // before had +'Z' at end... WHY !?!?!!
+        .style('stroke-width', 1)
+        .style('stroke', 'steelblue');
+    path.enter().append('svg:path').attr('d', function(d){return valueline(d)}) // before had +'Z' at end... WHY !?!?!!
+        .style('stroke-width', 1)
+        .style('stroke', 'steelblue');
+    path.exit().remove()
+    path.attr("fill", "none");
+}
 
+//var circles=svg.selectAll("circle")
+    //.data(data);
+
+//circles.enter()
+    //.append("circle")
+	//.attr("class", "dot")
+	//.style("fill", function(d,i){
+		//if (i == 1){
+				//return "red";
+		//} else {
+			//return "green"; 
+		//}
+	//})
+	//.attr("cx", function(d,i) { return x(d.x) })
+	//.attr("cy", function(d,i) { return y(d.y) })
+	//.attr("r", 6)
+
+// Define the line
+//var valueline = d3.svg.line()
+ //   .x(function(d) { return x(d.num); })
+//	.y(function(d) { return y(d.size); });
+
+function fup1(){
+ nodes
+  .attr("cx", function(d) {
+    return d.x;
+  })
+  .attr("cy", function(d) {
+    return d.y;
+  })
+  .attr("r", 3)
+  .style("fill", function(d) {
+    return 'green';
+  })
+}
+
+function update(data) {
+
+   // force.nodes(data);
+   // force.on('tick', function (e) {
+    //    circles.attr("transform", function (d, i) {
+     //       return "translate(" + d.x + "," + d.y + ")";
+     //   });
+    //});
+
+    // DATA JOIN
+    // Join new data with old elements, if any.
+    var circles = svg.selectAll("circle").data(data);
+
+    // UPDATE
+    // Update old elements as needed.
+    circles.attr("cx", function (d) {return x(d.x);})
+           .attr("cy", function (d) {return y(d.y);})
+        //.transition().duration(750)
+        .style("fill", function (d) {
+			if (d.is_correct) {
+				return "green";
+			} else {
+				return "red";
+			}
+    });
+
+    // ENTER
+    // Create new elements as needed.
+    circles.enter().append("svg:circle").attr("r", 2);
+    // UPDATE
+    // Update old elements as needed.
+    circles.attr("cx", function (d) {return x(d.x);})
+           .attr("cy", function (d) {return y(d.y);})
+        //.transition().duration(750)
+        .style("fill", function (d) {
+			if (d.is_correct) {
+				return "green";
+			} else {
+				return "red";
+			}
+    });
+
+    // EXIT
+    // Remove old elements as needed.
+    circles.exit().remove();
+
+   // force.start();
+}
+
+if (false) {
+var nodes = svg.selectAll("circle.node").data(data)
+  .enter()
+  .append("g")
+  .attr("class", "node")
+  .append("svg:circle");
+up1();
+}
+
+function BADupdate(dat) {
+
+    // Select the section we want to apply our changes to
+	    //var svg = d3.select("body").transition();
+
+     //svg.select(".line")   // change the line
+	//.attr("d", d3.svg.line()
+	//.x(function(d) { return d.x; })
+	//.y(function(d) { return d.y; })
+	//.interpolate('linear')(dat))
+
+      //.data(data)
+      //.attr("d", d3.line()
+        //.x(function(d) { return x(d.x) })
+        //.y(function(d) { return y(d.y) })
+        //);
+
+	var circles=svg.selectAll("circle")
+		.data(data);
+
+	circles.enter()
+		.append("circle")
+		.attr("class", "dot")
+		.style("fill", function(d,i){
+			if (i == 1){
+					return "red";
+			} else {
+				return "green"; 
+			}
+		})
+		.attr("cx", function(d,i) { return x(d.x) })
+		.attr("cy", function(d,i) { return y(d.y) })
+		.attr("r", 6)
+
+}
+
+//update(data);
+//render(data);
