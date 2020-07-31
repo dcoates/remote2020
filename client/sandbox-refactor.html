@@ -71,7 +71,6 @@
 		</div>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
@@ -325,10 +324,10 @@
             function animateLoop() {
                 //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
-                    stats.begin()
+                    //stats.begin()
                     //filled=fillTemplate(actions[indexAction],eval(trial_params) )
                     eval( actions[indexAction] );
-                    stats.end()
+                    //stats.end()
                     indexFrame += 1;
                     if (indexFrame>=flip_durations[indexAction]) {
                         indexFrame = 0;
@@ -393,11 +392,11 @@
         window.addEventListener('resize', reportSize);
         //audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
 
-        var stats = new Stats();
-        stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-        stats.dom.style.position="absolute";
-        stats.dom.style.top="90%";
-        document.body.appendChild( stats.dom );
+        //var stats = new Stats();
+        //stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        //stats.dom.style.position="absolute";
+        //stats.dom.style.top="90%";
+        //document.body.appendChild( stats.dom );
 
         var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
         var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
