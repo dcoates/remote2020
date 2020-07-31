@@ -281,20 +281,20 @@
 
             function demo1() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,0,20,4,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,20,4,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,0,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,20,4,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
             function mocs1() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,0,20,4,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,10,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,20,4,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,0,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,10,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,20,4,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
             function demo1p() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:72\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
@@ -302,14 +302,14 @@
 
             function mocs1p() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,20,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
+                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,20,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:72\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
             function demo2() {
                 //document.getElementById("commands").value=
-                //"make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\nbeep(1,880,30); flip(1); \
+                //"make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\n//beep(1,880,30); flip(1); \
                 //animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(0,0,10,2,'black');flip(1);"
 
                 // Clone the canvas to unhook the canvas
