@@ -34,7 +34,17 @@
                 <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
 
-                <button mode="adv" type="button" id="btnSend" onclick="send_trial();">SEND 1 Trial!</button>
+<p class="boxed" mode="both" id="keygroup">
+<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-keyboard" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14 5H2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2z"/>
+  <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75v-.5zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25v-.5zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75v-.5zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75v-.5zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75v-.5zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75v-.5zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75v-.5zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75v-.5zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75v-.5zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25v-.5z"/>
+</svg>
+
+Local Keys
+<input type="checkbox" id="chkKeys">
+</p>
+
+
 
 <div class="boxed" mode="adv">
 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -46,23 +56,17 @@ To Partner
                     <input mode="adv" type="checkbox" id="chkRemoteStair">
 </div>
 
-<p class="boxed" mode="both" id="keygroup">
-<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-keyboard" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" d="M14 5H2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zM2 4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2z"/>
-  <path d="M13 10.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm0-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5 0A.25.25 0 0 1 8.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 8 8.75v-.5zm2 0a.25.25 0 0 1 .25-.25h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5a.25.25 0 0 1-.25-.25v-.5zm1 2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-5-2A.25.25 0 0 1 6.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 6 8.75v-.5zm-2 0A.25.25 0 0 1 4.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 4 8.75v-.5zm-2 0A.25.25 0 0 1 2.25 8h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 2 8.75v-.5zm11-2a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm-2 0A.25.25 0 0 1 9.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 9 6.75v-.5zm-2 0A.25.25 0 0 1 7.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 7 6.75v-.5zm-2 0A.25.25 0 0 1 5.25 6h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5A.25.25 0 0 1 5 6.75v-.5zm-3 0A.25.25 0 0 1 2.25 6h1.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-1.5A.25.25 0 0 1 2 6.75v-.5zm0 4a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5zm2 0a.25.25 0 0 1 .25-.25h5.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-5.5a.25.25 0 0 1-.25-.25v-.5z"/>
-</svg>
+                <button mode="adv" type="button" id="btnSend" onclick="send_trial();">SEND 1 Trial!</button>
 
-Local Keys
-<input type="checkbox" id="chkKeys">
-</p>
-
-                    <span id="lblStair">Staircase (0):</span>
-                    <input type="checkbox" id="chkStair">
-                    <button type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
-                    <input mode="adv" type="checkbox" id="chkMOCS">
+                <br mode="adv"><br mode="adv">
+                    <span mode="adv" id="lblStair">Staircase (0)</span>
+                    <input mode="adv" type="checkbox" id="chkStair" style="display:none;">
+                    <button mode="adv" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
+                    <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
-                    <br><br>
+                <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+                    <br mode="adv"><br mode="adv">
 
                 <button mode="adv" type="button" id="demo1" onclick="demo1()">Tumbling-E (fovea)</button>
                 <button mode="adv" type="button" id="demo1p" onclick="demo1p()">Tumbling-E (5deg)</button>
@@ -70,15 +74,12 @@ Local Keys
                 <button mode="adv" type="button" id="mocs1" onclick="mocs1()">E MOCS (fovea)</button>
                 <button mode="adv" type="button" id="mocs1p" onclick="mocs1p()">E MOCS (5deg)</button>
 
-                <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
-
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
-
 
                 <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
                     <tr><td width="30pix"></td><td width="30pix"></td><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
-                <table mode="graph" id="table_arrows" style="width:100px;height:200px;border-top:1px;margin-left:auto;margin-right:auto">
+                <table mode="graph" id="table_arrows" style="width:100px;height:200px;border-top:1px;margin-left:auto;margin-right:auto" hidden=true>
                     <tr><td width="30px"></td><td width="30px">UP<td><td width"30px"><tr>
                     <tr><td width="30px">LEFT</td><td width="30px"><td><td width"30px">RIGHT<tr>
                     <tr><td width="30px"></td><td width="30px">DOWN<td><td width"30px"><tr>
@@ -147,7 +148,7 @@ Local Keys
                     id: function(s) {set_html('my-id','My ID:'+s);},
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
-                    connect: function(s) {set_html('status','Pair:'+ s);},
+                    connect: function(s) {set_html('status','Pair:'+ s); set_checked("chkRemoteStair",true);},
                     peer_info: function(s) {set_html('status2','Scr:'+s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
@@ -232,7 +233,7 @@ Local Keys
                             a.hidden=true;
                             a.style.display="none";
                         } else if (a.getAttribute("mode")==show) {
-                            a.hidden=false;
+                            a.hidden=false; // Needed for graph table and arrow 
                             a.style.display=a.old_display;
                         }
                     });
@@ -279,7 +280,9 @@ Local Keys
                 trial_params=eval(document.getElementById("trial").value);
                 commands=fillTemplate(commands,trial_params );
                 var msg="T "+commands;
-			    thePeer.send(msg);
+                if (thePeer && thePeer.conn && thePeer.conn.open) {
+			        thePeer.send(msg);
+                }
             }
 
             function do_trial() {

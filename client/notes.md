@@ -2,7 +2,6 @@
   * Display things
   * get/wait for keypress
 
-
 Convert Gabor to math.js.
 
 Or [gpu.js](http://gpu.rocks)
