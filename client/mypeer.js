@@ -39,7 +39,8 @@
                         //host: '192.168.12.1',
                         port: '9000',
                         path: '/myapp',
-                        debug: 3
+                        debug: 3,
+                        sdpSemantics: 'plan-b'
                     });
                     var peer=this.peer;
                     peer.on('open', function (id) {
