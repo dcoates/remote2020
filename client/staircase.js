@@ -72,10 +72,8 @@
 						// Make aliases for x and y just to make drawing easier
 
                     this.trial_history.push(trial1);
+					update(this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
-					//update(this.trial_history);
-					//update(this.trial_history); // need two... ?
-
                     // Get next one:
                     var oriNew=getRandomInt(4)*90
                     // Set up trial parameters, which are merged with the code to do 1 trial
@@ -86,7 +84,7 @@
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
                         set_html("lblStair","FINISHED");
-                        beep(1,440,80);
+                        //beep(1,440,80);
                     } else {
                         this.next(); // execute next
                     }
@@ -137,7 +135,7 @@
                     set_checked( "chkStair", false); // TODO: out of UI
                     set_checked( "chkMOCS", false); // TODO: out of UI
                     set_html("lblStair","FINISHED");
-                    beep(1,440,80);
+                    //beep(1,440,80);
                 } else {
                     this.next(); // execute next
                 }

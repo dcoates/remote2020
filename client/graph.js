@@ -16,27 +16,42 @@ var svg = d3.select("#my_dataviz")
 //Read the data
 //d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
 
-    // Add X axis --> it is a date format
-    var x = d3.scaleLinear()
-      .domain([0,100])
-      .range([ 0, width_graph ]);
-    svg.append("g")
-      .attr("transform", "translate(0," + height_graph + ")")
-      .call(d3.axisBottom(x));
+const xScale = d3.scaleLinear()
+        .domain([0,50])
+        .range([0,width_graph])
+const xAxis = d3.axisBottom(xScale);
 
-    // Add Y axis
-    var y = d3.scaleLinear()
-      .domain([0, 100.0])
-      .range([ height_graph, 0 ]);
+svg.append("g")
+    .attr("transform", "translate(0," + width_graph + ")")
+    .call(d3.axisBottom(xScale));
+
+
+const g = svg.append("g");
+//const margin = { left: 5, right: 5 };
+
+// Add Y axis
+var yScale = d3.scaleLinear()
+  .domain([0, 100.0])
+  .range([ height_graph, 0 ]);
 
 data=[{x:0,y:0.5},{x:1,y:6.0},{x:2,y:3.0}];
 // Define the line
 var valueline = d3.line()
-    .x(function(d) { return x(d.x); })
-	.y(function(d) { return y(d.y); })
+    .x(function(d) { return xScale(d.x); })
+	.y(function(d) { return yScale(d.y); })
 	//.is_correct(function(d) { return d.is_correct; });
 
 function app1(data) {
+
+    var datalen=data.length;
+
+     //https://bl.ocks.org/HarryStevens/678935d06d4601c25cb141bacd4068ce
+    // would have loved to make xAxis dynamic, but couldn't understand d3.js data model
+    // and how to modify old lines: they were duplicated and not erasing
+    //xScale
+        //.domain([0,datalen+5])
+        //.range([0,width_graph]);
+
     // Add the line
     svg.append("path")
       .attr("fill", "none")
@@ -55,6 +70,12 @@ function app1(data) {
         //.y(function(d) { return y(d.y) })
         //);
       .attr("d", valueline(data) )
+      //.exit().remove()
+     //.attr("transform", `translate(${margin.left}, ${height_graph})`) .transition().duration(1000)
+
+    // Wasn't erasing old data
+    //g.attr("transform", `translate(${margin.left}, ${height_graph})`) .transition().duration(1000)
+                        //.call(xAxis);
 }
 
 function render(dat) {
@@ -105,7 +126,11 @@ function fup1(){
   })
 }
 
-function update(data) {
+function update(data1) {
+    // MANY MANY failed attempts to add successively add colored dots
+    // using d3.js. Eventually just used svg.
+
+    const rad=6;
 
    // force.nodes(data);
    // force.on('tick', function (e) {
@@ -116,24 +141,21 @@ function update(data) {
 
     // DATA JOIN
     // Join new data with old elements, if any.
-    var circles = svg.selectAll("circle").data(data);
-
-    // UPDATE
-    // Update old elements as needed.
-    circles.attr("cx", function (d) {return x(d.x);})
-           .attr("cy", function (d) {return y(d.y);})
-        //.transition().duration(750)
-        .style("fill", function (d) {
-			if (d.is_correct) {
+    svg.append('circle')
+        .attr("r", rad)
+        .attr("cx", xScale(data1.x) )
+        .attr("cy", yScale(data1.y) )
+        .style("fill", function () {
+			if (data1.is_correct) {
 				return "green";
 			} else {
 				return "red";
 			}
     });
 
+    if (false) {
     // ENTER
     // Create new elements as needed.
-    circles.enter().append("svg:circle").attr("r", 2);
     // UPDATE
     // Update old elements as needed.
     circles.attr("cx", function (d) {return x(d.x);})
@@ -146,10 +168,12 @@ function update(data) {
 				return "red";
 			}
     });
+
+    }
 
     // EXIT
     // Remove old elements as needed.
-    circles.exit().remove();
+    //circles.exit().remove();
 
    // force.start();
 }

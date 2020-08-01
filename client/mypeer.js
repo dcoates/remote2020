@@ -38,7 +38,7 @@
                         //host: '192.168.12.1',
                         port: '9000',
                         path: '/myapp',
-                        debug: 3
+                        debug: 2
                     });
                     var peer=this.peer;
                     peer.on('open', function (id) {
@@ -106,7 +106,8 @@
 
                     // Create connection to destination peer specified in the input field
                     this.conn = this.peer.connect(friend, {
-                        reliable: true
+                        reliable: true,
+                        serialization: "json"
                     });
                     var conn=this.conn;
 

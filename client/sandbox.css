@@ -12,7 +12,7 @@
 /* Control the left side */
 .left {
   left: 0;
-  background-color: teal;
+  background-color: #808080;
 }
 
 /* Control the right side */
@@ -88,7 +88,7 @@ canvas{
 }
 
 input.button-setup {
-    background-image: url(./wheels.png); 
+    background-image: url(./Tools24.png); 
     background-color: #909090; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 0px 0px;  /* equivalent to 'top left' */
@@ -108,7 +108,29 @@ input.button-tumbling_e {
     border: 1;           /* assuming we don't want any borders */
     cursor: pointer;        /* make the cursor like hovering over an <a> element */
     height: 28px;           /* make this the size of your image */
-    padding-left: 24px;     /* make text start to the right of the image */
+    padding-left: 22px;     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
 	border-radius: 4px;
+}
+
+.icon-link {
+	height: 24px;
+	width: 24px;
+    background-image : url(./link.svg) no-repeat;
+    background-position: center center;
+}
+
+.bi::before {
+  display: inline-block;
+  content: "";
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' clip-rule='evenodd'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+}
+
+.boxed {
+ border: 1px solid black;
+ border-radius: 3px;
+ display: inline-block;
+ padding: 2px;
 }
