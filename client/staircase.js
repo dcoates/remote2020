@@ -1,3 +1,7 @@
+    // Base class:
+    // - curr_trial (woolean, size, etc.)
+    // - trial_history   
+
     class staircase {
             constructor(size,stair_N) {
                 this.stair_N=stair_N; // N-up-1down
@@ -154,3 +158,14 @@
                 do_trial(); // TODO: figure out better place for this
             };
         }; // MOCS class
+
+
+    function manual_trial(which_size) {
+        // Get random orientation
+        var oriNew=getRandomInt(4)*90
+
+        // Set up trial parameters, which are merged with the code to do 1 trial
+        set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize: ${which_size}\n}`);
+
+        do_trial(); // TODO: figure out better place for this
+    }
