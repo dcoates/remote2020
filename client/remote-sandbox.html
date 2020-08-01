@@ -61,14 +61,12 @@
 		</div>
         <p>Something</p>
 
-        <script type="text/javascript" src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
-
         <script src="grating.js"></script>
         <script src="stims.js"></script>
         <script src="drc-misc.js"></script>
         <script src="prism.js"></script>
         <script src="grating_shader.js" type="text/javascript"> </script>
+        <script src="peerjs.min.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
 
         <script type="text/javascript">
@@ -233,10 +231,10 @@
             function animateLoop() {
                 //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
-                    stats.begin()
+                    //stats.begin()
                     //filled=fillTemplate(actions[indexAction],eval(trial_params) )
                     eval( actions[indexAction] );
-                    stats.end()
+                    //stats.end()
                     indexFrame += 1;
                     if (indexFrame>=flip_durations[indexAction]) {
                         indexFrame = 0;
@@ -301,11 +299,11 @@
         window.addEventListener('resize', reportSize);
         audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
 
-        var stats = new Stats();
-        stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-        stats.dom.style.position="absolute";
-        stats.dom.style.top="90%";
-        document.body.appendChild( stats.dom );
+        //var stats = new Stats();
+        //stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        //stats.dom.style.position="absolute";
+        //stats.dom.style.top="90%";
+        //document.body.appendChild( stats.dom );
 
         var stairCmd=null;
 
