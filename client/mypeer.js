@@ -107,7 +107,7 @@
 
                     // Create connection to destination peer specified in the input field
                     this.conn = this.peer.connect(friend, {
-                        reliable: true,
+                        //reliable: true,
                         serialization: "json"
                     });
                     var conn=this.conn;
