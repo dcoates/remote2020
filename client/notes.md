@@ -2,6 +2,10 @@
   * Display things
   * get/wait for keypress
 
+
+# No Safari support though:
+https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas#Browser_compatibility
+
 Convert Gabor to math.js.
 
 Or [gpu.js](http://gpu.rocks)

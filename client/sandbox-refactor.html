@@ -12,28 +12,26 @@
 		<div class="split left" id='lefty'>
 				<input type="text" id="receiver-id" title="Enter ID" size="8">
 				<button id="connect-button" onclick="do_connect()" style="border-radius:4px;">
-					<object type="image/svg+xml" data="link.svg"> </object>
-					<object type="image/svg+xml" data="bs_person_square.svg"></object>
+					<object type="image/svg+xml" data="img/link.svg"> </object>
+					<object type="image/svg+xml" data="img/bs_person_square.svg"></object>
 					Connect
 				</button>
 
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
-                <div id="status2" style="font-weight: bold; display:inline-block;" title="status2">Status2:</div>
-
-                <br><br>
-                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="dctest">
+                <br>
+                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
 
 				<p class="boxed" mode="both" id="keygroup">
-					<object type="image/svg+xml" data="bs_keyboard.svg"></object>
+					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="24px"></object>
 					Local Keys
 					<input type="checkbox" id="chkKeys">
 				</p>
 
 				<div class="boxed" mode="adv">
-					<object type="image/svg+xml" data="bs_arrow_box.svg"></object>
-					To Partner
+					<object type="image/svg+xml" data="img/bs_arrow_box.svg"></object>
+					To Subject
 					<input mode="adv" type="checkbox" id="chkRemoteStair">
 				</div>
 
@@ -58,11 +56,26 @@
                 <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
                     <tr><td width="30pix"></td><td width="30pix"></td><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
-                <table mode="graph" id="table_arrows" style="width:100px;height:200px;border-top:1px;margin-left:auto;margin-right:auto" hidden=true>
-                    <tr><td width="30px"></td><td width="30px">UP<td><td width"30px"><tr>
-                    <tr><td width="30px">LEFT</td><td width="30px"><td><td width"30px">RIGHT<tr>
-                    <tr><td width="30px"></td><td width="30px">DOWN<td><td width"30px"><tr>
+                <table mode="graph" id="table_arrows" hidden=true>
+                    <tr><td width="40pix"></td>
+					<td>
+                            <button id="btnUp" onclick="alert('hi')"><span class="resp_up"></span></button>
+                    </td><td id="dim_place"></td>
+					<td id="minican" rowspan=3>
+            				<canvas id="canvas2">Canvas</canvas>
+					</td></tr>
+
+					<tr><td>
+							<button id="btnLeft" onclick=";"><span class="resp_left"></span></button>
+					</td><td></td><td>
+							<button id="btnRight" onclick=";"><span class="resp_right"></span></button>
+					</td></tr>
+	
+					<tr><td ></td><td >
+							<button id="btnDown" onclick=";"><span class="resp_down"></span></button>
+					</tr>
                 </table>
+     			<canvas id="canvas" hidden=true>Canvas</canvas>
 
                 <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
                 <table mode="adv" style="width:100%;height:200px;border-top:1px">
@@ -75,10 +88,6 @@
                     <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
                     </tr>
                 </table>
-		</div>
-
-		<div class="splt rght" id="rightcan" style="none">
-            <canvas id="canvas">Canvas</canvas>
 		</div>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
@@ -108,6 +117,14 @@
                 demo1(); // preload E acuity
                 build_table(); // create graph table
 
+
+                // Testing: simulate a display
+                //canv.width=543;
+                //canv.height=738;
+                //reportSize();
+                //pair_screen_info('FS 548 738'); // DRC Hauwei Tablet
+                pair_screen_info('FS 408 712'); // DRC S8
+
                 location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
 
                 // Save default style for each. set_mode sets style to "none" to hide. Need this to restore
@@ -124,11 +141,11 @@
 
             function peer_init() {
                 var handler={
-                    id: function(s) {set_html('my-id','My ID:'+s);},
+                    id: function(s) {set_html('my-id','ID:'+s);},
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
-                    connect: function(s) {set_html('status','Pair:'+ s); set_checked("chkRemoteStair",true);},
-                    peer_info: function(s) {set_html('status2','Scr:'+s);},
+                    connect: function(s) {set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);},
+                    peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
                     receive: function (s) {},
@@ -137,6 +154,19 @@
                 thePeer.init();
             };
 
+            function pair_screen_info(s) {
+                var list_dims=s.split(' ');
+                var width=parseInt(list_dims[1]); // first is "0" FS specifier code
+                var height=parseInt(list_dims[2]);
+
+                // Make our 'shadow' canvas match theirs
+                canv.width=width;
+                canv.height=height;
+                reportSize(); // adjust our drawing stuff
+
+                set_html("dim_place",width+"x"+height);
+            }
+
             function do_connect() {
                 thePeer.join(get_value('receiver-id'));
             };
@@ -144,11 +174,15 @@
             var thePeer = null; 
 
             function reportSize() {
-                var rightcan = document.getElementById("rightcan");
-                wid=rightcan.clientWidth;
-                height=rightcan.clientHeight;
-                canv.width=wid;
-                canv.height=height;
+                //var rightcan = document.getElementById("rightcan");
+                //wid=canv.clientWidth;
+                //height=canv.clientHeight;
+                //canv.width=wid;
+                //canv.height=height;
+                wid=canv.width;
+                height=canv.height;
+                //canv.width=wid;
+                //canv.height=height;
                 xc=wid/2;
                 yc=height/2;
 
@@ -229,7 +263,6 @@
             var height=768;
             var xc=wid/2;
             var yc=height/2;
-            var conn = null;
 
             var mode_setup="E";
 
@@ -348,11 +381,18 @@
             }
 
             function animateLoop() {
+            	//var canv = document.getElementById("canvas");
+                //var ctx = canv.getContext("2d");
+
                 //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
                     //stats.begin()
                     //filled=fillTemplate(actions[indexAction],eval(trial_params) )
                     eval( actions[indexAction] );
+
+					// after draws:
+					resizeTo(canv,0.25);
+
                     //stats.end()
                     indexFrame += 1;
                     if (indexFrame>=flip_durations[indexAction]) {
@@ -415,7 +455,7 @@
 
         // Main Javascript entry:
         reportSize();//call once to set initial size
-        window.addEventListener('resize', reportSize);
+        //window.addEventListener('resize', reportSize);
         //audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
 
         //var stats = new Stats();

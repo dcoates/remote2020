@@ -74,9 +74,13 @@ textarea {
 }
 
 canvas{
-    width: 100%;
-    height: 100%;
-    display:block;
+    /* width: 100%; */
+    /* height: 100%; */
+    height: 150px;
+    width: 200px;
+    background-color: black;
+	margin-left:15px;
+    /* display:block; */
 }
 
 .methods_trainer{
@@ -88,7 +92,7 @@ canvas{
 }
 
 input.button-setup {
-    background-image: url(./Tools24.png); 
+    background-image: url(img/Tools24.png); 
     background-color: #909090; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 0px 0px;  /* equivalent to 'top left' */
@@ -101,7 +105,7 @@ input.button-setup {
 }
 
 input.button-tumbling_e {
-    background-image: url(./tumbling_e.png); 
+    background-image: url(img/tumbling_e.png); 
     background-color: #ffffff; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 7px 7px;  
@@ -126,6 +130,44 @@ input.button-tumbling_e {
   background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' clip-rule='evenodd'/></svg>");
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
+}
+
+.resp_arrow {
+    background-position: center center;
+    background-repeat: no-repeat;  /* make the background image appear only once */
+}
+
+span.resp_up {
+    background: url(img/bs_arrow_up.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_down {
+    background: url(img/bs_arrow_down.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_left {
+    background: url(img/bs_arrow_left.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_right {
+    background: url(img/bs_arrow_right.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
 }
 
 .bs2 {
