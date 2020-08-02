@@ -160,12 +160,32 @@
         }; // MOCS class
 
 
+    var num_manual_trial=0;
+    map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
+       "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
+
     function manual_trial(which_size) {
         // Get random orientation
         var oriNew=getRandomInt(4)*90
 
         // Set up trial parameters, which are merged with the code to do 1 trial
-        set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize: ${which_size}\n}`);
+        set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize: ${map_size[which_size]}\n}`);
 
         do_trial(); // TODO: figure out better place for this
+
+        prev_manual_trial={'ori':oriNew, 'size': which_size};
+
+        num_manual_trial += 1;
+    }
+
+    function process_manual(ori_resp) {
+        var correct=(ori_resp==prev_manual_trial['ori']);
+        log.info(correct);
+
+        // Rescale our linear indexed scale (0-15) to the actual size scale, although sizes won't correspond
+        // Button one is a phantom button to leave space
+        var ylocGraph=(prev_manual_trial['size'])*98/15.0
+        var trial1={'is_correct': correct, 'x': num_manual_trial-1, 'y':ylocGraph };
+        update(trial1);
+        //app1(this.trial_history); // TODO
     }

@@ -1,8 +1,8 @@
 // set the dimensions and margins of the graph
-var margin = {top: 5, right: 5, bottom: 5, left: 25},
+var margin = {top: 0, right: 5, bottom: 0, left: 25},
     //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
-    width_graph = 400 - margin.left - margin.right,
-    height_graph = 400 - margin.top - margin.bottom;
+    width_graph = 300 - margin.left - margin.right,
+    height_graph = 380 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -19,12 +19,11 @@ var svg = d3.select("#my_dataviz")
 const xScale = d3.scaleLinear()
         .domain([0,50])
         .range([0,width_graph])
-const xAxis = d3.axisBottom(xScale);
+//const xAxis = d3.axisBottom(xScale);
 
-svg.append("g")
-    .attr("transform", "translate(0," + width_graph + ")")
-    .call(d3.axisBottom(xScale));
-
+//svg.append("g")
+    //.attr("transform", "translate(0," + 340 + ")")
+    //.call(d3.axisBottom(xScale));
 
 const g = svg.append("g");
 //const margin = { left: 5, right: 5 };

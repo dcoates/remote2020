@@ -12,8 +12,8 @@
 		<div class="split left" id='lefty'>
 				<input type="text" id="receiver-id" title="Enter ID" size="8">
 				<button id="connect-button" onclick="do_connect()" style="border-radius:4px;">
-					<object type="image/svg+xml" data="img/link.svg"> </object>
-					<object type="image/svg+xml" data="img/bs_person_square.svg"></object>
+					<object type="image/svg+xml" onclick="do_connect()" data="img/link.svg"> </object>
+					<object type="image/svg+xml" onclick="do_connect()" data="img/bs_person_square.svg"></object>
 					Connect
 				</button>
 
@@ -53,26 +53,27 @@
 
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
 
-                <table mode="graph" id="table_graph" style="width:100%;height:100px;border-top:1px" hidden=true>
-                    <tr><td width="30pix"></td><td width="30pix"></td><td width=400 id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
+                <table mode="graph" id="table_graph" class="table_graph" style="table-layout: fixed; width:100%;height:100px;border-top:1px;" hidden=true>
+                    <tr><td width="20px"></td><td width="20px"></td><td width="400px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
-                <table mode="graph" id="table_arrows" hidden=true>
-                    <tr><td width="40pix"></td>
+
+                <table mode="graph" id="table_arrows" class="arrows" hidden=true>
+                    <tr><td></td>
 					<td>
-                            <button id="btnUp" onclick="alert('hi')"><span class="resp_up"></span></button>
+                            <button id="btnUp" onclick="do_kb(38);"><span class="resp_up"></span></button>
                     </td><td id="dim_place"></td>
 					<td id="minican" rowspan=3>
             				<canvas id="canvas2">Canvas</canvas>
 					</td></tr>
 
 					<tr><td>
-							<button id="btnLeft" onclick=";"><span class="resp_left"></span></button>
+							<button id="btnLeft" onclick="do_kb(37)"><span class="resp_left"></span></button>
 					</td><td></td><td>
-							<button id="btnRight" onclick=";"><span class="resp_right"></span></button>
+							<button id="btnRight" onclick="do_kb(39)"><span class="resp_right"></span></button>
 					</td></tr>
 	
 					<tr><td ></td><td >
-							<button id="btnDown" onclick=";"><span class="resp_down"></span></button>
+							<button id="btnDown" onclick="do_kb(40)"><span class="resp_down"></span></button>
 					</tr>
                 </table>
      			<canvas id="canvas" hidden=true>Canvas</canvas>
@@ -111,21 +112,18 @@
                 eval( document.getElementById("metap").value );
             }
 
-            var queryDict = {} // GLOBAL
+            var dict_params = {} // GLOBAL
             function load_code() {
                 peer_init();
                 demo1(); // preload E acuity
                 build_table(); // create graph table
 
-
-                // Testing: simulate a display
+                // Testing/initial config: simulate a display
                 //canv.width=543;
                 //canv.height=738;
                 //reportSize();
-                //pair_screen_info('FS 548 738'); // DRC Hauwei Tablet
-                pair_screen_info('FS 408 712'); // DRC S8
-
-                location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+                //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
+                pair_screen_info('FS 408 712'); // DRC's Samsung S8
 
                 // Save default style for each. set_mode sets style to "none" to hide. Need this to restore
                 var lefty=document.getElementById('lefty');
@@ -134,7 +132,14 @@
                 });
 
 
-                if (queryDict['mode']=='graph') {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+                if (dict_params['mode']=='vs205') {
+                    set_mode("graph","adv");
+                    document.getElementById('btnSetup').hidden=true;
+                    set_checked('chkKeys',true);
+                }
+                if (dict_params['mode']=='graph') {
                     set_mode("graph","adv");
                 }
             };
@@ -204,13 +209,13 @@
                 var table=document.getElementById('table_graph');
                 var td_graph=document.getElementById('td_graph');
                 const nrows=15;
-                td_graph.rowSpan=nrows+1;
+                td_graph.rowSpan=nrows+2;
 
-                //tr.width="360px";
                 for (var nrow = 0; nrow <= nrows-1; nrow++) {
 
                     tr = table.insertRow(-1);
                     var td = document.createElement('td');
+                    td.width = "20px";
                     td = tr.insertCell(0);
                     var button = document.createElement('input');
                     button.setAttribute('type', 'button');
@@ -220,8 +225,16 @@
 
                     td = tr.insertCell(0);
                     td.id='count_'+(nrows-nrow);
+                    td.width = "20px";
                     td.innerHTML="0";
                 }
+                tr = table.insertRow(-1); // add a blank row at end to better line up with graph
+                td = tr.insertCell(0);
+                var button = document.createElement('input');
+                button.style.visibility='hidden';
+                td.appendChild(button);
+                td = tr.insertCell(0);
+
                 if (false) { // If on bottom, need this (horizontal-arranged stimuli)
                     tr = table.insertRow(-1);
                     for (var nrow = 0; nrow <= nrows- 1; nrow++) {
@@ -496,6 +509,8 @@
             }
         }
 
+        var prev_manual_trial=null; // TODO: FIXME (put into OO staircase class)
+
         function do_kb(keycode) {
             var ori_resp;
             switch (keycode) {
@@ -515,11 +530,16 @@
                 var correct=(ori_resp==trial_params['orientation']);
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
-            }
-            if (get_checked("chkMOCS")) {
-                var correct=(ori_resp==trial_params['orientation']);
-                theMOCS.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
-                // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+            } else {
+                if (get_checked("chkMOCS")) {
+                    var correct=(ori_resp==trial_params['orientation']);
+                    theMOCS.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                    // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+                } else {
+                    if (prev_manual_trial) {
+                        process_manual(ori_resp);
+                    }
+                }
             }
         };
 </script>

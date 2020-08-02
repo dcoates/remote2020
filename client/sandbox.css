@@ -187,3 +187,8 @@ background-image: url("data:image/svg+xml,%3Csvg width='1em' height='1em' viewBo
  display: inline-block;
  padding: 2px;
 }
+
+table.table_graph { table-layout:fixed; }
+table.table_graph td { overflow: hidden; }
+
+table.td_graph { ; }
