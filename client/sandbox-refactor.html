@@ -58,8 +58,9 @@
                 </table>
 
                 <table mode="graph" id="table_arrows" class="arrows" hidden=true>
-                    <tr><td></td>
-					<td>
+                    <tr><td>
+                            <button id="btnTrash" onclick="do_trash()"><span class="bs_reset_ccw"></span></button>
+                    </td><td>
                             <button id="btnUp" onclick="do_kb(38);"><span class="resp_up"></span></button>
                     </td><td id="dim_place"></td>
 					<td id="minican" rowspan=3>
@@ -205,13 +206,13 @@
                 manual_trial(which);
 			}
 
+            const nrows_mocs_table=15;
             function build_table() {
                 var table=document.getElementById('table_graph');
                 var td_graph=document.getElementById('td_graph');
-                const nrows=15;
-                td_graph.rowSpan=nrows+2;
+                td_graph.rowSpan=nrows_mocs_table+2;
 
-                for (var nrow = 0; nrow <= nrows-1; nrow++) {
+                for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
 
                     tr = table.insertRow(-1);
                     var td = document.createElement('td');
@@ -219,12 +220,12 @@
                     td = tr.insertCell(0);
                     var button = document.createElement('input');
                     button.setAttribute('type', 'button');
-                    button.setAttribute('value', nrows-nrow);
-                    button.setAttribute('onclick', 'table_button_click('+(nrows-nrow)+')');
+                    button.setAttribute('value', nrows_mocs_table-nrow);
+                    button.setAttribute('onclick', 'table_button_click('+(nrows_mocs_table-nrow)+')');
                     td.appendChild(button);
 
                     td = tr.insertCell(0);
-                    td.id='count_'+(nrows-nrow);
+                    td.id='count_'+(nrows_mocs_table-nrow);
                     td.width = "20px";
                     td.innerHTML="0";
                 }
@@ -510,6 +511,14 @@
         }
 
         var prev_manual_trial=null; // TODO: FIXME (put into OO staircase class)
+
+        function do_trash() {
+            graph_clear();
+            for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+                var id='count_'+(nrows_mocs_table-nrow);
+                set_html(id,0);
+            }
+        }
 
         function do_kb(keycode) {
             var ori_resp;

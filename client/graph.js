@@ -125,6 +125,11 @@ function fup1(){
   })
 }
 
+function graph_clear() {
+    svg.selectAll('circle').remove()
+    svg.selectAll('path').remove()
+}
+
 function update(data1) {
     // MANY MANY failed attempts to add successively add colored dots
     // using d3.js. Eventually just used svg.
