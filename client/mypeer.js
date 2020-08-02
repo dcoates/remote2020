@@ -36,11 +36,15 @@
                     // Create own peer object with connection to shared PeerJS server
                     this.peer = new Peer(null, { //'uh2', {
                         host: '185.146.28.139',
+                        host: 'server.coateslab.org',
                         //host: '192.168.12.1',
                         port: '9000',
                         path: '/myapp',
                         debug: 3,
-                        sdpSemantics: 'plan-b'
+
+                        // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
+                        sdpSemantics: 'plan-b',
+                        iceTransportPolicy: 'relay',
                     });
                     var peer=this.peer;
                     peer.on('open', function (id) {
