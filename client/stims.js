@@ -48,14 +48,28 @@
                     }
                 }
 
-                function fixation(x,y,siz,wid,colr) {
+                function fixation(x,y,siz,wid,colr,style) {
                     ctx.beginPath();
                     ctx.lineWidth=wid;
                     ctx.strokeStyle=colr;
-                    ctx.moveTo(x+xc, y+yc-siz);
-                    ctx.lineTo(x+xc, y+yc+siz);
-                    ctx.moveTo(x+xc-siz, y+yc);
-                    ctx.lineTo(x+xc+siz, y+yc);
+                    if (style!="+") {
+                        ctx.moveTo(x+xc+siz, y+yc+siz);
+                        ctx.lineTo(x+xc+siz/2.0, y+yc+siz/2.0);
+
+                        ctx.moveTo(x+xc-siz, y+yc+siz);
+                        ctx.lineTo(x+xc-siz/2.0, y+yc+siz/2.0);
+
+                        ctx.moveTo(x+xc-siz, y+yc-siz);
+                        ctx.lineTo(x+xc-siz/2.0, y+yc-siz/2.0);
+
+                        ctx.moveTo(x+xc+siz, y+yc-siz);
+                        ctx.lineTo(x+xc+siz/2.0, y+yc-siz/2.0);
+                    } else {
+                        ctx.moveTo(x+xc, y+yc-siz);
+                        ctx.lineTo(x+xc, y+yc+siz);
+                        ctx.moveTo(x+xc-siz, y+yc);
+                        ctx.lineTo(x+xc+siz, y+yc);
+                    }
                     ctx.stroke()
                 }
 
