@@ -1,3 +1,12 @@
+    function generate_ori(nafc) {
+        if (nafc==4) {
+            ori=getRandomInt(4)*90;
+        } else if (nafc==2) {
+            ori=getRandomInt(2)*180; // (0 or 1) * 180 : L or R
+        }
+        return ori;
+    }
+
     // Base class:
     // - curr_trial (woolean, size, etc.)
     // - trial_history   
@@ -8,13 +17,14 @@
                 this.restart(size); 
             }
 
-            restart(size) {
+            restart(size,nafc) {
                 this.stair_trial=0;
                 this.consecutive_corrects=0;
                 this.stair_size=size; // TODO
                 this.nReversals=0;
                 this.prev_corr=true; // assume first one correcta (still going "down")
                 this.trial_history=[];
+                this.nafc=nafc;
             }
 
             next() {
@@ -79,7 +89,7 @@
 					update(this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
-                    var oriNew=getRandomInt(4)*90
+                    var oriNew=draw_ori() 
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                         this.stair_size+"\n}");
@@ -100,10 +110,11 @@
             constructor() {
             }
 
-            restart(levels,repeats) {
+            restart(levels,repeats,nafc) {
                 this.levels=levels; 
                 this.repeats=repeats;
                 this.num_trial=0;
+                this.nafc=nafc;
 
                 var remaining=[]; // bc can't access 'this' in forEach (?)
                 this.levels.forEach(function(entry) { // List of valid trials yet to run
@@ -164,9 +175,9 @@
     map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
        "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
 
-    function manual_trial(which_size) {
+    function manual_trial(which_size,nafc) {
         // Get random orientation
-        var oriNew=getRandomInt(4)*90
+        var oriNew=generate_ori(nafc);
 
         // Set up trial parameters, which are merged with the code to do 1 trial
         set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize: ${map_size[which_size]}\n}`);

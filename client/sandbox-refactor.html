@@ -24,10 +24,17 @@
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
 
 				<p class="boxed" mode="both" id="keygroup">
-					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="24px"></object>
+					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="16px"></object>
 					Local Keys
 					<input type="checkbox" id="chkKeys">
 				</p>
+ 
+            <div class="boxed" mode="both">
+            2AFC <label class="switch" height="16px">
+              <input type="checkbox" id="chkNafc" checked>
+              <span class="slider round"></span>
+            </label>4AFC
+            </div>
 
 				<div class="boxed" mode="adv">
 					<object type="image/svg+xml" data="img/bs_arrow_box.svg"></object>
@@ -119,10 +126,7 @@
                 demo1(); // preload E acuity
                 build_table(); // create graph table
 
-                // Testing/initial config: simulate a display
-                //canv.width=543;
-                //canv.height=738;
-                //reportSize();
+                // Testing/initial config: simulate a phantom display connection 
                 //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
                 pair_screen_info('FS 408 712'); // DRC's Samsung S8
 
@@ -131,7 +135,6 @@
                 [].forEach.call(lefty.children, a => {
                     a.old_display=a.style.display;
                 });
-
 
                 // Read "command line" parameters
                 location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
@@ -180,31 +183,12 @@
             var thePeer = null; 
 
             function reportSize() {
-                //var rightcan = document.getElementById("rightcan");
-                //wid=canv.clientWidth;
-                //height=canv.clientHeight;
-                //canv.width=wid;
-                //canv.height=height;
                 wid=canv.width;
                 height=canv.height;
-                //canv.width=wid;
-                //canv.height=height;
                 xc=wid/2;
                 yc=height/2;
-
-                //document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
-
-                //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; // <-- pull the page back up to the top
-                //document.body.style.overflow = 'hidden'; // -- relevant addition
             }
 
-			function table_button_click(which) {
-			    var thisid='count_'+which;
-				console.log(thisid);
-				set_html(thisid,parseInt(get_html(thisid))+1);
-                manual_trial(which);
-			}
 
             const nrows_mocs_table=15;
             function build_table() {
@@ -248,25 +232,16 @@
             }
 
             function set_mode(show,hide) {
-                //mode_setup=(mode_setup==false); // toggle
-                // TODO: Determine if we already in a mode, otherwise
-                // a.old_display gets blown away.. I guess
-                // maybe could save that just once (in startup)
-
-                if (true) {
-                    var lefty=document.getElementById('lefty');
-                    [].forEach.call(lefty.children, a => {
-                        if (a.getAttribute("mode")==hide) {
-                            a.hidden=true;
-                            a.style.display="none";
-                        } else if (a.getAttribute("mode")==show) {
-                            a.hidden=false; // Needed for graph table and arrow 
-                            a.style.display=a.old_display;
-                        }
-                    });
-                } else {
-                    ;
-                };
+                var lefty=document.getElementById('lefty');
+                [].forEach.call(lefty.children, a => {
+                    if (a.getAttribute("mode")==hide) {
+                        a.hidden=true;
+                        a.style.display="none";
+                    } else if (a.getAttribute("mode")==show) {
+                        a.hidden=false; // Needed for graph table and arrow 
+                        a.style.display=a.old_display;
+                    } // IF neither (not matching show or hide, do nothing)
+                });
             }
 
             // Global variables
@@ -424,6 +399,11 @@
                 }
             }
 
+
+                // fullscreen hints:
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; 
+                //document.body.style.overflow = 'hidden'; 
 		function openFullscreen() {
 
             if (document.fullscreenElement) {
@@ -485,9 +465,10 @@
             set_checked('chkStair',true);
             set_checked('chkMOCS',false);
             set_html("lblStair","Staircase 0 0");
+            nafc=get_checked('chkNafc')?4:2;
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
-            theStaircase.restart(parseInt(metap.stair_start));
+            theStaircase.restart(parseInt(metap.stair_start),nafc);
             theStaircase.next(); // show first trial
         }
 
@@ -495,10 +476,19 @@
             set_checked('chkStair',false);
             set_checked('chkMOCS',true);
             set_html("lblStair","MOCS X");
+            nafc=get_checked('chkNafc')?4:2;
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
-            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats);
+            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
             theMOCS.next(); // show first trial
+        }
+        function table_button_click(which) {
+            var thisid='count_'+which;
+            nafc=get_checked('chkNafc')?4:2;
+
+            log.info(thisid);
+            set_html(thisid,parseInt(get_html(thisid))+1);
+            manual_trial(which,nafc);
         }
 
         // Keyboard stuff:
