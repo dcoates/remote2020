@@ -171,7 +171,8 @@
         }; // MOCS class
 
 
-    var num_manual_trial=0; // trial count
+    var num_manual_trial=0;      // trial count
+    var prev_answered=false;     // was previous trial answered already?
     map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
        "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
 
@@ -186,7 +187,7 @@
         do_trial(); // TODO: figure out better place for this
 
         prev_manual_trial={'ori':oriNew, 'size': which_size};
-
+        prev_answered=false;
         num_manual_trial += 1;
     }
 
@@ -203,8 +204,13 @@
         fields=strCurrent.split('/');
         set_html(thisid,fields[0]+'/'+(parseInt(fields[1])+1));
     }
-
     function process_manual(ori_resp, is_YN) {
+        if (prev_answered) {
+            return;
+        } // noop if they already responded to this trial.
+        
+        prev_answered=true; // ...now they have!
+
         var correct=(ori_resp==prev_manual_trial['ori']);
         var nwhich=prev_manual_trial['size'];
         if (is_YN) {
@@ -226,6 +232,5 @@
         var ylocGraph=(nwhich)*98/15.0
         var trial1={'is_correct': correct, 'x': num_manual_trial-1, 'y':ylocGraph };
         update(trial1);
-
         //app1(this.trial_history); // TODO
     }
