@@ -517,10 +517,14 @@
 
         function do_trash() {
             graph_clear();
+
             for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
                 var count_id='count_'+nrow;
                 set_html(count_id,"0/0");
             }
+            // clear "manual"
+            prev_manual_trial=null;
+            num_manual_trial=0;
         }
 
         function do_kb(keycode) {
