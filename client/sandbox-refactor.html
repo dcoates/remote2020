@@ -216,9 +216,14 @@
                 tr = table.insertRow(-1); // add a blank row at end to better line up with graph
                 td = tr.insertCell(0);
                 var button = document.createElement('input');
-                button.style.visibility='hidden';
+                button.setAttribute('type', 'button');
+                button.setAttribute('value', nrows_mocs_table-nrow);
+                button.setAttribute('onclick', 'table_button_click(0)');
                 td.appendChild(button);
                 td = tr.insertCell(0);
+                td.id='count_0';
+                td.width = "20px";
+                td.innerHTML="0";
 
                 if (false) { // If on bottom, need this (horizontal-arranged stimuli)
                     tr = table.insertRow(-1);

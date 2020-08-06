@@ -20,6 +20,8 @@
                 }
 
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
+                    if (siz==0) {return;} // make sure noop for size 0, and no weirdness
+
                     if (which=='E') {
 							draw_e(posx,posy,siz*5.0,ori);
                        }
