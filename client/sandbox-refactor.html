@@ -35,6 +35,13 @@
               <span class="slider round"></span>
             </label>4AFC
             </div>
+ 
+            <div class="boxed" mode="both">
+            Y/N <label class="switch" height="16px">
+              <input type="checkbox" id="chkYN" checked>
+              <span class="slider round"></span>
+            </label>nFC
+            </div>
 
 				<div class="boxed" mode="adv">
 					<object type="image/svg+xml" data="img/bs_arrow_box.svg"></object>
@@ -211,7 +218,7 @@
                     td = tr.insertCell(0);
                     td.id='count_'+(nrows_mocs_table-nrow);
                     td.width = "20px";
-                    td.innerHTML="0";
+                    td.innerHTML="0/0";
                 }
                 tr = table.insertRow(-1); // add a blank row at end to better line up with graph
                 td = tr.insertCell(0);
@@ -223,7 +230,7 @@
                 td = tr.insertCell(0);
                 td.id='count_0';
                 td.width = "20px";
-                td.innerHTML="0";
+                td.innerHTML="0/0";
 
                 if (false) { // If on bottom, need this (horizontal-arranged stimuli)
                     tr = table.insertRow(-1);
@@ -490,10 +497,11 @@
         function table_button_click(which) {
             var thisid='count_'+which;
             nafc=get_checked('chkNafc')?4:2;
+            is_YN=get_checked('chkYN')?false:true;
 
             log.info(thisid);
-            set_html(thisid,parseInt(get_html(thisid))+1);
-            manual_trial(which,nafc);
+            update_manual_table_outof(which);
+            manual_trial(which,nafc,is_YN);
         }
 
         // Keyboard stuff:
@@ -509,9 +517,9 @@
 
         function do_trash() {
             graph_clear();
-            for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
-                var id='count_'+(nrows_mocs_table-nrow);
-                set_html(id,0);
+            for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
+                var count_id='count_'+nrow;
+                set_html(count_id,"0/0");
             }
         }
 
@@ -541,7 +549,9 @@
                     // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
                 } else {
                     if (prev_manual_trial) {
-                        process_manual(ori_resp);
+                        // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
+                        is_YN=get_checked('chkYN')?false:true;
+                        process_manual(ori_resp, is_YN);
                     }
                 }
             }

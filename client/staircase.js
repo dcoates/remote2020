@@ -171,13 +171,14 @@
         }; // MOCS class
 
 
-    var num_manual_trial=0;
+    var num_manual_trial=0; // trial count
     map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
        "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
 
-    function manual_trial(which_size,nafc) {
+    function manual_trial(which_size,nafc,is_YN) {
         // Get random orientation
         var oriNew=generate_ori(nafc);
+        if (is_YN) {oriNew=0}; // for Y/N task, always right-pointed
 
         // Set up trial parameters, which are merged with the code to do 1 trial
         set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize: ${map_size[which_size]}\n}`);
@@ -189,14 +190,42 @@
         num_manual_trial += 1;
     }
 
-    function process_manual(ori_resp) {
+    // TODO: This UI doesn't really belong here
+    function update_manual_table_corr(nwhich,correct) {
+        var thisid='count_'+nwhich;
+        strCurrent=get_html(thisid);
+        fields=strCurrent.split('/');
+        set_html(thisid,(parseInt(fields[0])+correct)+'/'+fields[1]);
+    }
+    function update_manual_table_outof(nwhich) {
+        var thisid='count_'+nwhich;
+        strCurrent=get_html(thisid);
+        fields=strCurrent.split('/');
+        set_html(thisid,fields[0]+'/'+(parseInt(fields[1])+1));
+    }
+
+    function process_manual(ori_resp, is_YN) {
         var correct=(ori_resp==prev_manual_trial['ori']);
+        var nwhich=prev_manual_trial['size'];
+        if (is_YN) {
+            if (nwhich==0 && ori_resp==180) { // for Y/N trials, left&absent is correct,
+                correct=true;
+            } else {
+                if(nwhich!=0 && ori_resp==0) { // right&present is correct
+                    correct=true;
+                } else {
+                    correct=false;
+                };
+            }
+        };
         log.info(correct);
+        update_manual_table_corr(nwhich,correct);
 
         // Rescale our linear indexed scale (0-15) to the actual size scale, although sizes won't correspond
         // Button one is a phantom button to leave space
-        var ylocGraph=(prev_manual_trial['size'])*98/15.0
+        var ylocGraph=(nwhich)*98/15.0
         var trial1={'is_correct': correct, 'x': num_manual_trial-1, 'y':ylocGraph };
         update(trial1);
+
         //app1(this.trial_history); // TODO
     }

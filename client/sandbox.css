@@ -217,7 +217,7 @@ table.td_graph { ; }
 .switch {
   position: relative;
   display: inline-block;
-  width: 48px;
+  width: 32px;
   height: 16px;
   bottom: 0px;
   top: 1px;
@@ -247,7 +247,7 @@ table.td_graph { ; }
   content: "";
   height: 16px;
   width: 16px;
-  left: 4px;
+  left: 1px;
   bottom: 1px;
   background-color: white;
   -webkit-transition: .4s;
@@ -266,9 +266,9 @@ input:focus + .slider {
 */
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
 }
 
 /* Rounded sliders */
