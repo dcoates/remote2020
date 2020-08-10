@@ -138,10 +138,6 @@
 
                 set_html("log",get_html("log")+"\n"+
                     this.num_trial+","+this.remaining[this.index_which]['which']+","+trial_params['orientation']+','+ori_resp+','+correct+',0,0');
-                this.remaining[this.index_which]['remaining'] -= 1;
-                if (this.remaining[this.index_which]['remaining']==0) {
-                    this.remaining.splice(this.index_which,1); // remove 1 item from middle of array
-                }
 
                 var spac=this.remaining[this.index_which]['which']
                 if (spac<10) {
@@ -154,6 +150,11 @@
                 update_graph(trial1);
 
                 set_html("lblStair",`MOCS ${this.total_remaining()}`); //TOTAL
+
+                this.remaining[this.index_which]['remaining'] -= 1;
+                if (this.remaining[this.index_which]['remaining']==0) {
+                    this.remaining.splice(this.index_which,1); // remove 1 item from middle of array
+                }
 
                 // Finished ?
                 if (this.remaining.length < 1 ) {
