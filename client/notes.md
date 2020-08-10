@@ -8,6 +8,12 @@ https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas#Browser_compati
 
 Convert Gabor to math.js.
 
+# Images over PeeJS
+https://blog.bitsrc.io/use-webrtc-and-peerjs-to-build-an-image-sharing-app-f8163b6a6266
+
+# Multiple PeerJS:
+https://html.developreference.com/article/12475785/Multiple+party+peer.js+application
+
 Or [gpu.js](http://gpu.rocks)
 
 Remote debugging:

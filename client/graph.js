@@ -130,7 +130,7 @@ function graph_clear() {
     svg.selectAll('path').remove()
 }
 
-function update(data1) {
+function update_graph(data1) {
     // MANY MANY failed attempts to add successively add colored dots
     // using d3.js. Eventually just used svg.
 

@@ -86,10 +86,10 @@
 						// Make aliases for x and y just to make drawing easier
 
                     this.trial_history.push(trial1);
-					update(this.trial_history[this.trial_history.length-1]);
+					update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
-                    var oriNew=draw_ori() 
+                    var oriNew=generate_ori(4) 
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
                         this.stair_size+"\n}");
@@ -142,6 +142,16 @@
                 if (this.remaining[this.index_which]['remaining']==0) {
                     this.remaining.splice(this.index_which,1); // remove 1 item from middle of array
                 }
+
+                var spac=this.remaining[this.index_which]['which']
+                if (spac<10) {
+                    var yloc=spac*15; // CC spacings times ten
+                } else {
+                    var yloc=90;
+                }
+                var xloc=this.total_remaining()/2.0; // from right to left
+                var trial1={'is_correct': correct, 'x': xloc, 'y':yloc };
+                update_graph(trial1);
 
                 set_html("lblStair",`MOCS ${this.total_remaining()}`); //TOTAL
 
@@ -231,6 +241,6 @@
         // Button one is a phantom button to leave space
         var ylocGraph=(nwhich)*98/15.0
         var trial1={'is_correct': correct, 'x': num_manual_trial-1, 'y':ylocGraph };
-        update(trial1);
+        update_graph(trial1);
         //app1(this.trial_history); // TODO
     }
