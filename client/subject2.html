@@ -99,6 +99,10 @@
                 ctx.font = "30px Arial";
                 ctx.fillText(dims, 10, 100);
                 ctx.fillText("Please wait", 10, 150);
+
+                canvas.addEventListener('click', function(event) {
+                    openFullscreen();
+                }, false);
             }
 
             // How we respond to peer commands
@@ -288,6 +292,50 @@
             }
 
         };
+
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.getElementById("canvas");
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
 
         // Keyboard listener
         document.addEventListener('keydown', function(event) {key_handler(event);} );
