@@ -221,7 +221,7 @@
         s = "";
         s += "size,num_correct,num_presented";
         s += ","+get_value("text_condition") + "\n";
-        for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+        for (var nrow = nrows_mocs_table; nrow>=0; nrow--) {
             var thisid='count_'+nrow;
             strCurrent=get_html(thisid);
             fields=strCurrent.split('/');
