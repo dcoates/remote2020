@@ -81,6 +81,9 @@
                 canvas.width  = window.innerWidth;
                 canvas.height = window.innerHeight;
 
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // <-- relevant addition
+
                 // set globals which are used by stims.js
                 wid=canvas.width;
                 height=canvas.height;
@@ -197,8 +200,6 @@
                 document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
 
                 //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; // <-- pull the page back up to the top
-                //document.body.style.overflow = 'hidden'; // <-- relevant addition
             }
 
             // Global variables

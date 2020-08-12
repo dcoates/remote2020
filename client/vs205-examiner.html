@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
         <title>remote2020 - examiner</title>
-        <link rel="stylesheet" href="sandbox.css">
+        <link rel="stylesheet" href="vs205.css">
         <link rel="stylesheet" href="graph.css">
     </head>
     <body style="background-color:#808080" onload="load_code()">  
@@ -67,7 +67,7 @@
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
 
                 <table mode="graph" id="table_graph" class="table_graph" style="table-layout: fixed; width:100%;height:100px;border-top:1px;" hidden=true>
-                    <tr><td width="20px"></td><td width="20px"></td><td width="400px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
+                    <tr><td width="50px"></td><td width="50px"></td><td width="400px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
 
                 <table mode="graph" id="table_arrows" class="arrows" hidden=true>
@@ -136,6 +136,8 @@
                 //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
                 pair_screen_info('FS 408 712'); // DRC's Samsung S8
 
+                document.getElementById('canvas').style.visibility="hidden";
+                document.getElementById('canvas').style.display="none";
                 // Save default style for each. set_mode sets style to "none" to hide. Need this to restore
                 var lefty=document.getElementById('lefty');
                 [].forEach.call(lefty.children, a => {
@@ -206,12 +208,12 @@
 
                     tr = table.insertRow(-1);
                     var td = document.createElement('td');
-                    td.width = "24px";
                     td = tr.insertCell(0);
                     var button = document.createElement('input');
                     button.setAttribute('type', 'button');
                     button.setAttribute('value', nrows_mocs_table-nrow);
                     button.setAttribute('onclick', 'table_button_click('+(nrows_mocs_table-nrow)+')');
+                    button.style.width="6ch";
                     td.appendChild(button);
 
                     td = tr.insertCell(0);
@@ -228,7 +230,7 @@
                 td.appendChild(button);
                 td = tr.insertCell(0);
                 td.id='count_0';
-                td.width = "20px";
+                button.style.width="6ch";
                 td.innerHTML="0/0";
 
                 if (false) { // If on bottom, need this (horizontal-arranged stimuli)
