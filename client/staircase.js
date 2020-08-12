@@ -232,9 +232,17 @@
         }
         log.info(s)
         set_html("log",s)
+
+        var owner=document.getElementById("table_text") 
+        owner.style.display="";
+        owner.hidden=false;
+
         var el=document.getElementById("log") //.select();
         var success= iosCopyToClipboard(el);
-        success=navigator.clipboard.writeText(s);
+        //success=navigator.clipboard.writeText(s);
+
+        owner.style.display="none";
+        owner.hidden=true;
     }
 
     function iosCopyToClipboard(el) {
@@ -242,6 +250,8 @@
 
         el.contentEditable = true;
         el.readOnly = false;
+        el.focus()
+        el.select()
         range.selectNodeContents(el);
 
         var s = window.getSelection();
@@ -250,7 +260,7 @@
 
         el.setSelectionRange(0, 999999); // A big number, to cover anything that could be inside the element.
 
-        return document.execCommand('copy');
+        document.execCommand('copy');
     }
 
     function process_manual(ori_resp, is_YN) {
