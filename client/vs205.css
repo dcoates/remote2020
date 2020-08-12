@@ -145,6 +145,7 @@ span.resp_up {
     height: 24px;
     width: 24px;
 }
+
 span.resp_down {
     background: url(img/bs_arrow_down.svg) no-repeat top left;
     background-size: contain;
@@ -281,6 +282,13 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-
-
+ 
+span.clipboard {
+    background: url(img/bs_clipboard.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
 

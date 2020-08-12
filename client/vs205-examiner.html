@@ -20,6 +20,8 @@
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
+				<input type="text" value="Enter condition" id="text_condition" title="Condition info" size="22">
+                <br>
                 <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
 
@@ -75,7 +77,8 @@
                             <button id="btnTrash" onclick="do_trash()"><span class="bs_reset_ccw"></span></button>
                     </td><td>
                             <button id="btnUp" onclick="do_kb(38);"><span class="resp_up"></span></button>
-                    </td><td id="dim_place"></td>
+                    </td>
+                    <td><button id="btnClip" onclick="export_manual_table();"><span class="clipboard"></span></button> </td>
 					<td id="minican" rowspan=3>
             				<canvas id="canvas2">Canvas</canvas>
 					</td></tr>
@@ -88,7 +91,7 @@
 	
 					<tr><td ></td><td >
 							<button id="btnDown" onclick="do_kb(40)"><span class="resp_down"></span></button>
-					</tr>
+                            <td id="dim_place"></td></tr>
                 </table>
      			<canvas id="canvas" hidden=true>Canvas</canvas>
 

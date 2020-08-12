@@ -215,6 +215,44 @@
         fields=strCurrent.split('/');
         set_html(thisid,fields[0]+'/'+(parseInt(fields[1])+1));
     }
+
+    // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+    function export_manual_table() {
+        s = "";
+        s += "size,num_correct,num_presented";
+        s += ","+get_value("text_condition") + "\n";
+        for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+            var thisid='count_'+nrow;
+            strCurrent=get_html(thisid);
+            fields=strCurrent.split('/');
+            // Only output cells for which one has been presented
+            if (parseInt(fields[1])>0) {
+                s+=nrow+","+fields[0]+","+fields[1]+"\n"
+            }
+        }
+        log.info(s)
+        set_html("log",s)
+        var el=document.getElementById("log") //.select();
+        var success= iosCopyToClipboard(el);
+        success=navigator.clipboard.writeText(s);
+    }
+
+    function iosCopyToClipboard(el) {
+        var range = document.createRange();
+
+        el.contentEditable = true;
+        el.readOnly = false;
+        range.selectNodeContents(el);
+
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
+
+        el.setSelectionRange(0, 999999); // A big number, to cover anything that could be inside the element.
+
+        return document.execCommand('copy');
+    }
+
     function process_manual(ori_resp, is_YN) {
         if (prev_answered) {
             return;
