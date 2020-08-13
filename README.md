@@ -7,7 +7,7 @@ The use cases are very specifics:
 
 1. Optometry teaching labs (contrast sensitivity, dark adaptation, psychophysical methods)
 1. Remote psychophysics experiments
-1. Leveraging ofjavascript libraries and integrating with hardware
+1. Leveraging of javascript libraries and integrating with hardware
 
 Requirements:
 - For experiments in "low-level" vision:
