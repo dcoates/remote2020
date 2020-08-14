@@ -24,7 +24,7 @@ Why JavaScript?
 
 There are a wealth of projects that allow simple "design and execution of psychology experiment on the web." For example: [Pavlovia](http://pavlovia.org), Gorilla, Lab.js, Testable, Tellab, etc.
 
-I believe that our concerns are quite different. For our teaching labs, both participants are expected to be engaged in the data collection (gaining experience as both subject and as an experimenter), but needn't be involved in their creation.. Thus the peer-to-peer aspect is essential. We also wanted very precise control of the stimuli, which wasn't obvious in some of the existing solutions. Also, I'm not a fan (and don't always see the benefit) of the graphical building; it seems great for 80% of what needs to be done, then the last 20% is painful or impossible. Thus I didn't mind a fully javascript solution, especially since the tools built into browsers are so mature.
+I believe that our concerns are quite different. For our teaching labs, both participants are expected to be engaged in the data collection (gaining experience as both subject and as an experimenter), but needn't be involved in their creation.. Thus the peer-to-peer aspect is essential. We also wanted very precise control of the stimuli, which wasn't obvious in some of the existing solutions. Also, I'm not a fan (and don't always see the benefit) of the GUI tools. They seem great for 80% of what one might want to do, then the last 20% becomes painful or impossible. Thus I didn't mind a fully javascript solution, especially since the tools built into browsers are really impressive.
 
 ## Sensation & perception labs
 
