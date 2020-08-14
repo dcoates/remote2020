@@ -1,9 +1,9 @@
 # remote2020
 A framework to present psychophysical stimuli in a peer-to-peer fashion.
 
-At its most basic level, this framework allows the specification of actions (typically a timeline of displaying visual elements) for rendering on another device, including getting responses.
+At its most basic level, this framework allows the specification of actions (typically a timeline of displaying visual elements) for rendering on another device, and potentially gathering behavioral responses.
 
-The use cases are very specifics:
+There are several speficic use cases:
 
 1. Optometry teaching labs (contrast sensitivity, dark adaptation, psychophysical methods)
 1. Remote psychophysics experiments
