@@ -1,46 +1,51 @@
-// set the dimensions and margins of the graph
-var margin = {top: 0, right: 5, bottom: 0, left: 25},
-    //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
-    width_graph = 600 - margin.left - margin.right,
-    height_graph = 380 - margin.top - margin.bottom;
+// Results logger class:
+// - Data store for psychophysical results
+// - (optionally) real-time graph that updates with results
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-  .append("svg")
-    .attr("width", width_graph + margin.left + margin.right)
-    .attr("height", height_graph + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-//Read the data
-//d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
-
-const xScale = d3.scaleLinear()
-        .domain([0,80])
-        .range([0,width_graph])
-//const xAxis = d3.axisBottom(xScale);
+class logger {
+    // set the dimensions and margins of the graph
+    var margin = {top: 0, right: 5, bottom: 0, left: 25};
+    var width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
+        //width_graph = 300 - margin.left - margin.right,
+    var height_graph = 380 - margin.top - margin.bottom;
 
 //svg.append("g")
     //.attr("transform", "translate(0," + 340 + ")")
     //.call(d3.axisBottom(xScale));
 
-const g = svg.append("g");
+    const g = svg.append("g");
 //const margin = { left: 5, right: 5 };
 
-// Add Y axis
-var yScale = d3.scaleLinear()
-  .domain([0, 100.0])
-  .range([ height_graph, 0 ]);
+    constructor(html_parent,html_class) {
+        // To make it dynamically size
+        this.width_graph = document.getElementById(html_element).scrollWidth - margin.left - margin.right,
+        this.svg = d3.select(html_class)
+              .append("svg")
+                .attr("width", width_graph + margin.left + margin.right)
+                .attr("height", height_graph + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+                
+        this.xScale = d3.scaleLinear()
+            .domain([0,50])
+            .range([0,width_graph])
 
-data=[{x:0,y:0.5},{x:1,y:6.0},{x:2,y:3.0}];
-// Define the line
-var valueline = d3.line()
-    .x(function(d) { return xScale(d.x); })
-	.y(function(d) { return yScale(d.y); })
+        this.xAxis = d3.axisBottom(xScale);
+
+        // Add Y axis
+        this.yScale = d3.scaleLinear()
+            .domain([0, 100.0])
+            .range([ height_graph, 0 ]);
+
+        self=this;
+        // Define the line
+        this.valueline = d3.line()
+            .x(function(d) { return self.xScale(d.x); })
+	        .y(function(d) { return self.yScale(d.y); })
 	//.is_correct(function(d) { return d.is_correct; });
 
-function app1(data) {
+    function app1(data) {
 
     //var datalen=data.length;
 

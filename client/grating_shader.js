@@ -55,8 +55,13 @@ void main() {
                       sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
 
   float grating=sin(posRotate[0]*sf_div);
-  float mag=1.0*exp(-distanceSqrd/sigma);
+  //float mag=1.0*exp(-distanceSqrd/sigma);  // Gaussian
+  //mag=ceil(0.5-distanceSqrd/(384.0*384.0));
+  float mag=ceil(sigma-distanceSqrd);
+  //mag=0.5;
+
   float noiz;
+
   //mag = mag/10.0 + 0.5;
   //mag = amp;
 
@@ -69,9 +74,14 @@ void main() {
   //noiz=rnd(fragmentPosition);
   mag=mag*amp; //mag/10.0+0.5;
   //float mag= 0.1/distanceSqrd;
+    //
+  mag=pow(mag,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
+
   gl_FragColor = vec4(0.0,mag,0.0, 1.0 );
 }
 `;
+
+// Samsung's Gamma: 2.4 http://www.displaymate.com/Galaxy_S8_ShootOut_01.htm
 
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/By_example/Textures_from_code
 // https://www.cs.cornell.edu/courses/cs4620/2017sp/cs4621/lecture08/

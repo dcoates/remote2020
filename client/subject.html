@@ -121,14 +121,18 @@
             var globContrastFine;
             var globRadius;
             var gaborCancel=false;
+            var count_animation=0;
             function gabor(commands) {
                 arr=commands.split(' ');
                 globRadius= parseFloat(arr[1]);
                 globContrastCoarse= parseFloat(arr[2]);
                 globContrastFine = parseFloat(arr[3]);
-                count_animation=0;
-                gaborCancel=false;
-                globalAnimationID = requestAnimationFrame(animateDA);
+                if (globalAnimationID==null) {
+                    // Start it if not already going
+                    count_animation=0;
+                    gaborCancel=false;
+                    globalAnimationID = requestAnimationFrame(animateDA);
+                } // if already going, param changes will be detected and used
             }
 
             // How we respond to peer commands
@@ -294,6 +298,7 @@
                 if (gaborCancel | count_animation>600*5) {
                     cancelAnimationFrame(globalAnimationID);
                     count_animation=0;
+                    globalAnimationID = null;
                 } else {
                     if ( (count_animation%(60*1.000))<(60*0.250) ) { // Every Xsec on for Yms
                         showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,count_animation/1000.0);

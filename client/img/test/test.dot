@@ -1,0 +1,10 @@
+digraph foo {
+    rankdir=LR;
+    node [shape=record];
+    a [label="{ <data> 12 | <ref>  }", width=1.2]
+    b [label="{ <data> 99 | <ref>  }"];
+    c [label="{ <data> 37 | <ref>  }"];
+    d [image="bs_person.png"];
+    a:ref:c -> b:data [arrowhead=vee, arrowtail=dot, dir=both, tailclip=false, arrowsize=1.2];
+    b:ref:c -> c:data [arrowhead=vee, arrowtail=dot, dir=both, tailclip=false];
+    c:ref:c -> d      [arrowhead=vee, arrowtai

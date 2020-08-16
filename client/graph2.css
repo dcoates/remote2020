@@ -3,21 +3,33 @@
         }
 
         .graph .axis .tick line {
-            stroke: black;
+            stroke: red;
         }
 
         .graph .axis .tick text {
-            fill: black;
+            fill: red;
             font-size: 0.7em;
         }
 
         .graph .axis .domain {
-            fill: black;
-            stroke: black;
+            fill: red;
+            stroke: red;
         }
 
         .graph .group {
             fill: none;
-            stroke: black;
+            stroke: red;
             stroke-width: 1.5;
         }
+
+.axisRed line{
+  stroke: red;
+}
+
+.axisRed path{
+  stroke: red;
+}
+
+.axisRed text{
+  fill: red;
+} 
