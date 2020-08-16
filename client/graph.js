@@ -1,7 +1,7 @@
 // set the dimensions and margins of the graph
 var margin = {top: 0, right: 5, bottom: 0, left: 25},
     //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
-    width_graph = 300 - margin.left - margin.right,
+    width_graph = 600 - margin.left - margin.right,
     height_graph = 380 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
@@ -42,7 +42,7 @@ var valueline = d3.line()
 
 function app1(data) {
 
-    var datalen=data.length;
+    //var datalen=data.length;
 
      //https://bl.ocks.org/HarryStevens/678935d06d4601c25cb141bacd4068ce
     // would have loved to make xAxis dynamic, but couldn't understand d3.js data model
