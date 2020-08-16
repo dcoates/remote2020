@@ -29,6 +29,13 @@
         <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.1</label>
 		<br>
         <label id="lbl_elapsed">Time elapsed: </label><label id="time_elapsed">0:00</label>
+
+	<br><br>
+	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">Big up</button>
+	<button id="fine_up" onclick="do_action(37);" style="border-radius:4px;">Fine up</button>
+	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">Fine down</button>
+	<button id="coarse_down" onclick="do_action(40);" style="border-radius:4px;">Big down</button>
+
 		<canvas id="canvas">Canvas</canvas>
         <div id="my_dataviz" class="graph"></div>
 
@@ -382,6 +389,9 @@
                     return; // do nothing if unrecognized key
                 }
         };
+	function do_action(which) { // TODO
+		    do_kb(which);}
+	
 </script>
     </body>
 </html>
