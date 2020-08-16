@@ -33,6 +33,10 @@ Them: <img src="doc/clouds_openloop.png?raw=true" height="25%" width="25%"></img
 
 Us: <img src="doc/pairs.png?raw=true" height="25%" width="25%"></img>
 
+| Them  | Us |
+| ------------- | ------------- |
+| <img src="doc/clouds_openloop.png?raw=true"></img>  | <img src="doc/pairs.png?raw=true"></img>  |
+
 ## Sensation & perception labs
 
 todo
