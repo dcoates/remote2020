@@ -27,6 +27,7 @@ varying vec2 v_texCoord;
 
 uniform float sf_div;
 uniform float sigma;
+uniform float amp;
 uniform float theta;
 uniform float rando;
 
@@ -38,7 +39,6 @@ float rnd(vec2 x)
         return 1.0 - float( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;
 };
 */
-
 
 void main() {
   //vec2 fragmentPosition = (gl_PointCoord*3.0-1.0)/2.0-v_texCoord;
@@ -55,14 +55,19 @@ void main() {
                       sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
 
   float grating=sin(posRotate[0]*sf_div);
-  float mag= grating*exp(-distanceSqrd/sigma);
+  float mag=1.0*exp(-distanceSqrd/sigma);
   float noiz;
-  mag = mag/10.0 + 0.5;
-  mag = sigma;
+  //mag = mag/10.0 + 0.5;
+  //mag = amp;
 
-  noiz=fract(sin(dot(fragmentPosition+vec2(rando,rando),vec2(12.9898,78.233))) * 43758.5453);
+  //if ((fragmentPosition[0]+fragmentPosition[1])>sigma) { mag=0; }
+  //else {mag=0.99;}
+
+  //mag=1.0;
+
+  //noiz=fract(sin(dot(fragmentPosition+vec2(rando,rando),vec2(12.9898,78.233))) * 43758.5453);
   //noiz=rnd(fragmentPosition);
-  mag=noiz*sigma;
+  mag=mag*amp; //mag/10.0+0.5;
   //float mag= 0.1/distanceSqrd;
   gl_FragColor = vec4(0.0,mag,0.0, 1.0 );
 }
@@ -79,7 +84,6 @@ var gl;
 var program;
 
 function setupWebGL (evt) {
-  //console.log("hi");
   //window.removeEventListener(evt.type, setupWebGL, false);
   
   if (!(gl = getRenderingContext()))
@@ -115,15 +119,15 @@ function setupWebGL (evt) {
   gl.useProgram(program);
 }
 
-function showShaderGrating(sf,sigma,theta,rando) {
+function showShaderGrating(sf,sigma,amp,theta,rando) {
   var locationOfSf = gl.getUniformLocation(program, "sf_div");
   var locationOfSigma = gl.getUniformLocation(program, "sigma");
+  var locationOfAmp = gl.getUniformLocation(program, "amp");
   var locationOfTheta = gl.getUniformLocation(program, "theta");
   var locationOfRando = gl.getUniformLocation(program, "rando");
-  //gl.uniform1f(locationOfSf, 90.0);
-  //gl.uniform1f(locationOfSigma, 0.15);
-  //gl.uniform1f(locationOfTheta, 3.1416*45/180.0);
+
   gl.uniform1f(locationOfSf, sf);
+  gl.uniform1f(locationOfAmp, amp);
   gl.uniform1f(locationOfSigma, sigma);
   gl.uniform1f(locationOfTheta, theta);
   gl.uniform1f(locationOfRando, rando);

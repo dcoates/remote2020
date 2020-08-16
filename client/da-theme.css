@@ -1,0 +1,118 @@
+label {
+  background-color: black;
+  color: red;
+  /*text-align: center; */
+  font-family: sans; 
+  font-size: 20px;
+  height: 50px; 
+}
+
+span.property-name {
+  background-color: black;
+  color: red;
+  /*text-align: center; */
+  font-family: sans; 
+  font-size: 20px;
+  height: 50px; 
+  /*border-radius: 15px; */
+  /*border: 2px purple ridge; */
+   display: inline-block; */
+  /*height: 30px; */
+  /*line-height: 2em; */
+}
+
+.cr {
+    height: 80px;
+    color: red;
+    background-color: black;
+}
+
+div.slider-fg {
+    background-color: black;
+    color: black;
+}
+
+.slider-fg {
+    background-color: black;
+    color: black;
+}
+
+button {
+    color: black;
+    height: 60px;
+    width: 80px;
+    background-color: red;
+}
+
+input {
+    color: black;
+    background-color: red;
+    height: 30px;
+}
+
+/*
+.dg.main.taller-than-window .close-button {
+    border-top: 1px solid #ddd;
+}
+
+.dg.main .close-button {
+    background-color: #e8e8e8;
+}
+ 
+.dg.main .close-button:hover {
+    background-color: #ddd;
+}
+
+.dg {
+    color: #555;
+    text-shadow: none !important;
+}
+
+.dg.main::-webkit-scrollbar {
+    background: #fafafa;
+}
+
+.dg.main::-webkit-scrollbar-thumb {
+    background: #bbb;
+}
+ 
+.dg li:not(.folder) {
+    background: #fafafa;
+    border-bottom: 1px solid #ddd;
+}
+ 
+.dg li.save-row .button {
+    text-shadow: none !important;
+}
+
+*/
+
+    background: #e8e8e8 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+}
+/*
+.dg .cr.function:hover,.dg .cr.boolean:hover {
+    background: #fff;
+}
+ 
+.dg .c input[type=text] {
+    background: #e9e9e9;
+}
+ 
+.dg .c input[type=text]:hover {
+    background: #eee;
+}
+ 
+.dg .c input[type=text]:focus {
+    background: #eee;
+    color: #555;
+}
+ 
+.dg .c .slider {
+    background: #e9e9e9;
+}
+
+.dg .c .slider:hover {
+    background: #eee;
+}
+
+*/

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>remote2020 - examiner-adaptometer</title>
+        <link rel="stylesheet" href="./da-theme.css">
+    </head>
+    <body style="background-color:#000000" onload="load_code()">  
+
+				<input type="text" id="receiver-id" title="Enter ID" size="8">
+				<button id="connect-button" onclick="do_connect()" style="border-radius:4px;">
+					<object type="image/svg+xml" onclick="do_connect()" data="img/link.svg"> </object>
+					<object type="image/svg+xml" onclick="do_connect()" data="img/bs_person_square.svg"></object>
+					Connect
+				</button>
+
+                <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
+                <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
+                <br>
+				<br>
+        <div id="gui_holder"></div>
+        <button id="measure-button" onclick=";" style="border-radius:4px;">Record!</button>
+
+
+        <label id="lbl_elapsed">Time elapsed: </label><label id="time_elapsed">13:12:03</label>
+		<canvas id="canvas">Canvas</canvas>
+
+		<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="loglevel.min.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="staircase.js"></script>
+        <script src="stims.js"></script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="grating.js"></script>
+        <script src="graph.js"></script>
+        <script src="grating_shader.js"></script>
+        <script type="text/javascript" src="dat.gui.min.js"></script>
+
+        <script type="text/javascript">
+
+            function load_code() {
+                peer_init();
+
+                canvas.addEventListener('click', function(event) {
+                    doit();
+                }, false);
+
+                // Testing/initial config: simulate a phantom display connection 
+                //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
+                //pair_screen_info('FS 408 712'); // DRC's Samsung S8
+                //pair_screen_info('FS 980 1708'); // DRC's Samsung S8 in Desktop Mode
+            };
+
+            var params = {
+                intensityCoarse:0.9,
+                intensityFine:0.004,
+                radius:0.05,
+                green:false,
+                peripheral:false,
+            }
+            var gui = new dat.gui.GUI({autoPlace: false, width:"400px"});
+
+			function params_update() {
+				thePeer.send("G "+params.radius + " " + params.intensityCoarse+" "+params.intensityFine);
+            }
+
+			function doit() {
+				openFullscreen();
+
+				//const cubeFolder = gui.params("contrast")
+				gui.add(params, "intensityCoarse", 0, 1.0, 0.01).onFinishChange(params_update);
+				gui.add(params, "intensityFine", 0, 0.004, 0.004/50.0).onFinishChange(params_update);
+				gui.add(params, "radius", 0.01, 0.1, 0.01).onFinishChange(params_update);
+				gui.add(params, "green").onFinishChange(params_update);
+				gui.add(params, "peripheral").onFinishChange(params_update);
+
+				var parent=document.getElementById("gui_holder");
+				// For some reason, css wasn't changing these attributes, so do it manually here:
+				parent.appendChild(gui.domElement);
+				el=document.getElementsByClassName('cr');
+				/*for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					el[i].style.height="40px";
+                    */
+
+				el=document.getElementsByClassName('slider-fg');
+				for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					el[i].style.color='black';
+					el[i].style.backgroundColor='red';
+					el[i].style.height='40px';
+				}
+
+				el=document.getElementsByClassName('close-button');
+				el[0].style.backgroundColor='black';
+				el[0].style.color='black';
+
+                // Star the clock ticking!
+                var_timer=setTimeout(updateClock, 5000);
+                d=new Date();
+                gTimeStart=d.getTime();
+			}
+
+            var count_animation=0;
+            var d;
+            var gTimeStart;
+
+            const UPDATE_RATE=5000; // every 5 sec
+            var var_timer; // need?
+            function updateClock() {
+                d=new Date();
+                var timeElapsed=d.getTime()-gTimeStart;
+                sec=(Math.trunc(timeElapsed/1000)%60);
+                s=Math.trunc(timeElapsed / (1000*60)) + ':' + (sec<10?'0':'') + sec;
+                set_html("time_elapsed",s);
+                var_timer=setTimeout(updateClock, 5000);
+            }
+
+            function peer_init() {
+                var handler={
+                    id: function(s) {set_html('my-id','ID:'+s);},
+                    lost: function(s) {set_html('status',s);},
+                    error: function(s) {set_html('status',s);},
+                    connect: function(s) {set_html('status','Paired:'+ s);},
+                    peer_info: function(s) {pair_screen_info(s);},
+                    unpair: function (s) {set_html ('status',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
+                thePeer=new MyPeer(handler);
+                thePeer.init();
+            };
+
+            function pair_screen_info(s) {
+                var list_dims=s.split(' ');
+                var width=parseInt(list_dims[1]); // first is "0" FS specifier code
+                var height=parseInt(list_dims[2]);
+
+                // Make our 'shadow' canvas match theirs
+                /* canv.width=width;
+                canv.height=height;
+                reportSize(); // adjust our drawing stuff
+
+                set_html("dim_place",width+"x"+height);
+				*/
+            }
+
+            function do_connect() {
+                thePeer.join(get_value('receiver-id'));
+				doit();
+            };
+
+            var thePeer = null; 
+
+            function reportSize() {
+                wid=canv.width;
+                height=canv.height;
+                xc=wid/2;
+                yc=height/2;
+            }
+
+            const nrows_mocs_table=15;
+            function build_table() {
+                var table=document.getElementById('table_graph');
+                var td_graph=document.getElementById('td_graph');
+                td_graph.rowSpan=nrows_mocs_table+2;
+
+                for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+
+                    tr = table.insertRow(-1);
+                    var td = document.createElement('td');
+                    td.width = "20px";
+                    td = tr.insertCell(0);
+                    var button = document.createElement('input');
+                    button.setAttribute('type', 'button');
+                    button.setAttribute('value', nrows_mocs_table-nrow);
+                    button.setAttribute('onclick', 'table_button_click('+(nrows_mocs_table-nrow)+')');
+                    td.appendChild(button);
+
+                    td = tr.insertCell(0);
+                    td.id='count_'+(nrows_mocs_table-nrow);
+                    td.width = "20px";
+                    td.innerHTML="0/0";
+                }
+                tr = table.insertRow(-1); // add a blank row at end to better line up with graph
+                td = tr.insertCell(0);
+                var button = document.createElement('input');
+                button.setAttribute('type', 'button');
+                button.setAttribute('value', nrows_mocs_table-nrow);
+                button.setAttribute('onclick', 'table_button_click(0)');
+                td.appendChild(button);
+                td = tr.insertCell(0);
+                td.id='count_0';
+                td.width = "20px";
+                td.innerHTML="0/0";
+
+                if (false) { // If on bottom, need this (horizontal-arranged stimuli)
+                    tr = table.insertRow(-1);
+                    for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+                        var td = document.createElement('td');
+                        td = tr.insertCell(-1);
+					    td.id='count_'+nrow;
+					    td.innerHTML="0";
+                    }
+                }
+            }
+
+            function send_trial() {
+                // get commands
+                var commands=document.getElementById("commands").value;
+                // Replace the meta parameters (since 1 string);
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params );
+                var msg="T "+commands;
+                if (thePeer && thePeer.conn && thePeer.conn.open) {
+			        thePeer.send(msg);
+                }
+            }
+
+                // fullscreen hints:
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; 
+                //document.body.style.overflow = 'hidden'; 
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.documentElement;
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+        var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
+
+        function do_stair_restart() {
+            set_checked('chkStair',true);
+            set_checked('chkMOCS',false);
+            set_html("lblStair","Staircase 0 0");
+            nafc=get_checked('chkNafc')?4:2;
+            graph_clear();
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theStaircase.restart(parseInt(metap.stair_start),nafc);
+            theStaircase.next(); // show first trial
+        }
+
+        function do_mocs_restart() {
+            set_checked('chkStair',false);
+            set_checked('chkMOCS',true);
+            set_html("lblStair","MOCS X");
+            nafc=get_checked('chkNafc')?4:2;
+            graph_clear();
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
+            theMOCS.next(); // show first trial
+        }
+        function table_button_click(which) {
+            var thisid='count_'+which;
+            nafc=get_checked('chkNafc')?4:2;
+            is_YN=get_checked('chkYN')?false:true;
+
+            log.info(thisid);
+            update_manual_table_outof(which);
+            manual_trial(which,nafc,is_YN);
+        }
+
+        // Keyboard stuff:
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+
+        function key_handler(event) {
+            ;
+        }
+
+        var prev_manual_trial=null; // TODO: FIXME (put into OO staircase class)
+
+        function do_trash() {
+            graph_clear();
+
+            for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
+                var count_id='count_'+nrow;
+                set_html(count_id,"0/0");
+            }
+            // clear "manual"
+            prev_manual_trial=null;
+            num_manual_trial=0;
+        }
+
+        function do_kb(keycode) {
+            var ori_resp;
+            switch (keycode) {
+                case 37: //L
+                    ori_resp=180; break;
+                case 38: //U
+                    ori_resp=90; break;
+                case 39: //R
+                    ori_resp=0; break;
+                case 40: //D
+                    ori_resp=270; break;
+                default:
+                    return; // do nothing if unrecognized key
+                }
+
+            if (get_checked("chkStair")) {
+                var correct=(ori_resp==trial_params['orientation']);
+                theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+            } else {
+                if (get_checked("chkMOCS")) {
+                    var correct=(ori_resp==trial_params['orientation']);
+                    theMOCS.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                    // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+                } else {
+                    if (prev_manual_trial) {
+                        // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
+                        is_YN=get_checked('chkYN')?false:true;
+                        process_manual(ori_resp, is_YN);
+                    }
+                }
+            }
+        };
+</script>
+    </body>
+</html>
+

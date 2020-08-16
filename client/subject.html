@@ -9,9 +9,6 @@
     <body style="background-color:#808080" onload="load_code()">  
 
 		<div class="split left">
-                <button type="button" id="get_id" onclick="get_id()">Get ID</button>
-                <button type="button" id="begin" onclick="begin()">Begin!</button>
-
                 <div id="receiver-id" style="font-weight: bold;" title="id">ID:</div>
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
 
@@ -62,14 +59,6 @@
         <script type="text/javascript">
             var thePeer=null;
 
-            function get_id() {
-                mypeer_init();
-            }
-
-            function begin() {
-                openFullscreen();
-            }
-
             function load_code() {
                 peer_init();
 
@@ -99,26 +88,44 @@
                 ctx.fillStyle = 'black';
                 ctx.font = "30px Arial";
                 ctx.fillText(dims, 10, 100);
-                ctx.fillText("Please wait", 10, 150);
+                //ctx.fillText("Please wait", 10, 150);
+
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // prevent scroll bars
+
+                canvas.addEventListener('click', function(event) {
+                    openFullscreen();
+                }, false);
             }
 
-            // Like demo2
             function setup_webgl() {
-                // Clone the canvas to unhook the canvas
-            	//canv = document.getElementById("canvas");
-                var newCvs = canvas.cloneNode(false);
-                canvas.parentNode.replaceChild(newCvs, canvas);
-                canvas = newCvs;
+
+                if (!(ctx==null)) {
+                    // Clone the canvas to unhook the canvas
+            	    //canv = document.getElementById("canvas");
+                    var newCvs = canvas.cloneNode(false);
+                    canvas.parentNode.replaceChild(newCvs, canvas);
+                    canvas = newCvs;
+                    ctx=null; // delte the 2d context used only here
+                }
 
                 setupWebGL();
+
+                // Need to re-do this I guess?
+                canvas.addEventListener('click', function(event) {
+                    openFullscreen();
+                }, false);
                 //showShaderGrating(90,0.01,3.14*45/180);
             }
-            var globContrast;
+            var globContrastCoarse;
+            var globContrastFine;
+            var globRadius;
             var gaborCancel=false;
             function gabor(commands) {
                 arr=commands.split(' ');
-                globContrast= parseFloat(arr[2]);
-                //showShaderGrating(parseFloat(arr[1]), globContrast, 3.14/180*parseFloat(arr[3]), 0 );
+                globRadius= parseFloat(arr[1]);
+                globContrastCoarse= parseFloat(arr[2]);
+                globContrastFine = parseFloat(arr[3]);
                 count_animation=0;
                 gaborCancel=false;
                 globalAnimationID = requestAnimationFrame(animateDA);
@@ -165,6 +172,8 @@
                     connect: function(s) {
                         ctx.fillStyle='green';
                         ctx.fillText('Partner: '+s, 170, 50);
+                        //ctx.fillText('Partner: '+s, 170, 50);
+                        ctx.fillText("Please click to go fullscreen", 10, 150);
                         setTimeout( function() {thePeer.send("FS "+canvas.width+" "+canvas.height);}, 500 );
                     },
                     peer_info: function(s) {},          //shouldn't ever receive this
@@ -232,13 +241,9 @@
                 document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
 
                 //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; // <-- pull the page back up to the top
-                //document.body.style.overflow = 'hidden'; // <-- relevant addition
             }
 
             // Global variables
-            //var c = document.getElementById("canvas");
-            //var canv = document.getElementById("canvas");
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
             var wid=768
@@ -248,11 +253,6 @@
             var conn = null;
 
             function do_trial() {
-                //var chkFullScr = document.getElementById("chkFullScr");
-                //if (chkFullScr.checked) {
-                    //openFullscreen();
-                //}
-
                 // parse commands
                 commands=document.getElementById("commands").value;
 
@@ -289,16 +289,14 @@
                 "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
             }
-
-            var count_animation=0;
             function animateDA(now) {
                 count_animation += 1;
                 if (gaborCancel | count_animation>600*5) {
                     cancelAnimationFrame(globalAnimationID);
                     count_animation=0;
                 } else {
-                    if ( (count_animation%(60))<(60) ) { // Every Xsec on for Yms
-                        showShaderGrating(0,globContrast,0,count_animation/1000.0);
+                    if ( (count_animation%(60*1.000))<(60*0.250) ) { // Every Xsec on for Yms
+                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,count_animation/1000.0);
                     } else {
                         clearGrating();
                     }
@@ -339,6 +337,54 @@
             }
 
         };
+
+		function openFullscreen() {
+
+            setup_webgl();
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+            var elem = document.getElementById("canvas");
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+
+            elem.width = document.body.clientWidth; //document.width is obsolete
+            elem.height = document.body.clientHeight; //document.height is obsolete
+
+            setup_webgl();
+
+            //s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
 
         // Keyboard listener
         document.addEventListener('keydown', function(event) {key_handler(event);} );
