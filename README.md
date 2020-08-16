@@ -29,9 +29,6 @@ I believe that our concerns are quite different.
 - Recruitment, saving data, etc., is not an issue. For us that can be done in a peer-to-peer, more ad-hoc fashion. In fact, it may be advantageous (for IRB approval, etc.) to NOT be hosted on a server.
 - We wanted very precise control of the stimuli, which wasn't obvious in some of the existing solutions. I'm not a fan (and don't always see the benefit) of the GUI tools. They seem great for 80% of what one might want to do, then the last 20% becomes painful or impossible. Thus I didn't mind a fully javascript solution, especially since the tools built into browsers are really impressive. But then again, I love VI too...
 
-Them: <img src="doc/clouds_openloop.png?raw=true" height="25%" width="25%"></img>
-
-Us: <img src="doc/pairs.png?raw=true" height="25%" width="25%"></img>
 
 | Them  | Us |
 | ------------- | ------------- |
