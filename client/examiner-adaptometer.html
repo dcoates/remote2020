@@ -16,28 +16,74 @@
 					Connect
 				</button>
 
-                <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
-                <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
-                <br> <br>
+                <div id="my-id" style="font-weight: bold; display:none;" title="my-id">ID:</div>
+                <div id="status" style="font-weight: bold; display:none;" title="status">Status:</div>
 
-        <div id="gui_holder"></div>
-        <button id="measure-button" onclick="record1();" style="border-radius:4px;">
-					<object type="image/svg+xml" onclick="record1();" data="img/bs_pencil.svg"> </object>
-        Record!</button>
+				<br><br>
 
-        <label id="lbl_text_value">Value: </label><label id="lbl_value">0.1</label>
-        <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.1</label>
-		<br>
-        <label id="lbl_elapsed">Time elapsed: </label><label id="time_elapsed">0:00</label>
+<div class="switch-toggle switch-3 switch-candy">
+  <input id="on" name="state-d" type="radio" checked="" />
+  <label for="on" onclick="" style="color:red;">Red</label>
+
+  <input id="na" name="state-d" type="radio" checked="checked" />
+  <label for="na" class="disabled" onclick="" style="color:white;">White</label>
+
+  <input id="off" name="state-d" type="radio" />
+  <label for="off" onclick="" style="color:green;">Green</label>
+</div>
+
+	<div class="switch-field">
+		<input type="radio" id="radio-fovea" name="switch-fovea" value="Fovea" checked/>
+		<label for="radio-fovea">Fovea</label>
+		<input type="radio" id="radio-periphery" name="switch-fovea" value="Periphery" />
+		<label for="radio-periphery">Periph.</label>
+
+		<label>&#124;</label>
+
+		<input type="radio" id="radio-small" name="switch-size" value="Small" checked/>
+		<label for="radio-small">Small</label>
+		<input type="radio" id="radio-large" name="switch-size" value="Large" />
+		<label for="radio-large">Large</label>
+	</div>
+
+<br>
+        <label id="lbl_elapsed">Elapsed Time: </label><label id="time_elapsed">0:00</label>
 
 	<br><br>
-	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">Big up</button>
-	<button id="fine_up" onclick="do_action(37);" style="border-radius:4px;">Fine up</button>
-	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">Fine down</button>
-	<button id="coarse_down" onclick="do_action(40);" style="border-radius:4px;">Big down</button>
+	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+          <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+        </svg>
+    </button>
+	<button id="fine_up" onclick="do_action(37);"style="border-radius:4px;">
+		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+		</svg>
+    </button>
+	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">
+		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		</svg>
+    </button>
+	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
+		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		  <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		</svg>
+    </button>
 
-		<canvas id="canvas">Canvas</canvas>
+        <button id="measure-button" onclick="record1();" style="border-radius:4px;">
+			<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+			  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+			</svg>
+        Record!</button>
+
         <div id="my_dataviz" class="graph"></div>
+
+        <label id="lbl_text_value">Value: </label><label id="lbl_value">0.000000</label><br>
+        <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.000000</label>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -46,7 +92,6 @@
         <script src="staircase.js"></script>
         <script src="stims.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
-        <script src="grating.js"></script>
         <script src="graph2.js"></script>
         <script src="grating_shader.js"></script>
         <script type="text/javascript" src="dat.gui.min.js"></script>
@@ -58,9 +103,11 @@
             function load_code() {
                 peer_init();
 
-                canvas.addEventListener('click', function(event) {
+/*
+                document.addEventListener('click', function(event) {
                     doit();
                 }, false);
+*/
 
                 // Testing/initial config: simulate a phantom display connection 
                 //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
@@ -107,12 +154,11 @@
 					el[i].style.height='40px';
 				}
 
-				*/
-
 				el=document.getElementsByClassName('close-button');
 				el[0].style.backgroundColor='black';
 				el[0].style.color='black';
 				el[0].style.display='none';
+				*/
 
                 // Star the clock ticking!
                 var_timer=setTimeout(updateClock, 5000);
@@ -359,8 +405,8 @@
         }
 		function do_update() {
 			update_line(params.intensityCoarse);
-			set_html('lbl_value',params.intensityCoarse);
-			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4) )
+			set_html('lbl_value',params.intensityCoarse.toFixed(6));
+			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
 			thePeer.send("G "+ "0.01 " + params.intensityCoarse + " 0.0")
 		}
         function do_kb(keycode) {
