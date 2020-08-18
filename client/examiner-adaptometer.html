@@ -22,14 +22,14 @@
 				<br><br>
 
 <div class="switch-toggle switch-3 switch-candy">
-  <input id="on" name="state-d" type="radio" checked="" />
-  <label for="on" onclick="" style="color:red;">Red</label>
+  <input id="on" name="state-d" type="radio" checked="checked" />
+  <label for="on" onclick="set_color(0);" style="color:white;">White</label>
 
-  <input id="na" name="state-d" type="radio" checked="checked" />
-  <label for="na" class="disabled" onclick="" style="color:white;">White</label>
+  <input id="na" name="state-d" type="radio" />
+  <label for="na" class="disabled" onclick="set_color(1);" style="color:green;">Green</label>
 
   <input id="off" name="state-d" type="radio" />
-  <label for="off" onclick="" style="color:green;">Green</label>
+  <label for="off" onclick="set_color(2);" style="color:red;">Red</label>
 </div>
 
 	<div class="switch-field">
@@ -40,9 +40,9 @@
 
 		<label>&#124;</label>
 
-		<input type="radio" id="radio-small" name="switch-size" value="Small" checked/>
+		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" checked/>
 		<label for="radio-small">Small</label>
-		<input type="radio" id="radio-large" name="switch-size" value="Large" />
+		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" />
 		<label for="radio-large">Large</label>
 	</div>
 
@@ -50,15 +50,10 @@
         <label id="lbl_elapsed">Elapsed Time: </label><label id="time_elapsed">0:00</label>
 
 	<br><br>
-	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">
-        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
-          <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
-        </svg>
-    </button>
-	<button id="fine_up" onclick="do_action(37);"style="border-radius:4px;">
-		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-		  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
+		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		  <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
 		</svg>
     </button>
 	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">
@@ -66,12 +61,18 @@
 		  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
 		</svg>
     </button>
-	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
-		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-		  <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-		  <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+	<button id="fine_up" onclick="do_action(37);"style="border-radius:4px;">
+		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
 		</svg>
     </button>
+	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+          <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+        </svg>
+    </button>
+
 
         <button id="measure-button" onclick="record1();" style="border-radius:4px;">
 			<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +190,7 @@
 				ypos=Math.log10(params.intensityCoarse)+2.0;
 
                 // If max is 30min (30*60), /20 goes from 0-90
-                var trial1={'is_correct': false, 'x': timeSecElapsed/20.0, 'y':ypos };
+                var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
                 update_graph(trial1);
             }
 
@@ -403,11 +404,26 @@
         function key_handler(event) {
             do_kb(event.keyCode);
         }
+
+        var gSize=0;
+        var gColor=0; // Default
+        function set_size(which){
+            gSize=which;
+            do_update();
+        }
+        function set_color(which){
+            gColor=which;
+            do_update();
+        }
+
 		function do_update() {
 			update_line(params.intensityCoarse);
 			set_html('lbl_value',params.intensityCoarse.toFixed(6));
 			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
-			thePeer.send("G "+ "0.01 " + params.intensityCoarse + " 0.0")
+            stim_size=(gSize==0)?0.01:0.25;
+            stim_color=gColor;
+            
+			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color)
 		}
         function do_kb(keycode) {
             switch (keycode) {

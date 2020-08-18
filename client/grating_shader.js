@@ -29,6 +29,7 @@ uniform float sf_div;
 uniform float sigma;
 uniform float amp;
 uniform float theta;
+uniform vec3 color;
 uniform float rando;
 
 /*
@@ -77,7 +78,7 @@ void main() {
     //
   mag=pow(mag,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
 
-  gl_FragColor = vec4(0.0,mag,0.0, 1.0 );
+  gl_FragColor = vec4(mag*color[0],mag*color[1],mag*color[2], 1.0 );
 }
 `;
 
@@ -129,17 +130,36 @@ function setupWebGL (evt) {
   gl.useProgram(program);
 }
 
-function showShaderGrating(sf,sigma,amp,theta,rando) {
+function showShaderGrating(sf,sigma,amp,theta,color,rando) {
   var locationOfSf = gl.getUniformLocation(program, "sf_div");
   var locationOfSigma = gl.getUniformLocation(program, "sigma");
   var locationOfAmp = gl.getUniformLocation(program, "amp");
   var locationOfTheta = gl.getUniformLocation(program, "theta");
+  var locationOfColor = gl.getUniformLocation(program, "color");
   var locationOfRando = gl.getUniformLocation(program, "rando");
 
   gl.uniform1f(locationOfSf, sf);
   gl.uniform1f(locationOfAmp, amp);
   gl.uniform1f(locationOfSigma, sigma);
   gl.uniform1f(locationOfTheta, theta);
+
+  var r, g, b;
+  switch(color) {
+    case 0: // W
+      r=1.0;g=1.0;b=1.0;
+      break;
+    case 1: // G
+      r=0.0;g=1.00;b=0.0;
+      break;
+    case 2: // R
+      r=1.0;g=0.00;b=0.0;
+      break;
+    default: // white. whatever
+      r=1.0,g=1.0,b=1.0;
+      break;
+  }
+  gl.uniform3f(locationOfColor,r,g,b);
+
   gl.uniform1f(locationOfRando, rando);
 
   gl.clearColor(background_color,background_color,background_color, 1.0);

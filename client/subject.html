@@ -15,7 +15,7 @@
                 <br><br>
 
             <div id="text">
-                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+                <button type="button" id="demo1" onclick=";">Tumbling-E Acuity</button>
 
                 <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
                 <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
@@ -46,10 +46,18 @@
             </div>
 		</div>
 
+        <!-- <div id="fullscreen_parent" class="fullscreen_parent">
+        -->
+            <!-- Specifying height&width here just to aspect ratio stays 1:1, not sure if this is correct. Was having problems.
+            override with style.height and weight anyway. -->
         <canvas id="canvas">Canvas</canvas>
-        <p>Something</p>
+        <!-- <div id="fullscreen_parent" class="fullscreen_parent">
+        <canvas id="canvas_layerFixation"></canvas>
+        </div>
+        -->
 
         <script src="loglevel.min.js"></script>
+        <script src="NoSleep.min.js"></script>
         <script src="stims.js"></script>
         <script src="drc-misc.js"></script>
         <script src="peerjs.js"></script>
@@ -58,10 +66,12 @@
 
         <script type="text/javascript">
             var thePeer=null;
+            var noSleep=null;
 
             function load_code() {
-                peer_init();
+                noSleep=new NoSleep();
 
+                peer_init();
                 // Get the canvas element form the page
                 canvas = document.getElementById("canvas");
                  
@@ -93,7 +103,7 @@
                 document.body.scrollTop = 0; // <-- pull the page back up to the top
                 document.body.style.overflow = 'hidden'; // prevent scroll bars
 
-                canvas.addEventListener('click', function(event) {
+                document.addEventListener('click', function(event) {
                     openFullscreen();
                 }, false);
             }
@@ -112,9 +122,9 @@
                 setupWebGL();
 
                 // Need to re-do this I guess?
-                canvas.addEventListener('click', function(event) {
-                    openFullscreen();
-                }, false);
+                //document.addEventListener('click', function(event) {
+                    //openFullscreen();
+                //}, false);
                 //showShaderGrating(90,0.01,3.14*45/180);
             }
             var globContrastCoarse;
@@ -127,6 +137,7 @@
                 globRadius= parseFloat(arr[1]);
                 globContrastCoarse= parseFloat(arr[2]);
                 globContrastFine = parseFloat(arr[3]);
+                globColor = parseFloat(arr[4]);
                 if (globalAnimationID==null) {
                     // Start it if not already going
                     count_animation=0;
@@ -288,20 +299,17 @@
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
-            function demo1() {
-                document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
-            }
+            const rate_hz=60; // Hz
+            const duty_cycle=0.25;
             function animateDA(now) {
                 count_animation += 1;
-                if (gaborCancel | count_animation>600*5) {
+                if (gaborCancel) { // not sure if this is ever needed 
                     cancelAnimationFrame(globalAnimationID);
                     count_animation=0;
                     globalAnimationID = null;
                 } else {
-                    if ( (count_animation%(60*1.000))<(60*0.250) ) { // Every Xsec on for Yms
-                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,count_animation/1000.0);
+                    if ( (count_animation%rate_hz)<(rate_hz*duty_cycle) ) { // Every Xsec on for Yms
+                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,count_animation/1000.0);
                     } else {
                         clearGrating();
                     }
@@ -343,7 +351,11 @@
 
         };
 
+        var cnvFixationLayer;
+        var ctxFixationLayer;
 		function openFullscreen() {
+
+            noSleep.enable();
 
             setup_webgl();
 
@@ -362,12 +374,34 @@
                 elem.msRequestFullscreen();
             }
 
-            elem.width = document.body.clientWidth; //document.width is obsolete
-            elem.height = document.body.clientHeight; //document.height is obsolete
+            elem.width = canvas.width; //document.body.clientWidth was weird... ?
+            elem.height = canvas.height; //document.body.clientHeight was weird.
 
-            setup_webgl();
+                /* 
+            const fixation_size=100;
+            cnvFixationLayer=document.getElementById('canvas_layerFixation')
+            cnvFixationLayer.style.width="100px";
+            cnvFixationLayer.style.height="200px";
+            cnvFixationLayer.style.left=(elem.width/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+            cnvFixationLayer.style.top="40px";
+
+            ctxFixationLayer=cnvFixationLayer.getContext('2d');
+            ctxFixationLayer.fillStyle = '#f00000';
+            ctxFixationLayer.fillRect(0,0,fixation_size,fixation_size); //fixation_size,fixation_size);
+*/
+
+            // Failed circle attempt:
+            //var cx=fixation_size/2.0;
+            //var cy=fixation_size/2.0;
+            //var rad=fixation_size/2.0;
+            //ctxFixationLayer.arc(cx,cy,rad,0,2*Math.PI,false);
+            //ctxFixationLayer.fill();
+
+            console.log(elem.width/2,elem.height/2);
 
             //s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+
+            setup_webgl();
 		};
 
 		function closeFullscreen() {
