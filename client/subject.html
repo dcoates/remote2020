@@ -363,19 +363,27 @@
                 return;
             }
 
+            var bDidFullscreen=true;
             var elem = document.getElementById("canvas");
             if (elem.requestFullscreen) {
-                elem.requestFullscreen();
+                elem.requestFullscreen(); // TODO: check return values?
             } else if (elem.mozRequestFullScreen) { /* Firefox */
                 elem.mozRequestFullScreen();
             } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
                 elem.webkitRequestFullscreen();
             } else if (elem.msRequestFullscreen) { /* IE/Edge */
                 elem.msRequestFullscreen();
+            } else {
+                bDidFullscreen=false;
             }
 
-            elem.width = canvas.width; //document.body.clientWidth was weird... ?
-            elem.height = canvas.height; //document.body.clientHeight was weird.
+            if (bDidFullscreen) {
+                elem.width = canvas.width; //document.body.clientWidth was weird... ?
+                elem.height = canvas.height; //document.body.clientHeight was weird.
+            } else {
+                elem.width = document.body.clientWidth;
+                elem.height = document.body.clientHeight;
+            }
 
                 /* 
             const fixation_size=100;

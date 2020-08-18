@@ -9,16 +9,13 @@
     <body style="background-color:#808080" onload="load_code()">  
 
 		<div class="split left">
-                <button type="button" id="get_id" onclick="get_id()">Get ID</button>
-                <button type="button" id="begin" onclick="begin()">Begin!</button>
-
                 <div id="receiver-id" style="font-weight: bold;" title="id">ID:</div>
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
 
                 <br><br>
 
             <div id="text">
-                <button type="button" id="demo1" onclick="demo1()">Tumbling-E Acuity</button>
+                <button type="button" id="demo1" onclick=";">Tumbling-E Acuity</button>
 
                 <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
                 <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
@@ -49,30 +46,32 @@
             </div>
 		</div>
 
+        <!-- <div id="fullscreen_parent" class="fullscreen_parent">
+        -->
+            <!-- Specifying height&width here just to aspect ratio stays 1:1, not sure if this is correct. Was having problems.
+            override with style.height and weight anyway. -->
         <canvas id="canvas">Canvas</canvas>
-        <p>Something</p>
+        <!-- <div id="fullscreen_parent" class="fullscreen_parent">
+        <canvas id="canvas_layerFixation"></canvas>
+        </div>
+        -->
 
         <script src="loglevel.min.js"></script>
+        <script src="NoSleep.min.js"></script>
         <script src="stims.js"></script>
         <script src="drc-misc.js"></script>
+        <script src="peerjs.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
-        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script src="grating_shader.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             var thePeer=null;
-
-            function get_id() {
-                mypeer_init();
-            }
-
-            function begin() {
-                openFullscreen();
-            }
+            var noSleep=null;
 
             function load_code() {
-                peer_init();
+                noSleep=new NoSleep();
 
+                peer_init();
                 // Get the canvas element form the page
                 canvas = document.getElementById("canvas");
                  
@@ -99,32 +98,52 @@
                 ctx.fillStyle = 'black';
                 ctx.font = "30px Arial";
                 ctx.fillText(dims, 10, 100);
-                ctx.fillText("Please wait", 10, 150);
+                //ctx.fillText("Please wait", 10, 150);
 
-                canvas.addEventListener('click', function(event) {
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // prevent scroll bars
+
+                document.addEventListener('click', function(event) {
                     openFullscreen();
                 }, false);
             }
 
             function setup_webgl() {
-                // Clone the canvas to unhook the canvas
-            	//canv = document.getElementById("canvas");
-                var newCvs = canvas.cloneNode(false);
-                canvas.parentNode.replaceChild(newCvs, canvas);
-                canvas = newCvs;
+
+                if (!(ctx==null)) {
+                    // Clone the canvas to unhook the canvas
+            	    //canv = document.getElementById("canvas");
+                    var newCvs = canvas.cloneNode(false);
+                    canvas.parentNode.replaceChild(newCvs, canvas);
+                    canvas = newCvs;
+                    ctx=null; // delte the 2d context used only here
+                }
 
                 setupWebGL();
+
+                // Need to re-do this I guess?
+                //document.addEventListener('click', function(event) {
+                    //openFullscreen();
+                //}, false);
                 //showShaderGrating(90,0.01,3.14*45/180);
             }
-            var globContrast;
+            var globContrastCoarse;
+            var globContrastFine;
+            var globRadius;
             var gaborCancel=false;
+            var count_animation=0;
             function gabor(commands) {
                 arr=commands.split(' ');
-                globContrast= parseFloat(arr[2]);
-                //showShaderGrating(parseFloat(arr[1]), globContrast, 3.14/180*parseFloat(arr[3]), 0 );
-                count_animation=0;
-                gaborCancel=false;
-                globalAnimationID = requestAnimationFrame(animateDA);
+                globRadius= parseFloat(arr[1]);
+                globContrastCoarse= parseFloat(arr[2]);
+                globContrastFine = parseFloat(arr[3]);
+                globColor = parseFloat(arr[4]);
+                if (globalAnimationID==null) {
+                    // Start it if not already going
+                    count_animation=0;
+                    gaborCancel=false;
+                    globalAnimationID = requestAnimationFrame(animateDA);
+                } // if already going, param changes will be detected and used
             }
 
             // How we respond to peer commands
@@ -155,7 +174,7 @@
                     default:
                         log.log('UNREC: ' +value);
                         break;
-                    }
+            }
             };
             function peer_init() {
                 var handler={
@@ -168,6 +187,8 @@
                     connect: function(s) {
                         ctx.fillStyle='green';
                         ctx.fillText('Partner: '+s, 170, 50);
+                        //ctx.fillText('Partner: '+s, 170, 50);
+                        ctx.fillText("Please click to go fullscreen", 10, 150);
                         setTimeout( function() {thePeer.send("FS "+canvas.width+" "+canvas.height);}, 500 );
                     },
                     peer_info: function(s) {},          //shouldn't ever receive this
@@ -235,8 +256,6 @@
                 document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
 
                 //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; // <-- pull the page back up to the top
-                //document.body.style.overflow = 'hidden'; // <-- relevant addition
             }
 
             // Global variables
@@ -249,11 +268,6 @@
             var conn = null;
 
             function do_trial() {
-                //var chkFullScr = document.getElementById("chkFullScr");
-                //if (chkFullScr.checked) {
-                    //openFullscreen();
-                //}
-
                 // parse commands
                 commands=document.getElementById("commands").value;
 
@@ -285,21 +299,17 @@
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
-            function demo1() {
-                document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(0,0,10,2,'green');\nflip(30);\n\nclear('#ffffff');\nbeep(1,880,30);\nfixation(0,0,10,2,'black');\nflip(1);\n\nfixation(0,0,10,2,'black');\ndraw_letter('E',${orientation},0,120,${size},'black');\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,10,2,'black');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: getRandomInt(3)*90,\n\tsize: 8\n}"
-            }
-
-            var count_animation=0;
+            const rate_hz=60; // Hz
+            const duty_cycle=0.25;
             function animateDA(now) {
                 count_animation += 1;
-                if (gaborCancel | count_animation>600*5) {
+                if (gaborCancel) { // not sure if this is ever needed 
                     cancelAnimationFrame(globalAnimationID);
                     count_animation=0;
+                    globalAnimationID = null;
                 } else {
-                    if ( (count_animation%(60))<(60) ) { // Every Xsec on for Yms
-                        showShaderGrating(0,globContrast,0,count_animation/1000.0);
+                    if ( (count_animation%rate_hz)<(rate_hz*duty_cycle) ) { // Every Xsec on for Yms
+                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,count_animation/1000.0);
                     } else {
                         clearGrating();
                     }
@@ -341,27 +351,66 @@
 
         };
 
+        var cnvFixationLayer;
+        var ctxFixationLayer;
 		function openFullscreen() {
+
+            noSleep.enable();
+
+            setup_webgl();
 
             if (document.fullscreenElement) {
                 return;
             }
 
-                  var elem = document.getElementById("canvas");
-		  if (elem.requestFullscreen) {
-		    elem.requestFullscreen();
-		  } else if (elem.mozRequestFullScreen) { /* Firefox */
-		    elem.mozRequestFullScreen();
-		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-		    elem.webkitRequestFullscreen();
-		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
-		    elem.msRequestFullscreen();
-		  }
-    		elem.width = document.body.clientWidth; //document.width is obsolete
-    		elem.height = document.body.clientHeight; //document.height is obsolete
+            var bDidFullscreen=true;
+            var elem = document.getElementById("canvas");
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen(); // TODO: check return values?
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            } else {
+                bDidFullscreen=false;
+            }
 
-			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
-			//conn.send(s);
+            if (bDidFullscreen) {
+                // Test to see if better on iOS:
+                elem.width = document.body.clientWidth;
+                elem.height = document.body.clientHeight;
+            } else {
+                elem.width = document.body.clientWidth;
+                elem.height = document.body.clientHeight;
+            }
+
+                /* 
+            const fixation_size=100;
+            cnvFixationLayer=document.getElementById('canvas_layerFixation')
+            cnvFixationLayer.style.width="100px";
+            cnvFixationLayer.style.height="200px";
+            cnvFixationLayer.style.left=(elem.width/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+            cnvFixationLayer.style.top="40px";
+
+            ctxFixationLayer=cnvFixationLayer.getContext('2d');
+            ctxFixationLayer.fillStyle = '#f00000';
+            ctxFixationLayer.fillRect(0,0,fixation_size,fixation_size); //fixation_size,fixation_size);
+*/
+
+            // Failed circle attempt:
+            //var cx=fixation_size/2.0;
+            //var cy=fixation_size/2.0;
+            //var rad=fixation_size/2.0;
+            //ctxFixationLayer.arc(cx,cy,rad,0,2*Math.PI,false);
+            //ctxFixationLayer.fill();
+
+            console.log(elem.width/2,elem.height/2);
+
+            //s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+
+            setup_webgl();
 		};
 
 		function closeFullscreen() {

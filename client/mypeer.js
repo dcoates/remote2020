@@ -17,8 +17,20 @@
     this.notify.unpair('');
     receive
     */
+    var handler_log={
+        id: function(s) {log.info('ID:'+s);},
+        lost: function(s) {log.info('LOST'+s);},
+        error: function(s) {log.info('ERROR'+s);},
+        connect: function(s) {log.info('CONNECT:'+s);},
+        peer_info: function(s) {log.info("INFO:"+ s);},
+        unpair: function (s) {log.info ("UNPAIR:"+s);},
+        keyboard: function (nkey) {log.info("KEY:" +nkey);},
+        receive: function (s) {log.info("RCV:"+s)},
+    }
 
     class MyPeer {
+
+            id_requested=null;
 
             constructor(handler) {
                 this.notify=handler;
@@ -34,10 +46,9 @@
                     var self=this;
 
                     // Create own peer object with connection to shared PeerJS server
-                    this.peer = new Peer(null, { //'uh2', {
-                        host: '185.146.28.139',
+                    this.peer = new Peer(this.id_requested, { //'uh2', {
+                        //host: '185.146.28.139',
                         host: 'server.coateslab.org',
-                        //host: '192.168.12.1',
                         port: '9000',
                         path: '/myapp',
                         debug: 3,
@@ -185,6 +196,5 @@
                         log.info('Connection is closed');
                     }
                 }
-
     }
 
