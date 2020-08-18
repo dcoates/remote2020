@@ -52,7 +52,7 @@
                         port: '9000',
                         path: '/myapp',
                         debug: 3,
-                        reliable: true
+                        reliable: true,
 
                         // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
                         sdpSemantics: 'plan-b',
