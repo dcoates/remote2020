@@ -8,13 +8,12 @@
     </head>
     <body style="background-color:#808080" onload="load_code()">  
 
-		<div class="split left">
+		<div class="split left" style="display:none">
                 <div id="receiver-id" style="font-weight: bold;" title="id">ID:</div>
                 <div id="status" style="font-weight: bold;" title="status">Status:</div>
-
                 <br><br>
 
-            <div id="text">
+            <div id="text" style="display:none;">
                 <button type="button" id="demo1" onclick=";">Tumbling-E Acuity</button>
 
                 <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
@@ -30,8 +29,7 @@
                     </tr>
                 </table>
             </div>
-
-            <div class="buttons">
+            <div class="buttons" style="display:none">
                 <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
                 <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
                 <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
@@ -138,6 +136,7 @@
                 globContrastCoarse= parseFloat(arr[2]);
                 globContrastFine = parseFloat(arr[3]);
                 globColor = parseFloat(arr[4]);
+                globBackground = parseFloat(arr[5]);
                 if (globalAnimationID==null) {
                     // Start it if not already going
                     count_animation=0;
@@ -309,9 +308,9 @@
                     globalAnimationID = null;
                 } else {
                     if ( (count_animation%rate_hz)<(rate_hz*duty_cycle) ) { // Every Xsec on for Yms
-                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,count_animation/1000.0);
+                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,globBackground,count_animation/1000.0);
                     } else {
-                        clearGrating();
+                        clearGrating(globBackground);
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
@@ -355,9 +354,18 @@
         var ctxFixationLayer;
 		function openFullscreen() {
 
+            // Remember fullscreen size
+            var elem = document.getElementById("canvas");
+            var width= elem.width;
+            var height= elem.height;
+
             noSleep.enable();
 
             setup_webgl();
+
+            // Do this in case the fullscreen calls crash
+            elem.width = width;
+            elem.height = height;
 
             if (document.fullscreenElement) {
                 return;
@@ -377,14 +385,10 @@
                 bDidFullscreen=false;
             }
 
-            if (bDidFullscreen) {
-                // Test to see if better on iOS:
-                elem.width = document.body.clientWidth;
-                elem.height = document.body.clientHeight;
-            } else {
-                elem.width = document.body.clientWidth;
-                elem.height = document.body.clientHeight;
-            }
+            // Restore to fullscreen, hopefully what 2d view had
+            // Test to see if better on iOS:
+            elem.width = width;
+            elem.height = height;
 
                 /* 
             const fixation_size=100;
@@ -411,6 +415,8 @@
             //s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
 
             setup_webgl();
+
+            receive_commands("G 0.25 0.001 0 0 0.2");
 		};
 
 		function closeFullscreen() {

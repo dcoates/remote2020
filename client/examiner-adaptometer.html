@@ -16,6 +16,8 @@
 					Connect
 				</button>
 
+				<input type="text" id="background" title="Value" value="0.0" size="8">
+
                 <div id="my-id" style="font-weight: bold; display:none;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:none;" title="status">Status:</div>
 
@@ -423,7 +425,7 @@
             stim_size=(gSize==0)?0.01:0.25;
             stim_color=gColor;
             
-			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color)
+			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background'))
 		}
         function do_kb(keycode) {
             switch (keycode) {

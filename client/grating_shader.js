@@ -30,6 +30,7 @@ uniform float sigma;
 uniform float amp;
 uniform float theta;
 uniform vec3 color;
+uniform float background;
 uniform float rando;
 
 /*
@@ -42,43 +43,25 @@ float rnd(vec2 x)
 */
 
 void main() {
-  //vec2 fragmentPosition = (gl_PointCoord*3.0-1.0)/2.0-v_texCoord;
-  //vec2 fragmentPosition = gl_PointCoord-0.5;
-  vec2 fragmentPosition = v_texCoord*vec2(1.0,-1.0)*2.0 + gl_PointCoord-vec2(0.5,0.5);
-  //vec2 fragmentPosition = position2;
+  vec2 fragmentPosition = gl_PointCoord-vec2(0.5,0.5); //convert from 0..1 to -0.5..0.5
   float distance = length(fragmentPosition);
   float distanceSqrd = distance * distance;
-  //float sigma=1.00;
-  //float theta=-3.1416/9.0; 
-  //float sf_div=85.0;
 
   vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
                       sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
 
   float grating=sin(posRotate[0]*sf_div);
-  //float mag=1.0*exp(-distanceSqrd/sigma);  // Gaussian
-  //mag=ceil(0.5-distanceSqrd/(384.0*384.0));
-  float mag=ceil(sigma-distanceSqrd);
-  //mag=0.5;
-
+  //float mag=1.0*exp(-distanceSqrd/0.01);  // Gaussian
+  float mag_raw=ceil(sigma-distanceSqrd);
+  float mag=mag_raw*amp;
   float noiz;
-
-  //mag = mag/10.0 + 0.5;
-  //mag = amp;
-
-  //if ((fragmentPosition[0]+fragmentPosition[1])>sigma) { mag=0; }
-  //else {mag=0.99;}
-
-  //mag=1.0;
 
   //noiz=fract(sin(dot(fragmentPosition+vec2(rando,rando),vec2(12.9898,78.233))) * 43758.5453);
   //noiz=rnd(fragmentPosition);
-  mag=mag*amp; //mag/10.0+0.5;
-  //float mag= 0.1/distanceSqrd;
-    //
   mag=pow(mag,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
 
-  gl_FragColor = vec4(mag*color[0],mag*color[1],mag*color[2], 1.0 );
+  //gl_FragColor = vec4(0.1, mag_raw, mag_raw, 1.0 );
+  gl_FragColor = vec4(mag*color[0]+background,mag*color[1]+background,mag*color[2]+background, 1.0 );
 }
 `;
 
@@ -130,12 +113,13 @@ function setupWebGL (evt) {
   gl.useProgram(program);
 }
 
-function showShaderGrating(sf,sigma,amp,theta,color,rando) {
+function showShaderGrating(sf,sigma,amp,theta,color,background,rando) {
   var locationOfSf = gl.getUniformLocation(program, "sf_div");
   var locationOfSigma = gl.getUniformLocation(program, "sigma");
   var locationOfAmp = gl.getUniformLocation(program, "amp");
   var locationOfTheta = gl.getUniformLocation(program, "theta");
   var locationOfColor = gl.getUniformLocation(program, "color");
+  var locationOfBackground = gl.getUniformLocation(program, "background");
   var locationOfRando = gl.getUniformLocation(program, "rando");
 
   gl.uniform1f(locationOfSf, sf);
@@ -159,29 +143,32 @@ function showShaderGrating(sf,sigma,amp,theta,color,rando) {
       break;
   }
   gl.uniform3f(locationOfColor,r,g,b);
-
+  gl.uniform1f(locationOfBackground,background);
   gl.uniform1f(locationOfRando, rando);
 
-  gl.clearColor(background_color,background_color,background_color, 1.0);
+  gl.clearColor(background,background,background, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   gl.drawArrays(gl.POINTS, 0, 1);
 }
 
-function clearGrating() {
-  var bcolor2=0.0;
-  gl.clearColor(bcolor2,bcolor2,bcolor2, 1.0);
+function clearGrating(background_color) {
+  gl.clearColor(background_color,background_color,background_color, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
 var buffer;
 function initializeAttributes() {
+  gl.enable( gl.GL_BLEND );
+  //gl.blendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
+  gl.blendFunc(gl.GL_SRC_ALPHA, gl.GL_ZERO);
+  gl.blendEquation(gl.GL_FUNC_ADD);
+
   gl.enableVertexAttribArray(0);
   buffer = gl.createBuffer();  
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-0.25,-0.25, 0.25,0.25, -0.25,0.25, 0.25,-0.25]),
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0]),
-      gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0]), gl.STATIC_DRAW);
+  //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,-0.5]), gl.STATIC_DRAW);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 }
 
@@ -194,7 +181,6 @@ if (program)
   gl.deleteProgram(program);
 }
 
-const background_color=0.0;
 function getRenderingContext() {
 
   //var canvas = document.querySelector("canvas");
@@ -213,7 +199,6 @@ function getRenderingContext() {
   gl.viewport(0, 0, 
     gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-  gl.clearColor(background_color,background_color,background_color, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
   return gl;
 }
