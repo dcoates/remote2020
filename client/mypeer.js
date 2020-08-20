@@ -54,7 +54,7 @@
                         debug: 3,
                         reliable: true,
 
-                        iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }],
+                        //iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }],
 
                         // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
                         sdpSemantics: 'plan-b',
