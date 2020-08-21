@@ -50,7 +50,6 @@
 		</div>
 
         <canvas id="canvas">Canvas</canvas>
-        <p>Something</p>
 
         <script src="loglevel.min.js"></script>
         <script src="stims.js"></script>
@@ -70,7 +69,11 @@
             }
 
             function load_code() {
+                alert("Getting ID..");
+
                 peer_init();
+
+                alert("Got ID..");
 
                 // Get the canvas element form the page
                 canvas = document.getElementById("canvas");
