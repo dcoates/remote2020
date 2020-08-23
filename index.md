@@ -6,10 +6,10 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 
 ### Markdown
 
-Link to [Dark adaptation page](https:dark.html)
+Link to [Dark adaptation page](https:client/dark.html)
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
+https://dcoates.github.io/remote2020/dark.html
 ```markdown
 Syntax highlighted code block
 
