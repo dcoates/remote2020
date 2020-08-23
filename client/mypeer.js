@@ -48,21 +48,21 @@
                      console.log('About to init.');
                     // Create own peer object with connection to shared PeerJS server
                     this.peer = new Peer(this.id_requested, { //'uh2', {
-                        //host: '185.146.28.139',
-                        host: 'server.coateslab.org',
+                        host: '185.146.28.139',
+                        //host: 'server.coateslab.org',
                         port: '9000',
                         path: '/myapp',
                         debug: 3,
-                        //reliable: true,
+                        reliable: true,
 
                         config: {
-                        iceServers: [{ urls: 'stun:stun.l.google.com:19302',
-                                        url: 'stun:stun.l.google.com:19302' },
-                                    {urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
+                            iceServers: [{ urls: 'stun:stun.l.google.com:19302',
+                                            url: 'stun:stun.l.google.com:19302' },
+                                        {urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
 
-                        // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
-                        sdpSemantics: 'unified-plan',
-                        iceTransportPolicy: 'relay',
+                            // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
+                            sdpSemantics: 'unified-plan',
+                            iceTransportPolicy: 'relay',
                         }
                     });
                     console.log('back');
