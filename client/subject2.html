@@ -298,8 +298,10 @@
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
-            const rate_hz=60; // Hz
-            const duty_cycle=0.25;
+            //const rate_hz=60; // Hz
+            //const duty_cycle=0.25;
+            const rate_hz=6; // Hz
+            const duty_cycle=0.5;
             function animateDA(now) {
                 count_animation += 1;
                 if (gaborCancel) { // not sure if this is ever needed 

@@ -61,7 +61,7 @@
                                         {urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
-                            sdpSemantics: 'unified-plan',
+                            sdpSemantics: 'plan-b',
                             iceTransportPolicy: 'relay',
                         }
                     });
