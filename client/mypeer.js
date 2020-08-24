@@ -55,15 +55,15 @@
                         debug: 3,
                         reliable: true,
 
-                        config: {
-                            iceServers: [{ urls: 'stun:stun.l.google.com:19302',
-                                            url: 'stun:stun.l.google.com:19302' },
-                                        {urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
+                        //config: {
+                            //iceServers: [{ urls: 'stun:stun.l.google.com:19302',
+                                            //url: 'stun:stun.l.google.com:19302' },
+                                        //{urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
-                            sdpSemantics: 'plan-b',
-                            iceTransportPolicy: 'relay',
-                        }
+                            //sdpSemantics: 'plan-b',
+                            //iceTransportPolicy: 'relay',
+                        //}
                     });
                     console.log('back');
                     var peer=this.peer;

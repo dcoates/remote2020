@@ -147,6 +147,7 @@
 
             // How we respond to peer commands
             function receive_commands(data) {
+                log.info(data);
                 code=data.substring(0,1)
                 value=data.substring(1)
                 switch (code) {
