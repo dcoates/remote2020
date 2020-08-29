@@ -98,7 +98,10 @@
 
                         log.info("Connected to: " + self.conn.peer);
                         self.notify.connect(self.conn.peer);
-                        self.ready();
+                        self.ready(c);
+                    });
+                    peer.on('data', function (dat) {
+                        log.info(dat);
                     });
                     peer.on('disconnected', function () {
                         self.notify.lost('Connection lost. Please reconnect');
@@ -178,12 +181,12 @@
                  * Triggered once a connection has been achieved.
                  * Defines callbacks to handle incoming data and connection events.
                  */
-                ready() {
+                ready(c) {
 
                     var self=this;
 
                     self.conn.on('data', function (data) {
-                        log.info("Data received: "+data);
+                        log.info("Data received: "+c.peer+" "+data);
                         self.notify.receive(data);
                     });
                     self.conn.on('close', function () {
