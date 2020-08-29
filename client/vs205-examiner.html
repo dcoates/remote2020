@@ -131,9 +131,16 @@
 
             var dict_params = {} // GLOBAL
             function load_code() {
-                peer_init();
-
-                //alert("ID_okay");
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+                if (dict_params['mode']=='vs205') {
+                    set_mode("graph","adv");
+                    document.getElementById('btnSetup').hidden=true;
+                    set_checked('chkKeys',true);
+                }
+                if (dict_params['mode']=='graph') {
+                    set_mode("graph","adv");
+                }
 
                 demo1(); // preload E acuity
                 build_table(); // create graph table
@@ -150,16 +157,7 @@
                     a.old_display=a.style.display;
                 });
 
-                // Read "command line" parameters
-                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
-                if (dict_params['mode']=='vs205') {
-                    set_mode("graph","adv");
-                    document.getElementById('btnSetup').hidden=true;
-                    set_checked('chkKeys',true);
-                }
-                if (dict_params['mode']=='graph') {
-                    set_mode("graph","adv");
-                }
+                peer_init();
             };
 
             function peer_init() {
@@ -174,6 +172,10 @@
                     receive: function (s) {},
                 }
                 thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    thePeer.instructor=true;
+                }
                 thePeer.init();
             };
 

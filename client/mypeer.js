@@ -29,11 +29,11 @@
     }
 
     class MyPeer {
-
-            id_requested=null;
-
             constructor(handler) {
                 this.notify=handler;
+            	this.id_requested=null;
+                this.conns=[];
+                this.instructor=false; // if instructor allow multiple connection
             }
 
 /**
@@ -45,33 +45,33 @@
                  init() {
                     var self=this;
 
-                     console.log('About to init.');
                     // Create own peer object with connection to shared PeerJS server
                     this.peer = new Peer(this.id_requested, { //'uh2', {
-                        host: '185.146.28.139',
-                        //host: 'server.coateslab.org',
+                        //host: '185.146.28.139',
+                        host: 'server.coateslab.org',
                         port: '9000',
                         path: '/myapp',
+                        //secure: true,
                         debug: 3,
-                        reliable: true,
 
-                        //config: {
-                            //iceServers: [{ urls: 'stun:stun.l.google.com:19302',
-                                            //url: 'stun:stun.l.google.com:19302' },
+                        config: {
+                            iceServers: [
+				{ urls: 'turn:turn.coateslab.org:3478','username':'turnuser','credential':'pw1234' },
+				{ urls: 'stun:stun.coateslab.org:3478'} ],
                                         //{urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'}],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
                             //sdpSemantics: 'plan-b',
-                            //iceTransportPolicy: 'relay',
-                        //}
+                            //iceTransportPolicy: 'relay'
+                        }
                     });
-                    console.log('back');
                     var peer=this.peer;
                     peer.on('open', function (id) {
                         //var peer=this.peer;
                         // Workaround for peer.reconnect deleting previous id
                         if (self.peer.id === null) {
                             log.info('Received null id from peer open');
+                    console.log('back');
                             self.peer.id = self.lastPeerId;
                         } else {
                             self.lastPeerId = self.peer.id;
@@ -81,16 +81,21 @@
                         self.notify.id(self.peer.id);
                     });
                     peer.on('connection', function (c) {
-                        // Allow only a single connection
-                        if (self.conn && self.conn.open) {
-                            c.on('open', function() {
-                                c.send("Already connected to another client");
-                                setTimeout(function() { c.close(); }, 500);
-                            });
-                            return;
+                        if (self.instructor==false) {
+                            // Allow only a single connection
+                            if (self.conn && self.conn.open) {
+                                c.on('open', function() {
+                                    c.send("Already connected to another client");
+                                    setTimeout(function() { c.close(); }, 500);
+                                });
+                                return;
+                            }
+                            self.conn = c;
+                        } else { //self.instructor==True
+                            self.conns.push(c);
+                            self.conn = c; // Keep the last one around
                         }
 
-                        self.conn = c;
                         log.info("Connected to: " + self.conn.peer);
                         self.notify.connect(self.conn.peer);
                         self.ready();
@@ -133,13 +138,13 @@
                     // Create connection to destination peer specified in the input field
                     this.conn = this.peer.connect(friend, {
                         //reliable: true,
-                        serialization: "json"
+                        serialization: "json" // this is recommended for iPhone/iPads
                     });
                     var conn=this.conn;
 
                     log.info(conn);
 
-                    // Inside the callback 'this' is wrong, so give it this 'self' alias to correct OO 'this'
+                    // Inside a callback, 'this' is different, so give it this 'self' alias to correct OO 'this'
                     // https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
                     var self=this;
                     conn.on('open', function () {
@@ -178,10 +183,7 @@
                     var self=this;
 
                     self.conn.on('data', function (data) {
-                        log.info("Data received");
-                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                        var code=data.substring(0,1)
-                        var value=data.substring(1)
+                        log.info("Data received: "+data);
                         self.notify.receive(data);
                     });
                     self.conn.on('close', function () {
@@ -197,12 +199,22 @@
                  send(message) {
                     var conn=this.conn;
                     log.info(message);
-                    if (conn && conn.open) {
-                        conn.send(message);
-                        log.info(message + " signal sent");
-                        //addMessage(cueString + sigName);
-                    } else {
-                        log.info('Connection is closed');
+                    if (this.conns.length==0) {
+                        // Single peer mode
+                        if (conn && conn.open) {
+                            conn.send(message);
+                            log.info(message + " signal sent");
+                            //addMessage(cueString + sigName);
+                        } else {
+                            log.info('Connection is closed');
+                        }
+                    } else {//multipeer mode
+                        for (var i = 0; i < this.conns.length; i++) {
+                            if (this.conns[i] && this.conns[i].open) {
+                                this.conns[i].send(message);
+                            // OK if some peers are closed
+                            }
+                        }
                     }
                 }
     }

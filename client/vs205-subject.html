@@ -68,12 +68,12 @@
                 openFullscreen();
             }
 
+            var dict_params = {} // GLOBAL
             function load_code() {
-                //alert("Getting ID..");
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
 
                 peer_init();
-
-                //alert("Got ID..");
 
                 // Get the canvas element form the page
                 canvas = document.getElementById("canvas");
@@ -130,6 +130,9 @@
                     id: function(s) {
                         ctx.fillStyle='black';
                         ctx.fillText('ID: '+s, 10, 50);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
                     },
                     lost: function(s) {alert(s);},
                     error: function(s) {alert(s);},
