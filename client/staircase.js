@@ -263,8 +263,8 @@
         document.execCommand('copy');
     }
 
-    function process_manual(ori_resp, is_YN) {
-        if (prev_answered) {
+    function process_manual(ori_resp, is_YN,allow_multiple) {
+        if ((!allow_multiple) && prev_answered) {
             return;
         } // noop if they already responded to this trial.
         

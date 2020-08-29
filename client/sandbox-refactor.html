@@ -571,7 +571,8 @@
                     if (prev_manual_trial) {
                         // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
                         is_YN=get_checked('chkYN')?false:true;
-                        process_manual(ori_resp, is_YN);
+                        allow_multple=false;
+                        process_manual(ori_resp, is_YN,allow_multiple);
                     }
                 }
             }

@@ -101,7 +101,7 @@
                         self.ready(c);
                     });
                     peer.on('data', function (dat) {
-                        log.info(dat);
+                        log.info("Hi "+dat);
                     });
                     peer.on('disconnected', function () {
                         self.notify.lost('Connection lost. Please reconnect');
@@ -163,7 +163,7 @@
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
                         //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
-                        log.info(data); // TODO: SAVE
+                        log.info(conn.peer+" HI "+data); // TODO: SAVE
 
                         if (data.startsWith('FS')) {
                             self.notify.peer_info(data);
@@ -185,13 +185,14 @@
 
                     var self=this;
 
-                    self.conn.on('data', function (data) {
+                    c.on('data', function (data) {
                         log.info("Data received: "+c.peer+" "+data);
                         self.notify.receive(data);
                     });
-                    self.conn.on('close', function () {
-                        self.notify.error("Connection reset<br>Awaiting connection...");
-                        conn = null;
+                    c.on('close', function () {
+                        log.info("Disconnected "+c.peer);
+                        //self.notify.error("Connection reset<br>Awaiting connection...");
+                        //conn = null;
                     });
                 }
 

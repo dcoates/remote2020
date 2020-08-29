@@ -169,7 +169,7 @@
                     peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
-                    receive: function (s) {},
+                    receive: function (s) {examiner_receive(s);},
                 }
                 thePeer=new MyPeer(handler);
                 if ('id' in dict_params) { // if id= parameter passed in, use that
@@ -178,6 +178,14 @@
                 }
                 thePeer.init();
             };
+
+            function examiner_receive(msg) {
+                // TODO: Check if we are instructor?
+                log.info(msg);
+                if (msg.substr(0,2)=='KB') {
+                    do_kb(parseInt(msg.substr(3)));
+                }
+            }
 
             function pair_screen_info(s) {
                 var list_dims=s.split(' ');
@@ -564,7 +572,12 @@
                     if (prev_manual_trial) {
                         // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
                         is_YN=get_checked('chkYN')?false:true;
-                        process_manual(ori_resp, is_YN);
+                        if (thePeer.instructor) {
+                            allow_multiple=true;
+                        } else {
+                            allow_multple=false;
+                        }
+                        process_manual(ori_resp, is_YN,allow_multiple);
                     }
                 }
             }

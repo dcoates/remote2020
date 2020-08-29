@@ -51,4 +51,5 @@ Display of their screen: see [[ ctx.scale(2,2)  ]]
 - nginx security (development) snippets, self-signed SSL, etc. need to remove cross-site stuff
 - sudo systemctl restart nginx
 - https://server.coateslab.org:9000/myapp/peerjs/id
+- shortcuts are in .htaccess on coateslab.org
 
