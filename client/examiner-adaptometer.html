@@ -35,13 +35,6 @@
 </div>
 
 	<div class="switch-field">
-		<input type="radio" id="radio-fovea" name="switch-fovea" value="Fovea" checked/>
-		<label for="radio-fovea">Fovea</label>
-		<input type="radio" id="radio-periphery" name="switch-fovea" value="Periphery" />
-		<label for="radio-periphery">Periph.</label>
-
-		<label>&#124;</label>
-
 		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" checked/>
 		<label for="radio-small">Small</label>
 		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" />
@@ -53,35 +46,41 @@
 
 	<br><br>
 	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
-		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		  <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
 		  <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
 		</svg>
     </button>
 	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">
-		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
 		</svg>
     </button>
 	<button id="fine_up" onclick="do_action(37);"style="border-radius:4px;">
-		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
 		</svg>
     </button>
 	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">
-        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
           <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
         </svg>
     </button>
 
+        <button type="button" id="btnReset" onclick="test_restart();"; style="border-radius:4px;">
+<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-arrow-counterclockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+  <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+</svg>
+    </button>
 
         <button id="measure-button" onclick="record1();" style="border-radius:4px;">
-			<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
 			  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
 			</svg>
-        Record!</button>
+        </button>
 
         <div id="my_dataviz" class="graph"></div>
 
@@ -164,9 +163,8 @@
 				*/
 
                 // Star the clock ticking!
+                timer_reset=true;
                 var_timer=setTimeout(updateClock, 5000);
-                d=new Date();
-                gTimeStart=d.getTime();
 
                 document.body.scrollTop = 0; // <-- pull the page back up to the top
                 document.body.style.overflow = 'hidden'; // prevent scroll bars
@@ -179,7 +177,13 @@
 
             const UPDATE_RATE=5000; // every 5 sec
             var var_timer; // need?
+            var timer_reset=true;
             function updateClock() {
+                if (timer_reset) {
+                    d=new Date();
+                    gTimeStart=d.getTime();
+                    timer_reset=false;
+                }
                 d=new Date();
                 timeSecElapsed=(d.getTime()-gTimeStart)/1000;
                 sec=(Math.trunc(timeSecElapsed%60));
@@ -195,7 +199,11 @@
                 var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
                 update_graph(trial1);
             }
-
+            function test_restart() {
+                timer_reset=true;
+                set_html("time_elapsed",0);
+                graph_clear_dots();
+            }
 
             function peer_init() {
                 var handler={
@@ -422,7 +430,7 @@
 			update_line(params.intensityCoarse);
 			set_html('lbl_value',params.intensityCoarse.toFixed(6));
 			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
-            stim_size=(gSize==0)?0.01:0.25;
+            stim_size=(gSize==0)?0.0025:0.25;
             stim_color=gColor;
             
 			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background'))

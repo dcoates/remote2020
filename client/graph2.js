@@ -143,8 +143,12 @@ function fup1(){
   })
 }
 
-function graph_clear() {
+function graph_clear_dots() {
     svg.selectAll('circle').remove()
+}
+
+function graph_clear() {
+    graph_clear_dots()
     svg.selectAll('path').remove()
 }
 
