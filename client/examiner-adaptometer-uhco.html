@@ -91,7 +91,7 @@
         </button>
 
 
-        <button id="torch-button" onclick="record1();" style="border-radius:4px;">
+        <button id="torch-button" onclick="do_torch();" style="border-radius:4px;">
             <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-brightness-high" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
             </svg>
@@ -200,7 +200,7 @@
             var timeSecElapsed=0;
 
             const UPDATE_RATE=5000; // every 5 sec
-            var var_timer; // need?
+            var var_timer=null;          // holds the timeout timer
             var timer_reset=true;
             function updateClock() {
                 if (timer_reset) {
@@ -216,6 +216,12 @@
                 var_timer=setTimeout(updateClock, 5000);
             }
 
+            var torch_on=false;
+            function do_torch() {
+                torch_on=(torch_on==false);
+                thePeer.send(torch_on?"1":"0");
+            }
+
             function record1() {
 				ypos=Math.log10(params.intensityCoarse)+2.0;
 
@@ -224,6 +230,8 @@
                 update_graph(trial1);
             }
             function test_restart() {
+                clearTimeout(var_timer);
+                var_timer=setTimeout(updateClock, 5000);
                 timer_reset=true;
                 set_html("time_elapsed",0);
                 graph_clear_dots();
