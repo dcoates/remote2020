@@ -114,7 +114,7 @@
                         peer.reconnect();
                     });
                     peer.on('close', function() {
-                        conn = null;
+                        self.conn = null;
                         self.notify.lost('Connect Destroyed. Please refresh.');
                         log.info('Connection destroyed');
                     });

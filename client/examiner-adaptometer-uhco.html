@@ -83,7 +83,7 @@
 </svg>
     </button>
 
-        <button id="upload-button" onclick="record1();" style="border-radius:4px;">
+        <button id="upload-button" onclick="do_upload();" style="border-radius:4px;">
             <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
               <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
@@ -222,11 +222,17 @@
                 thePeer.send(torch_on?"1":"0");
             }
 
+            function do_upload() {
+                thePeer2.send(trial_log);
+            }
+
+            var trial_log=[];
             function record1() {
 				ypos=Math.log10(params.intensityCoarse)+2.0;
 
                 // If max is 30min (30*60), /20 goes from 0-90
                 var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
+                trial_log.push(trial1);
                 update_graph(trial1);
             }
             function test_restart() {
@@ -235,6 +241,7 @@
                 timer_reset=true;
                 set_html("time_elapsed",0);
                 graph_clear_dots();
+                trial_log=[];
             }
 
             function peer_init() {
@@ -247,7 +254,10 @@
                     },
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
-                    connect: function(s) {set_html('status','Paired:'+ s);},
+                    connect: function(s) {
+                        set_html('status','Paired:'+ s);
+                        set_value('receiver-id',s+': OK');
+                    },
                     peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
@@ -259,6 +269,29 @@
                     //thePeer.instructor=true; // not sure if it is instructor or not
                 }
                 thePeer.init();
+
+                var handler_uploader={
+                    id: function(s) {
+                        if ('autoconnect2' in dict_params) {
+                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {alert('status',s);},
+                    error: function(s) {alert('status',s);},
+                    connect: function(s) {
+                        set_html('status','Paired:'+ s);
+                    },
+                    peer_info: function(s) {pair_screen_info(s);},
+                    unpair: function (s) {set_html ('status',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
+
+                // To handle upload, simplest is to just create a new Peer to talk to instructor
+                // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new
+                // Peer connection in mypeer. (one -> many ( ok, here two) )
+                thePeer2=new MyPeer(handler_uploader);
+                thePeer2.init();
             };
 
             function pair_screen_info(s) {
@@ -276,11 +309,12 @@
             }
 
             function do_connect() {
-                thePeer.join(get_value('receiver-id'));
+                //thePeer.join(get_value('receiver-id'));
 				doit();
             };
 
             var thePeer = null; 
+            var thePeer2 = null; 
 
             function reportSize() {
                 wid=canv.width;
