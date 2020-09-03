@@ -1,0 +1,34 @@
+STORE1 <bits> : give a screen buffer
+
+FRAME 1 <bits>
+SHOW 1 XFRAMES
+
+animate action: blink, etc. toggle on screen, etc.
+
+specify actions for each time
+
+iPad add to home screen is full-screen with:
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+Multiple ways to use:
+- Frame mode
+- Code mode
+
+- Code to make Javascript animation loops usable
+
+
+Value: -1.5
+
+---
+
+# TODO:
+- Store commands in file..
+- Store log in file..
+- https://medv.io/codejar/
+- photometer
+
+## Versions:
+
+### Frozen VS205 Lab 1 -- Psychophysical Methods
+
+
