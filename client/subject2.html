@@ -66,7 +66,11 @@
             var thePeer=null;
             var noSleep=null;
 
+            var dict_params = {} // GLOBAL
             function load_code() {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+
                 noSleep=new NoSleep();
 
                 peer_init();
@@ -181,6 +185,9 @@
                     id: function(s) {
                         ctx.fillStyle='black';
                         ctx.fillText('ID: '+s, 10, 50);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
                     },
                     lost: function(s) {alert(s);},
                     error: function(s) {alert(s);},
@@ -197,6 +204,10 @@
                     receive: receive_commands,
                 };
                 thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    thePeer.instructor=false;
+                }
                 thePeer.init();
             };
 
