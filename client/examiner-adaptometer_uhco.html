@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>remote2020 - examiner-adaptometer</title>
+        <link rel="stylesheet" href="./da-theme.css">
+        <link rel="stylesheet" href="graph2.css">
+    </head>
+    <body style="background-color:#000000" onload="load_code()">  
+
+				<input type="text" id="receiver-id" title="Enter ID" size="8">
+				<button id="connect-button" onclick="do_connect()" style="border-radius:4px;">
+					<object type="image/svg+xml" onclick="do_connect()" data="img/link.svg"> </object>
+					<object type="image/svg+xml" onclick="do_connect()" data="img/bs_person_square.svg"></object>
+					Connect
+				</button>
+
+				<input type="text" id="background" title="Value" value="0.0" size="8">
+
+                <div id="my-id" style="font-weight: bold; display:none;" title="my-id">ID:</div>
+                <div id="status" style="font-weight: bold; display:none;" title="status">Status:</div>
+
+				<br><br>
+
+<div class="switch-toggle switch-3 switch-candy">
+  <input id="on" name="state-d" type="radio" checked="checked" />
+  <label for="on" onclick="set_color(0);" style="color:white;">White</label>
+
+  <input id="na" name="state-d" type="radio" />
+  <label for="na" class="disabled" onclick="set_color(1);" style="color:green;">Green</label>
+
+  <input id="off" name="state-d" type="radio" />
+  <label for="off" onclick="set_color(2);" style="color:red;">Red</label>
+</div>
+
+	<div class="switch-field">
+		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" checked/>
+		<label for="radio-small">Small</label>
+		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" />
+		<label for="radio-large">Large</label>
+	</div>
+
+<br>
+
+	<br><br>
+	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-double-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		  <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		</svg>
+    </button>
+	<button id="fine_down" onclick="do_action(39);" style="border-radius:4px;">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		</svg>
+    </button>
+	<button id="fine_up" onclick="do_action(37);"style="border-radius:4px;">
+		<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+		</svg>
+    </button>
+	<button id="coarse_up" onclick="do_action(38);" style="border-radius:4px;">
+        <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-chevron-double-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+          <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+        </svg>
+    </button>
+
+        <button id="measure-button" onclick="record1();" style="border-radius:4px;">
+			<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+			  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+			</svg>
+        </button>
+
+        <br><br>
+
+        <button type="button" id="btnReset" onclick="test_restart();"; style="border-radius:4px;">
+<svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-arrow-counterclockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+  <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+</svg>
+    </button>
+
+        <button id="upload-button" onclick="record1();" style="border-radius:4px;">
+            <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+            </svg>
+        </button>
+
+
+        <button id="torch-button" onclick="record1();" style="border-radius:4px;">
+            <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-brightness-high" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+            </svg>
+        </button>
+
+
+
+
+        <br><br>
+        <label id="lbl_elapsed">Elapsed Time: </label><label id="time_elapsed">0:00</label>
+
+        <div id="my_dataviz" class="graph"></div>
+
+        <label id="lbl_text_value">Value: </label><label id="lbl_value">0.000000</label><br>
+        <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.000000</label>
+
+		<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="loglevel.min.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="staircase.js"></script>
+        <script src="stims.js"></script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="graph2.js"></script>
+        <script src="grating_shader.js" type="text/javascript"></script>
+        <script type="text/javascript" src="dat.gui.min.js"></script>
+
+        <script type="text/javascript">
+            // <button id="prev" onclick=";" style="border-radius:4px;">&#8249;</button>
+
+
+            var dict_params = {} // GLOBAL
+            function load_code() {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+
+                peer_init();
+/*
+                document.addEventListener('click', function(event) {
+                    doit();
+                }, false);
+*/
+
+                // Testing/initial config: simulate a phantom display connection 
+                //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
+                //pair_screen_info('FS 408 712'); // DRC's Samsung S8
+                //pair_screen_info('FS 980 1708'); // DRC's Samsung S8 in Desktop Mode
+            };
+
+            var params = {
+                intensityCoarse:0.9,
+                intensityFine:0.004,
+                radius:0.025,
+                green:false,
+                peripheral:false,
+            }
+            var gui = new dat.gui.GUI({autoPlace: false, width:"400px"});
+
+			function params_update() {
+				thePeer.send("G "+params.radius + " " + params.intensityCoarse+" "+params.intensityFine);
+            }
+
+			function doit() {
+				openFullscreen();
+
+				/* 
+				//const cubeFolder = gui.params("contrast")
+				gui.add(params, "intensityCoarse", 0, 1.0, 0.01).onFinishChange(params_update);
+				gui.add(params, "intensityFine", 0, 0.004, 0.004/50.0).onFinishChange(params_update);
+				gui.add(params, "radius", 0.01, 0.1, 0.01).onFinishChange(params_update);
+				gui.add(params, "green").onFinishChange(params_update);
+				gui.add(params, "peripheral").onFinishChange(params_update);
+
+				var parent=document.getElementById("gui_holder");
+				// For some reason, css wasn't changing these attributes, so do it manually here:
+				parent.appendChild(gui.domElement);
+				el=document.getElementsByClassName('cr');
+				//for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					//el[i].style.height="40px";
+                    
+
+				el=document.getElementsByClassName('slider-fg');
+				for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					el[i].style.color='black';
+					el[i].style.backgroundColor='red';
+					el[i].style.height='40px';
+				}
+
+				el=document.getElementsByClassName('close-button');
+				el[0].style.backgroundColor='black';
+				el[0].style.color='black';
+				el[0].style.display='none';
+				*/
+
+                // Star the clock ticking!
+                timer_reset=true;
+                var_timer=setTimeout(updateClock, 5000);
+
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // prevent scroll bars
+			}
+
+            var count_animation=0;
+            var d;
+            var gTimeStart;
+            var timeSecElapsed=0;
+
+            const UPDATE_RATE=5000; // every 5 sec
+            var var_timer; // need?
+            var timer_reset=true;
+            function updateClock() {
+                if (timer_reset) {
+                    d=new Date();
+                    gTimeStart=d.getTime();
+                    timer_reset=false;
+                }
+                d=new Date();
+                timeSecElapsed=(d.getTime()-gTimeStart)/1000;
+                sec=(Math.trunc(timeSecElapsed%60));
+                s=Math.trunc(timeSecElapsed/60) + ':' + (sec<10?'0':'') + sec;
+                set_html("time_elapsed",s);
+                var_timer=setTimeout(updateClock, 5000);
+            }
+
+            function record1() {
+				ypos=Math.log10(params.intensityCoarse)+2.0;
+
+                // If max is 30min (30*60), /20 goes from 0-90
+                var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
+                update_graph(trial1);
+            }
+            function test_restart() {
+                timer_reset=true;
+                set_html("time_elapsed",0);
+                graph_clear_dots();
+            }
+
+            function peer_init() {
+                var handler={
+                    id: function(s) {
+                        set_html('my-id','ID:'+s);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {set_html('status',s);},
+                    error: function(s) {set_html('status',s);},
+                    connect: function(s) {set_html('status','Paired:'+ s);},
+                    peer_info: function(s) {pair_screen_info(s);},
+                    unpair: function (s) {set_html ('status',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
+                thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    //thePeer.instructor=true; // not sure if it is instructor or not
+                }
+                thePeer.init();
+            };
+
+            function pair_screen_info(s) {
+                var list_dims=s.split(' ');
+                var width=parseInt(list_dims[1]); // first is "0" FS specifier code
+                var height=parseInt(list_dims[2]);
+
+                // Make our 'shadow' canvas match theirs
+                /* canv.width=width;
+                canv.height=height;
+                reportSize(); // adjust our drawing stuff
+
+                set_html("dim_place",width+"x"+height);
+				*/
+            }
+
+            function do_connect() {
+                thePeer.join(get_value('receiver-id'));
+				doit();
+            };
+
+            var thePeer = null; 
+
+            function reportSize() {
+                wid=canv.width;
+                height=canv.height;
+                xc=wid/2;
+                yc=height/2;
+            }
+
+            const nrows_mocs_table=15;
+            function build_table() {
+                var table=document.getElementById('table_graph');
+                var td_graph=document.getElementById('td_graph');
+                td_graph.rowSpan=nrows_mocs_table+2;
+
+                for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+
+                    tr = table.insertRow(-1);
+                    var td = document.createElement('td');
+                    td.width = "20px";
+                    td = tr.insertCell(0);
+                    var button = document.createElement('input');
+                    button.setAttribute('type', 'button');
+                    button.setAttribute('value', nrows_mocs_table-nrow);
+                    button.setAttribute('onclick', 'table_button_click('+(nrows_mocs_table-nrow)+')');
+                    td.appendChild(button);
+
+                    td = tr.insertCell(0);
+                    td.id='count_'+(nrows_mocs_table-nrow);
+                    td.width = "20px";
+                    td.innerHTML="0/0";
+                }
+                tr = table.insertRow(-1); // add a blank row at end to better line up with graph
+                td = tr.insertCell(0);
+                var button = document.createElement('input');
+                button.setAttribute('type', 'button');
+                button.setAttribute('value', nrows_mocs_table-nrow);
+                button.setAttribute('onclick', 'table_button_click(0)');
+                td.appendChild(button);
+                td = tr.insertCell(0);
+                td.id='count_0';
+                td.width = "20px";
+                td.innerHTML="0/0";
+
+                if (false) { // If on bottom, need this (horizontal-arranged stimuli)
+                    tr = table.insertRow(-1);
+                    for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+                        var td = document.createElement('td');
+                        td = tr.insertCell(-1);
+					    td.id='count_'+nrow;
+					    td.innerHTML="0";
+                    }
+                }
+            }
+
+            function send_trial() {
+                // get commands
+                var commands=document.getElementById("commands").value;
+                // Replace the meta parameters (since 1 string);
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params );
+                var msg="T "+commands;
+                if (thePeer && thePeer.conn && thePeer.conn.open) {
+			        thePeer.send(msg);
+                }
+            }
+
+                // fullscreen hints:
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; 
+                //document.body.style.overflow = 'hidden'; 
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.documentElement;
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+        var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
+
+        function do_stair_restart() {
+            set_checked('chkStair',true);
+            set_checked('chkMOCS',false);
+            set_html("lblStair","Staircase 0 0");
+            nafc=get_checked('chkNafc')?4:2;
+            graph_clear();
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theStaircase.restart(parseInt(metap.stair_start),nafc);
+            theStaircase.next(); // show first trial
+        }
+
+        function do_mocs_restart() {
+            set_checked('chkStair',false);
+            set_checked('chkMOCS',true);
+            set_html("lblStair","MOCS X");
+            nafc=get_checked('chkNafc')?4:2;
+            graph_clear();
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
+            theMOCS.next(); // show first trial
+        }
+        function table_button_click(which) {
+            var thisid='count_'+which;
+            nafc=get_checked('chkNafc')?4:2;
+            is_YN=get_checked('chkYN')?false:true;
+
+            log.info(thisid);
+            update_manual_table_outof(which);
+            manual_trial(which,nafc,is_YN);
+        }
+
+        // Keyboard stuff:
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+
+        function key_handler(event) {
+            ;
+        }
+
+        var prev_manual_trial=null; // TODO: FIXME (put into OO staircase class)
+
+        function do_trash() {
+            graph_clear();
+
+            for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
+                var count_id='count_'+nrow;
+                set_html(count_id,"0/0");
+            }
+            // clear "manual"
+            prev_manual_trial=null;
+            num_manual_trial=0;
+        }
+
+
+        function key_handler(event) {
+            do_kb(event.keyCode);
+        }
+
+        var gSize=0;
+        var gColor=0; // Default
+        function set_size(which){
+            gSize=which;
+            do_update();
+        }
+        function set_color(which){
+            gColor=which;
+            do_update();
+        }
+
+		function do_update() {
+			update_line(params.intensityCoarse);
+			set_html('lbl_value',params.intensityCoarse.toFixed(6));
+			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
+            stim_size=(gSize==0)?0.0025:0.25;
+            stim_color=gColor;
+            
+			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background'))
+		}
+        function do_kb(keycode) {
+            switch (keycode) {
+                case 37: //L
+                    params.intensityCoarse /= 0.95;
+					do_update();
+					break;
+                case 38: //U
+                    params.intensityCoarse /= 0.75;
+					do_update();
+					break;
+                case 39: //R
+                    params.intensityCoarse *= 0.95;
+					do_update();
+					break;
+                case 40: //D
+                    params.intensityCoarse *= 0.75;
+					do_update();
+					break;
+                case 32: // Space bar
+					record1();
+					break;
+                default:
+					log.info(keycode);
+                    return; // do nothing if unrecognized key
+                }
+        };
+	function do_action(which) { // TODO
+		    do_kb(which);}
+	
+</script>
+    </body>
+</html>
+
