@@ -2,7 +2,7 @@
 var margin = {top: 20, right: 15, bottom: 30, left: 20},
     //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
     width_graph = 400 - margin.left - margin.right,
-    height_graph = 380 - margin.top - margin.bottom;
+    height_graph = 340 - margin.top - margin.bottom;
 
    left_extra=20; // for the arrow
 
