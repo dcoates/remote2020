@@ -73,8 +73,10 @@
 			  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
 			</svg>
         </button>
-
         <br><br>
+        <label id="lbl_elapsed">Elapsed Time: </label><label id="time_elapsed">0:00</label>
+
+        <div id="my_dataviz" class="graph"></div>
 
         <button type="button" id="btnReset" onclick="test_restart();"; style="border-radius:4px;">
 <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-arrow-counterclockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -97,13 +99,7 @@
             </svg>
         </button>
 
-
-
-
         <br><br>
-        <label id="lbl_elapsed">Elapsed Time: </label><label id="time_elapsed">0:00</label>
-
-        <div id="my_dataviz" class="graph"></div>
 
         <label id="lbl_text_value">Value: </label><label id="lbl_value">0.000000</label><br>
         <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.000000</label>
