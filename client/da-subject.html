@@ -129,9 +129,11 @@
             }
             var globContrastCoarse;
             var globContrastFine;
+            var globPeripheral;
             var globRadius;
             var gaborCancel=false;
             var count_animation=0;
+
             function gabor(commands) {
                 arr=commands.split(' ');
                 globRadius= parseFloat(arr[1]);
@@ -139,12 +141,24 @@
                 globContrastFine = parseFloat(arr[3]);
                 globColor = parseFloat(arr[4]);
                 globBackground = parseFloat(arr[5]);
+                globPeripheral = parseFloat(arr[6]);
+
+                if (globPeripheral) {
+                    var elem = document.getElementById("canvas_layerFixation");
+                    elem.style.display="none";
+                } else {
+                    var elem = document.getElementById("canvas_layerFixation");
+                    elem.style.display="block";
+                }
+
                 if (globalAnimationID==null) {
                     // Start it if not already going
                     count_animation=0;
                     gaborCancel=false;
                     globalAnimationID = requestAnimationFrame(animateDA);
                 } // if already going, param changes will be detected and used
+
+
             }
 
             // How we respond to peer commands
@@ -446,7 +460,7 @@
 
             setup_webgl();
 
-            receive_commands("G 0.25 0.8 0 0 0.1");
+            receive_commands("G 0.025 0.8 0 0 0.1 1");
 		};
 
 		function closeFullscreen() {

@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
         <title>remote2020 - examiner-adaptometer</title>
-        <link rel="stylesheet" href="./da-theme.css">
+        <link rel="stylesheet" href="da-theme.css">
         <link rel="stylesheet" href="graph2.css">
     </head>
     <body style="background-color:#000000" onload="load_code()">  
@@ -35,13 +35,18 @@
 </div>
 
 	<div class="switch-field">
-		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" checked/>
+		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" />
 		<label for="radio-small">Small</label>
-		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" />
+		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" checked />
 		<label for="radio-large">Large</label>
 	</div>
 
-<br>
+	<div class="switch-field">
+		<input type="radio" id="radio-foveal" name="switch-loc" value="Foveal" onclick="set_loc(0);" checked/>
+		<label for="radio-foveal">Foveal</label>
+		<input type="radio" id="radio-periph" name="switch-loc" value="Peripheral" onclick="set_loc(1);" />
+		<label for="radio-perip">Peripheral</label>
+	</div>
 
 	<br><br>
 	<button id="coarse_down" onclick="do_action(40);" class="bs_down2" style="border-radius:4px;">
@@ -144,11 +149,13 @@
                 green:false,
                 peripheral:false,
             }
-            var gui = new dat.gui.GUI({autoPlace: false, width:"400px"});
 
-			function params_update() {
-				thePeer.send("G "+params.radius + " " + params.intensityCoarse+" "+params.intensityFine);
-            }
+
+            //var gui = new dat.gui.GUI({autoPlace: false, width:"400px"});
+
+			//function params_update() {
+				//thePeer.send("G "+params.radius + " " + params.intensityCoarse+" "+params.intensityFine);
+            //}
 
 			function doit() {
 				openFullscreen();
@@ -488,12 +495,18 @@
 
         var gSize=0;
         var gColor=0; // Default
+        var gPeriph=0; // Default
+
         function set_size(which){
-            gSize=which;
+            gSize=which?0.25:0.0025;
             do_update();
         }
         function set_color(which){
             gColor=which;
+            do_update();
+        }
+        function set_loc(which){
+            gPeriph=which?0:1;
             do_update();
         }
 
@@ -501,10 +514,9 @@
 			update_line(params.intensityCoarse);
 			set_html('lbl_value',params.intensityCoarse.toFixed(6));
 			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
-            stim_size=(gSize==0)?0.0025:0.25;
             stim_color=gColor;
             
-			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background'))
+			thePeer.send("G "+gSize+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background')+" "+gPeriph)
 		}
         function do_kb(keycode) {
             switch (keycode) {

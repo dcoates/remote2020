@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        
+        <title>Remote2020: OPTO 5111: Optics/VS Labs</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+<style>
+button {height:4em; width:4em; font-size:20px}
+</style>
+
+    <body>
+		<h1>Remote20/20: OPTO 5111: Optics&Vision Science Labs</h1>
+	
+            In one window (or device) click on the "subject view".. It will open a big screen with an ID in the upper left hand corner. Note the number.<br><br>
+            In another device, click "Examiner view." It will get its own ID. Then type in the 6-digit number of the first device (subject) into the box in the upper left hand-corner and click "Connect."
+
+<br><br>
+
+<table border=1  style="width:540px;"> 
+		<th>Lab</th>
+		<th style="width:120px;padding:0;min-width:0;">View</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 1</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 2</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 3</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 4</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 5</th>
+		<th style="width:120px;padding:0;min-width:0;">Room 6</th>
+<tr>
+				<td align="center"><img src='img/KallDark7.png' style="width:120px;">Dark adaptation</td>
+<td align="center"><img src="img/man_screen.png" style="width:60px;">Subject</a></td>
+<td><button id="button1_1" onclick="window.open('da-subject.html?id=a00001','_blank')">Room 1</button></td>
+<td><button id="button1_2" onclick="window.open('da-subject.html?id=a00002','_blank')">Room 2</button></td>
+<td><button id="button1_3" onclick="window.open('da-subject.html?id=a00003','_blank')">Room 3</button></td>
+<td><button id="button1_4" onclick="window.open('da-subject.html?id=a00004','_blank')">Room 4</button></td>
+<td><button id="button1_5" onclick="window.open('da-subject.html?id=a00005','_blank')">Room 5</button></td>
+<td><button id="button1_6" onclick="window.open('da-subject.html?id=a00006','_blank')">Room 6</button></td>
+</tr><tr>
+
+<td align="center"><img src='img/screenshot_dark.png' style="width:60px;"></td>
+<td align="center"><img src="img/nurse.png" style="width:60px;">Examiner</a></td>
+<td><button id="button2_1" onclick="window.open('da-examiner.html?id=a10001&autoconnect=a00001&autoconnect2=a05111','_blank')">Room 1</button></td>
+<td><button id="button2_2" onclick="window.open('da-examiner.html?id=a10002&autoconnect=a00002&autoconnect2=a05111','_blank')">Room 2</button></td>
+<td><button id="button2_3" onclick="window.open('da-examiner.html?id=a10003&autoconnect=a00003&autoconnect2=a05111','_blank')">Room 3</button></td>
+<td><button id="button2_4" onclick="window.open('da-examiner.html?id=a10004&autoconnect=a00004&autoconnect2=a05111','_blank')">Room 4</button></td>
+<td><button id="button2_5" onclick="window.open('da-examiner.html?id=a10005&autoconnect=a00005&autoconnect2=a05111','_blank')">Room 5</button></td>
+<td><button id="button2_6" onclick="window.open('da-examiner.html?id=a10006&autoconnect=a00006&autoconnect2=a05111','_blank')">Room 6</button></td>
+</tr><tr>
+
+			</table>
+
+            <br><br>
+		</div>
+		
+    </body>
+</html>
