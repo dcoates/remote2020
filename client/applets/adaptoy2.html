@@ -9,13 +9,14 @@ Dark Adaptation Simulator
 
 <body>
 <div id="jxgbox" class="jxgbox" style="width:400px; height:300px;"></div>
-
+<div id="spectrum" style="position:absolute;top:263px;left:210px;"><img src="spectrum.png"></img></div>
 <script>
 var b = JXG.JSXGraph.initBoard('jxgbox',
 	{showNavigation: false, showCopyright: false, originX: 200, originY: 200, unitX: 40, unitY: 40, grid:true, axis:true});        
 
 //var el = b.create('text', [5,-0.5,'350'] )
 
+const color_cones="#f0c000";
 
 b.setBoundingBox([20,11.0,765,-3.0])
 //b.suspendUpdate();
@@ -23,13 +24,13 @@ var destHeight = 1;
 
 var freqslider = b.create('slider',[[365,-2],[750,-2],[0,3,9]]);
 
-var phoslider = b.create('slider',[[150,10],[300,10],[0,0.8,1]], {name:'Cones 0%'});
-var scoslider = b.create('slider',[[150,9],[300,9],[0,0.8,1]], {name:'Rods 0%'});
+var phoslider = b.create('slider',[[150,10],[300,10],[0,0.8,1]], {name:'Cones'});
+var scoslider = b.create('slider',[[150,9],[300,9],[0,0.8,1]], {name:'Rods'});
 
 var arrPhotopic = [[365.000000,405.000000,436.000000,492.000000,546.000000,578.000000,621.000000,691.000000,713.000000,750.000000], [8.690000,6.200000,5.288000,4.480000,4.026000,4.066000,4.400000,6.048000,6.806000,7.872000]];
 var arrScotopic = [[365.000000,405.000000,436.000000,492.000000,546.000000,578.000000,621.000000,691.000000,713.000000,750.000000], [6.042000,3.573000,2.325000,1.705000,1.905000,2.625000,3.962000,6.135000,7.087000,8.090000]];
 var chartS = b.create('chart', arrScotopic, {chartStyle:'spline',labels:arrScotopic,strokeWidth:3, strokeColor:'#a0a0a0'});
-var chartP = b.create('chart', arrPhotopic, {chartStyle:'spline',labels:arrPhotopic,strokeWidth:3, strokeColor:'#f0c000'});
+var chartP = b.create('chart', arrPhotopic, {chartStyle:'spline',labels:arrPhotopic,strokeWidth:3, strokeColor:color_cones});
 
 var lDown = b.create('line', [[function(){return arrScotopic[0][Math.floor(freqslider.Value())]},8],
 	[function(){return arrScotopic[0][Math.floor(freqslider.Value())]},0]], {dash:0, strokeWidth:0.5, strokeColor:'#ff0000'})
@@ -50,7 +51,7 @@ maxsteps = 360
 //var scoslider.Value b.create('point',[25,maxleft], {trace:false, strokeColor:'#000000', fillColor:'#000000', labelColor:'#800080', name:'sco0'} )
 
 // Photopic recovery curve
-var phor = b.create('curve', [[0],[0]], {strokeColor:'#f0c000', dash:1, strokeWidth:1});
+var phor = b.create('curve', [[0],[0]], {strokeColor:color_cones, dash:1, strokeWidth:1});
 phor.updateDataArray = function() {
     this.dataX = [];
     this.dataY = [];
@@ -74,7 +75,7 @@ scor.updateDataArray = function() {
 };
 
 // Photopic adaptation curve
-var phoa = b.create('curve', [[0],[0]], {strokeColor:'#a000a0', dash:2, strokeWidth:1});
+var phoa = b.create('curve', [[0],[0]], {strokeColor:color_cones, dash:2, strokeWidth:1});
 phoa.updateDataArray = function() {
     this.dataX = [];
     this.dataY = [];
@@ -129,11 +130,11 @@ Y axis = Log Threshold<br>
 X axis on left = Time (approx. minutes*20, i.e.'100'=~5 mins)<br>
 X axis on right = Wavelength<br>
 <br>
-Sliders control wavelength of test light and percentage bleached (pho/sco)<br>
+Sliders control wavelength of test light and percentage bleached (rods&cones)<br>
 <br>
-bold lines on right = spectral sensitivity curves<br>
 bold dark line on left = dark adaptation curve<br>
-dashed lines = theoretical thresholds for scotopic/photopic<br>
+bold lines on right = spectral sensitivity curves<br>
+dashed lines = theoretical thresholds for rods&cones<br>
 dotted lines = pigment regeneration curves<br>
 <!--
 <form name="form_parties">
