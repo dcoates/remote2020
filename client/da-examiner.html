@@ -251,7 +251,7 @@
                 var handler={
                     id: function(s) {
                         set_html('my-id','ID:'+s);
-                        if ('AUToconnect' in dict_params) { // disable with CAPS
+                        if ('autoconnect' in dict_params) { 
                             setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
                         }
                     },
@@ -275,7 +275,7 @@
 
                 var handler_uploader={
                     id: function(s) {
-                        if ('autoconnect2' in dict_params) {
+                        if ('XXXautoconnect2' in dict_params) { //disable
                             setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
                         }
                     },
