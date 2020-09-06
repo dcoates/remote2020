@@ -1,0 +1,169 @@
+<html>
+<title>
+Dark Adaptation Toy
+</title>
+<head>
+ <link rel="stylesheet" type="text/css" href="jsxgraph.css" />
+ <script type="text/javascript" src="jsxgraphcore.js"></script>
+</head>
+
+<body>
+<div id="jxgbox" class="jxgbox" style="width:400px; height:300px;"></div>
+
+<script>
+var b = JXG.JSXGraph.initBoard('jxgbox',
+	{showNavigation: false, showCopyright: false, originX: 100, originY: 200, unitX: 40, unitY: 40, grid:false, axis:false});        
+
+
+b.setBoundingBox([20,11.0,765,-3.0])
+//b.suspendUpdate();
+
+var urlim = "http://jsxgraph.uni-bayreuth.de/distrib/images/uccellino.jpg";
+var urlim = "adaptbak.png"
+var backimage = b.create('image',[urlim,[20,-3.5], [745,14] ]);
+
+phosh = -1.9
+scosh = phosh-0.7
+var phoslider = b.create('slider',[[30,phosh],[100,phosh],[0,0.8,1]], {name:'Bleached cones'});
+var scoslider = b.create('slider',[[30,scosh],[100,scosh],[0,0.8,1]], {name:'Bleached rods'});
+
+//timeheight = -0.5
+//var scale5 = b.create('text', [100, timeheight,'5'] )
+//var scale10 = b.create('text', [200, timeheight,'10'] )
+//var scale15 = b.create('text', [300, timeheight,'15'] )
+//var scale20 = b.create('text', [400, timeheight,'20'] )
+//var freqlabel = b.create('text', [200,timeheight-0.5,'Time in dark'] )
+
+freqheight = -2.15
+//var fscale0 = b.create('text', [400, freqheight,'400'] )
+//var fscale1 = b.create('text', [500, freqheight,'500'] )
+//var fscale2 = b.create('text', [600, freqheight,'600'] )
+//var fscale3 = b.create('text', [700, freqheight,'700'] )
+//var fscale4 = b.create('text', [800, freqheight,'800'] )
+//var freqlabel = b.create('text', [480, freqheight+0.65,'Freq. of test light'] )
+
+var freqslider = b.create('slider',[[365,freqheight-0.5],[750,freqheight-0.5],[0,3,9]]);
+
+//var ylabel = b.create('text', [50, 10,'Log Threshold'] );
+//var trot = b.create('transform', [90.0*Math.PI/180.0, 50, 10 ], {type: 'rotate'} );
+//trot.bindTo(ylabel); 
+//b.update()
+
+rodcolor="#a0a0a0"
+conecolor="#909000"
+
+var arrPhotopic = [[365.000000,405.000000,436.000000,492.000000,546.000000,578.000000,621.000000,691.000000,713.000000,750.000000], [8.690000,6.200000,5.288000,4.480000,4.026000,4.066000,4.400000,6.048000,6.806000,7.872000]];
+var arrScotopic = [[365.000000,405.000000,436.000000,492.000000,546.000000,578.000000,621.000000,691.000000,713.000000,750.000000], [6.042000,3.573000,2.325000,1.705000,1.905000,2.625000,3.962000,6.135000,7.087000,8.090000]];
+//var chartS = b.create('chart', arrScotopic, {chartStyle:'spline',labels:arrScotopic,strokeWidth:3, strokeColor:rodcolor});
+//var chartP = b.create('chart', arrPhotopic, {chartStyle:'spline',labels:arrPhotopic,strokeWidth:3, strokeColor:conecolor});
+
+var lDown = b.create('line', [[function(){return arrScotopic[0][Math.floor(freqslider.Value())]},8],
+	[function(){return arrScotopic[0][Math.floor(freqslider.Value())]},0]], {dash:0, strokeWidth:0.5, strokeColor:'#ff0000'})
+
+//var urlim = "http://jsxgraph.uni-bayreuth.de/distrib/images/uccellino.jpg";
+//var urlim = "adaptoy.png"
+////var backimage = b.create('image',[urlim,[100,0], [300,20] ]);
+
+maxleft = 10.5
+horizcomp = 10.0
+tau_sco = 5.2
+tau_pho = 1.7
+maxsteps = 360
+aboffx = 40
+
+// Photopic recovery curve
+var phor = b.create('curve', [[0],[0]], {strokeColor:conecolor, dash:1, strokeWidth:1});
+phor.updateDataArray = function() {
+    this.dataX = [];
+    this.dataY = [];
+    for(var i=0; i<maxsteps; i++) {
+		B = phoslider.Value() * Math.pow(0.5, i/horizcomp/tau_pho);
+        this.dataX[i] = i+aboffx;
+        this.dataY[i] = B*maxleft;
+    }
+};
+
+// Scotopic recovery curve
+var scor = b.create('curve', [[0],[0]], {strokeColor:rodcolor, dash:1, strokeWidth:1});
+scor.updateDataArray = function() {
+    this.dataX = [];
+    this.dataY = [];
+    for(var i=0; i<maxsteps; i++) {
+		B = scoslider.Value() * Math.pow(0.5, i/horizcomp/tau_sco);
+        this.dataX[i] = i+aboffx;
+        this.dataY[i] = B*maxleft;
+    }
+};
+
+// Photopic adaptation curve
+var phoa = b.create('curve', [[0],[0]], {strokeColor:conecolor, dash:2, strokeWidth:2});
+phoa.updateDataArray = function() {
+    this.dataX = [];
+    this.dataY = [];
+    for(var i=0; i<arrPhotopic[0][Math.floor(freqslider.Value())]-aboffx; i++) {
+		B = phoslider.Value() * Math.pow(0.5, i/horizcomp/tau_pho);
+		di = 2.9*B + arrPhotopic[1][Math.floor(freqslider.Value())];
+        this.dataX[i] = i+aboffx;
+        this.dataY[i] = di;
+    }
+};
+
+// Scotopic adaption curve
+var scoa = b.create('curve', [[0],[0]], {strokeColor:rodcolor, dash:2, strokeWidth:2});
+scoa.updateDataArray = function() {
+    this.dataX = [];
+    this.dataY = [];
+    for(var i=0; i<arrScotopic[0][Math.floor(freqslider.Value())]-aboffx; i++) {
+		B = scoslider.Value() * Math.pow(0.5, i/horizcomp/tau_sco);
+		di = 10.0*2.0*B + arrScotopic[1][Math.floor(freqslider.Value())];
+        this.dataX[i] = i+aboffx;
+        this.dataY[i] = di;
+    }
+};
+
+// Dark adaption curve!!
+var scoa = b.create('curve', [[0],[0]], {strokeColor:'#000000', strokeWidth:3.5});
+scoa.updateDataArray = function() {
+    this.dataX = [];
+    this.dataY = [];
+    for(var i=0; i<maxsteps; i++) {
+		Bs = scoslider.Value() * Math.pow(0.5, i/horizcomp/tau_sco);
+		dis = 10.0*2.0*Bs + arrScotopic[1][Math.floor(freqslider.Value())];
+		Bf = phoslider.Value() * Math.pow(0.5, i/horizcomp/tau_pho);
+		dif = 2.9*Bf + arrPhotopic[1][Math.floor(freqslider.Value())];
+		
+		di = Math.min( dis, dif )
+        this.dataX[i] = i+aboffx;
+        this.dataY[i] = di;
+    }
+};
+
+function test() {
+	freqslider.Value() = 0.0
+}
+
+b.unsuspendUpdate();
+b.update()
+
+//Y axis = Log Threshold<br>
+//X axis on left = Time (approx. minutes*20, i.e.'100'=~5 mins)<br>
+//X axis on right = Wavelength<br>
+//<br>
+//Sliders control wavelength of test light and percentage bleached (pho/sco)<br>
+//<br>
+//bold lines on right = spectral sensitivity curves<br>
+
+</script>
+
+bold dark line on left = dark adaptation curve<br>
+dashed lines = individual thresholds for rods and cones<br>
+dotted lines = pigment regeneration curves<br>
+<!--
+<form name="form_parties">
+   <input type="checkbox" value="13" onchange="test();" name="parties">Sonstige<br/>
+</form></div>
+-->
+
+</body>
+
+</html>
