@@ -251,7 +251,7 @@
                 var handler={
                     id: function(s) {
                         set_html('my-id','ID:'+s);
-                        if ('autoconnect' in dict_params) {
+                        if ('AUToconnect' in dict_params) { // disable with CAPS
                             setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
                         }
                     },
