@@ -10,6 +10,16 @@ Dark Adaptation Simulator
 <body>
 <div id="jxgbox" class="jxgbox" style="width:400px; height:300px;"></div>
 <div id="spectrum" style="position:absolute;top:263px;left:210px;"><img src="spectrum.png"></img></div>
+
+<div id="div_check_cones" style="position:absolute;top:18px;left:240px;">
+    <input type="checkbox" id="chk_cones" onclick="do_cones()" checked>
+</div>
+
+<div id="div_check_rods" style="position:absolute;top:38px;left:240px;">
+    <input type="checkbox" id="chk_rods" onclick="do_rods()" checked>
+</div>
+
+
 <script>
 var b = JXG.JSXGraph.initBoard('jxgbox',
 	{showNavigation: false, showCopyright: false, originX: 200, originY: 200, unitX: 40, unitY: 40, grid:true, axis:true});        
@@ -17,6 +27,9 @@ var b = JXG.JSXGraph.initBoard('jxgbox',
 //var el = b.create('text', [5,-0.5,'350'] )
 
 const color_cones="#f0c000";
+
+var rods_use=1.0;
+var cones_use=1.0;
 
 b.setBoundingBox([20,11.0,765,-3.0])
 //b.suspendUpdate();
@@ -75,7 +88,7 @@ scor.updateDataArray = function() {
 };
 
 // Photopic adaptation curve
-var phoa = b.create('curve', [[0],[0]], {strokeColor:color_cones, dash:2, strokeWidth:1});
+var phoa = b.create('curve', [[0],[0]], {strokeColor:color_cones, dash:2, strokeWidth:2});
 phoa.updateDataArray = function() {
     this.dataX = [];
     this.dataY = [];
@@ -88,7 +101,7 @@ phoa.updateDataArray = function() {
 };
 
 // Scotopic adaption curve
-var scoa = b.create('curve', [[0],[0]], {strokeColor:'#a0a0a0', dash:2, strokeWidth:1});
+var scoa = b.create('curve', [[0],[0]], {strokeColor:'#a0a0a0', dash:2, strokeWidth:2});
 scoa.updateDataArray = function() {
     this.dataX = [];
     this.dataY = [];
@@ -101,7 +114,7 @@ scoa.updateDataArray = function() {
 };
 
 // Dark adaption curve!!
-var scoa = b.create('curve', [[0],[0]], {strokeColor:'#000000', strokeWidth:3});
+var scoa = b.create('curve', [[0],[0]], {strokeColor:'#000000', strokeWidth:4});
 scoa.updateDataArray = function() {
     this.dataX = [];
     this.dataY = [];
@@ -111,7 +124,7 @@ scoa.updateDataArray = function() {
 		Bf = phoslider.Value() * Math.pow(0.5, i/horizcomp/tau_pho);
 		dif = 2.9*Bf + arrPhotopic[1][Math.floor(freqslider.Value())];
 		
-		di = Math.min( dis, dif )
+		di = Math.min( dis*rods_use, dif*cones_use )
         this.dataX[i] = i;
         this.dataY[i] = di;
     }
@@ -123,6 +136,29 @@ function test() {
 
 b.unsuspendUpdate();
 b.update()
+
+    function do_cones() {
+      // Toggle
+      var elem=document.getElementById('chk_cones');
+      console.log(elem.checked);
+      if (elem.checked) {
+        cones_use=1.0;
+      } else {
+        cones_use=1000.0;
+      }
+      b.update();
+    }
+    function do_rods() {
+      // Toggle
+      var elem=document.getElementById('chk_rods');
+      console.log(elem.checked);
+      if (elem.checked) {
+        rods_use=1.0;
+      } else {
+        rods_use=1000.0;
+      }
+      b.update();
+    }
 
 </script>
 
