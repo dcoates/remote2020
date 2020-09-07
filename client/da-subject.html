@@ -143,12 +143,11 @@
                 globBackground = parseFloat(arr[5]);
                 globPeripheral = parseFloat(arr[6]);
 
+                var elem = document.getElementById("canvas_layerFixation");
                 if (globPeripheral) {
-                    var elem = document.getElementById("canvas_layerFixation");
-                    elem.style.display="none";
-                } else {
-                    var elem = document.getElementById("canvas_layerFixation");
                     elem.style.display="block";
+                } else {
+                    elem.style.display="none";
                 }
 
                 if (globalAnimationID==null) {
@@ -157,8 +156,6 @@
                     gaborCancel=false;
                     globalAnimationID = requestAnimationFrame(animateDA);
                 } // if already going, param changes will be detected and used
-
-
             }
 
             // How we respond to peer commands
@@ -424,7 +421,7 @@
             cnvFixationLayer.width=wid_full; //fixation_size+"px";
             cnvFixationLayer.height=hi_full; //fixation_size+"px";
             cnvFixationLayer.style.left=(wid_full/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
-            cnvFixationLayer.style.top="0px"; //(hi_full/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+            cnvFixationLayer.style.top=hi_full-fixation_size*2.0+"px"; //not sure why I need to add "px" to all these. Seems wrong.
             //cnvFixationLayer.style.top="0px";
 
             ctxFixationLayer=cnvFixationLayer.getContext('2d');
@@ -460,7 +457,7 @@
 
             setup_webgl();
 
-            receive_commands("G 0.025 0.8 0 0 0.1 1");
+            receive_commands("G 0.125 0.8 0 0 0.01 0");
 		};
 
 		function closeFullscreen() {

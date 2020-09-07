@@ -52,7 +52,7 @@ void main() {
 
   float grating=sin(posRotate[0]*sf_div);
   //float mag=1.0*exp(-distanceSqrd/0.01);  // Gaussian
-  float mag_raw=ceil(sigma-distanceSqrd);
+  float mag_raw=ceil(sigma-distance);
   float mag=mag_raw*amp;
   float noiz;
 
@@ -167,7 +167,7 @@ function initializeAttributes() {
   gl.enableVertexAttribArray(0);
   buffer = gl.createBuffer();  
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,-0.5]), gl.STATIC_DRAW);
   //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,-0.5]), gl.STATIC_DRAW);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 }

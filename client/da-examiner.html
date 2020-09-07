@@ -237,6 +237,16 @@
                 var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
                 trial_log.push(trial1);
                 update_graph(trial1);
+
+                if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                    thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+ypos);
+                }
+
+                if (timeSecElapsed==0) {
+                    timer_reset=true;
+                    var_timer=setTimeout(updateClock, 5000);
+                }
+
             }
             function test_restart() {
                 clearTimeout(var_timer);
@@ -275,17 +285,15 @@
 
                 var handler_uploader={
                     id: function(s) {
-                        if ('XXXautoconnect2' in dict_params) { //disable
+                        if ('autoconnect2' in dict_params) { //disable
                             setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
                         }
                     },
-                    lost: function(s) {alert('status',s);},
-                    error: function(s) {alert('status',s);},
-                    connect: function(s) {
-                        set_html('status','Paired:'+ s);
-                    },
-                    peer_info: function(s) {pair_screen_info(s);},
-                    unpair: function (s) {set_html ('status',s);},
+                    lost: function(s) {log.info(s);},
+                    error: function(s) {log.info(s);},
+                    connect: function(s) {log.info('paired '+s);},
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info('unpaired',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
                     receive: function (s) {},
                 }
@@ -494,12 +502,12 @@
             do_kb(event.keyCode);
         }
 
-        var gSize=0;
+        var gSize=0.125;
         var gColor=0; // Default
         var gPeriph=0; // Default
 
         function set_size(which){
-            gSize=which?0.25:0.0025;
+            gSize=which?0.25:0.025;
             do_update();
         }
         function set_color(which){
@@ -507,7 +515,7 @@
             do_update();
         }
         function set_loc(which){
-            gPeriph=which?0:1;
+            gPeriph=which?1:0;
             do_update();
         }
 
