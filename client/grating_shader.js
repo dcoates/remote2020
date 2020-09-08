@@ -167,8 +167,7 @@ function initializeAttributes() {
   gl.enableVertexAttribArray(0);
   buffer = gl.createBuffer();  
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0.5]), gl.STATIC_DRAW);
-  //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,-0.5]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,-0.25]), gl.STATIC_DRAW);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 }
 

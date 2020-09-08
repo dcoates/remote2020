@@ -121,7 +121,6 @@
 
                 setupWebGL();
 
-                // Need to re-do this I guess?
                 //document.addEventListener('click', function(event) {
                     //openFullscreen();
                 //}, false);
@@ -274,8 +273,6 @@
                 yc=height/2;
 
                 document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
-
-                //canvas.className = "fullscreen"
             }
 
             // Global variables
@@ -373,11 +370,51 @@
 
         };
 
+        document.addEventListener('fullscreenchange',(event) => {
+            if (document.fullscreenElement) {
+                setup_webgl();
+                receive_commands("G 0.125 0.8 0 0 0.01 1");
+
+                var elem = document.getElementById("fullscreen_parent");
+
+                // Restore to fullscreen, hopefully what 2d view had
+                // Test to see if better on iOS:
+                //elem.width = width;
+                //elem.height = height;
+                wid_full=elem.scrollWidth;
+                hi_full=elem.scrollHeight;
+
+                const fixation_size=40;
+                cnvFixationLayer=document.getElementById('canvas_layerFixation')
+                cnvFixationLayer.width=wid_full; //fixation_size+"px";
+                cnvFixationLayer.height=hi_full; //fixation_size+"px";
+                cnvFixationLayer.style.left=(wid_full/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+                cnvFixationLayer.style.top="0px" //hi_full-fixation_size*2.0+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+
+                ctxFixationLayer=cnvFixationLayer.getContext('2d');
+                var ctx=ctxFixationLayer;
+                ctx.strokeStyle = '#500000';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(0, fixation_size/2); //fixation_size/2);
+                ctx.lineTo(fixation_size,fixation_size/2); //fixation_size, fixation_size/2);
+                ctx.moveTo(fixation_size/2,0);
+                ctx.lineTo(fixation_size/2,fixation_size); //fixation_size/2, fixation_size);
+                ctx.stroke();
+
+                }
+            });
+
         var wid_full;
         var hi_full;
         var cnvFixationLayer;
         var ctxFixationLayer;
 		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                // don't do anything if there is already a fullscreen element
+                return;
+            }
 
             // Remember fullscreen size
             var elem = document.getElementById("fullscreen_parent");
@@ -386,15 +423,9 @@
 
             noSleep.enable();
 
-            setup_webgl();
-
             // Do this in case the fullscreen calls crash
             elem.width = width;
             elem.height = height;
-
-            if (document.fullscreenElement) {
-                return;
-            }
 
             var bDidFullscreen=true;
             if (elem.requestFullscreen) {
@@ -408,38 +439,6 @@
             } else {
                 bDidFullscreen=false;
             }
-
-            // Restore to fullscreen, hopefully what 2d view had
-            // Test to see if better on iOS:
-            //elem.width = width;
-            //elem.height = height;
-            wid_full=elem.width; //scrollWidth;
-            hi_full=elem.height; //scrollHeight;
-
-            const fixation_size=40;
-            cnvFixationLayer=document.getElementById('canvas_layerFixation')
-            cnvFixationLayer.width=wid_full; //fixation_size+"px";
-            cnvFixationLayer.height=hi_full; //fixation_size+"px";
-            cnvFixationLayer.style.left=(wid_full/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
-            cnvFixationLayer.style.top=hi_full-fixation_size*2.0+"px"; //not sure why I need to add "px" to all these. Seems wrong.
-
-            ctxFixationLayer=cnvFixationLayer.getContext('2d');
-            var ctx=ctxFixationLayer;
-            ctx.strokeStyle = '#500000';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(0, fixation_size/2); //fixation_size/2);
-            ctx.lineTo(fixation_size,fixation_size/2); //fixation_size, fixation_size/2);
-            ctx.moveTo(fixation_size/2,0);
-            ctx.lineTo(fixation_size/2,fixation_size); //fixation_size/2, fixation_size);
-            ctx.stroke();
-
-            canvas.width=wid_full;
-            canvas.height=hi_full;
-
-            setup_webgl();
-
-            receive_commands("G 0.125 0.8 0 0 0.01 0");
 		};
 
 		function closeFullscreen() {
