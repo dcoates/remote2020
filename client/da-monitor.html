@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>remote2020 - examiner-adaptometer</title>
+        <link rel="stylesheet" href="da-theme.css">
+        <link rel="stylesheet" href="graph2.css">
+    </head>
+    <body style="background-color:#000000" onload="load_code()">  
+
+        <table>
+            <tr><td>
+        <div id="my_dataviz1" class="graph" onclick="multi_clear(0);"></div>
+                </td><td>
+        <div id="my_dataviz2" class="graph"></div>
+                </td><td>
+        <div id="my_dataviz3" class="graph"></div>
+                </td>
+            </tr>
+            <tr><td>
+        <div id="my_dataviz4" class="graph"></div>
+                </td><td>
+        <div id="my_dataviz5" class="graph"></div>
+                </td><td>
+        <div id="my_dataviz6" class="graph"></div>
+                </td>
+            </tr>
+        </table>
+
+
+		<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="loglevel.min.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="staircase.js"></script>
+        <script src="stims.js"></script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="graph_class.js"></script>
+        <script src="grating_shader.js" type="text/javascript"></script>
+        <script type="text/javascript" src="dat.gui.min.js"></script>
+
+        <script type="text/javascript">
+            // <button id="prev" onclick=";" style="border-radius:4px;">&#8249;</button>
+
+            var graphs=[];
+
+            var dict_params = {} // GLOBAL
+            function load_code() {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+
+                peer_init();
+
+				for( var i=1; i<7; i++) {
+                    graph1=new aGraph("#my_dataviz"+i,400,340);
+                    graphs.push(graph1);
+                }
+            };
+
+            var params = {
+                intensityCoarse:0.9,
+                intensityFine:0.004,
+                radius:0.025,
+                green:false,
+                peripheral:false,
+            }
+
+
+            //var gui = new dat.gui.GUI({autoPlace: false, width:"400px"});
+
+			//function params_update() {
+				//thePeer.send("G "+params.radius + " " + params.intensityCoarse+" "+params.intensityFine);
+            //}
+
+			function doit() {
+				openFullscreen();
+
+				/* 
+				//const cubeFolder = gui.params("contrast")
+				gui.add(params, "intensityCoarse", 0, 1.0, 0.01).onFinishChange(params_update);
+				gui.add(params, "intensityFine", 0, 0.004, 0.004/50.0).onFinishChange(params_update);
+				gui.add(params, "radius", 0.01, 0.1, 0.01).onFinishChange(params_update);
+				gui.add(params, "green").onFinishChange(params_update);
+				gui.add(params, "peripheral").onFinishChange(params_update);
+
+				var parent=document.getElementById("gui_holder");
+				// For some reason, css wasn't changing these attributes, so do it manually here:
+				parent.appendChild(gui.domElement);
+				el=document.getElementsByClassName('cr');
+				//for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					//el[i].style.height="40px";
+                    
+
+				el=document.getElementsByClassName('slider-fg');
+				for( var i=0; i<el.length; i++) { // couldn't get forEach to wokr
+					el[i].style.color='black';
+					el[i].style.backgroundColor='red';
+					el[i].style.height='40px';
+				}
+
+				el=document.getElementsByClassName('close-button');
+				el[0].style.backgroundColor='black';
+				el[0].style.color='black';
+				el[0].style.display='none';
+				*/
+
+                // Star the clock ticking!
+                timer_reset=true;
+                var_timer=setTimeout(updateClock, 5000);
+
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // prevent scroll bars
+			}
+
+            var count_animation=0;
+            var d;
+            var gTimeStart;
+            var timeSecElapsed=0;
+
+            const UPDATE_RATE=5000; // every 5 sec
+            var var_timer=null;          // holds the timeout timer
+            var timer_reset=true;
+            function updateClock() {
+                if (timer_reset) {
+                    d=new Date();
+                    gTimeStart=d.getTime();
+                    timer_reset=false;
+                }
+                d=new Date();
+                timeSecElapsed=(d.getTime()-gTimeStart)/1000;
+                sec=(Math.trunc(timeSecElapsed%60));
+                s=Math.trunc(timeSecElapsed/60) + ':' + (sec<10?'0':'') + sec;
+                set_html("time_elapsed",s);
+                var_timer=setTimeout(updateClock, 5000);
+            }
+
+            var torch_on=false;
+            function do_torch() {
+                torch_on=(torch_on==false);
+                thePeer.send(torch_on?"1":"0");
+            }
+
+            function do_upload() {
+                thePeer2.send(trial_log);
+            }
+
+            var trial_log=[];
+            function plot1(which,x,y) {
+
+                // If max is 30min (30*60), /20 goes from 0-90
+                var trial1={'is_correct': false, 'x': x, 'y': y };
+                trial_log.push(trial1);
+                graphs[which].update_graph(trial1);
+            }
+            function test_restart() {
+                clearTimeout(var_timer);
+                var_timer=setTimeout(updateClock, 5000);
+                timer_reset=true;
+                set_html("time_elapsed",0);
+                graph_clear_dots();
+                trial_log=[];
+            }
+
+            function peer_init() {
+                var handler={
+                    id: function(s) {
+                        log.info('my-id','ID:'+s);
+                        if ('autoconnect' in dict_params) { 
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {log.info('status',s);},
+                    error: function(s) {log.info('status',s);},
+                    connect: function(s) {
+                        log.error('status','Paired:'+ s);
+                        log.error('receiver-id',s+': OK');
+                    },
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info ('status',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {receive_message(s);}
+                }
+                thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    //thePeer.instructor=true; // not sure if it is instructor or not
+                }
+                thePeer.instructor=true;
+                thePeer.init();
+
+                var handler_uploader={
+                    id: function(s) {
+                        if ('autoconnect2' in dict_params) { //disable
+                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {log.info(s);},
+                    error: function(s) {log.info(s);},
+                    connect: function(s) {log.info('paired '+s);},
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info('unpaired',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {;}
+                }
+
+                // To handle upload, simplest is to just create a new Peer to talk to instructor
+                // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new
+                // Peer connection in mypeer. (one -> many ( ok, here two) )
+                //thePeer2=new MyPeer(handler_uploader);
+                //thePeer2.init();
+            };
+
+            function do_connect() {
+                // Might want to disable for autoconnected
+                thePeer.join(get_value('receiver-id'));
+				doit();
+            };
+
+            var thePeer = null; 
+            var thePeer2 = null; 
+
+            function reportSize() {
+                wid=canv.width;
+                height=canv.height;
+                xc=wid/2;
+                yc=height/2;
+            }
+
+            function send_trial() {
+                // get commands
+                var commands=document.getElementById("commands").value;
+                // Replace the meta parameters (since 1 string);
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params );
+                var msg="T "+commands;
+                if (thePeer && thePeer.conn && thePeer.conn.open) {
+			        thePeer.send(msg);
+                }
+            }
+
+        function receive_message(s) {
+            var fields=s.split(" ");
+            var sender=parseInt(fields[0][5])-1;
+            var x=parseFloat(fields[1]);
+            var y=parseFloat(fields[2]);
+            if (sender<=6) {
+                plot1(sender,x,y);
+            }
+        }
+
+        function multi_clear(which) {
+            graphs[which].graph_clear_dots();
+        }
+
+        function do_trash() {
+            graph_clear();
+
+            for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
+                var count_id='count_'+nrow;
+                set_html(count_id,"0/0");
+            }
+            // clear "manual"
+            prev_manual_trial=null;
+            num_manual_trial=0;
+        }
+
+
+        function key_handler(event) {
+            do_kb(event.keyCode);
+        }
+
+        var gSize=0.125;
+        var gColor=0; // Default
+        var gPeriph=0; // Default
+
+        function set_size(which){
+            gSize=which?0.23:0.025;
+            do_update();
+        }
+        function set_color(which){
+            gColor=which;
+            do_update();
+        }
+        function set_loc(which){
+            gPeriph=which?1:0;
+            do_update();
+        }
+
+		function do_update() {
+			update_line(params.intensityCoarse);
+			set_html('lbl_value',params.intensityCoarse.toFixed(6));
+			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
+            stim_color=gColor;
+            
+			thePeer.send("G "+gSize+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background')+" "+gPeriph)
+		}
+        function do_kb(keycode) {
+            switch (keycode) {
+                case 37: //L
+                    params.intensityCoarse /= 0.95;
+					do_update();
+					break;
+                case 38: //U
+                    params.intensityCoarse /= 0.75;
+					do_update();
+					break;
+                case 39: //R
+                    params.intensityCoarse *= 0.95;
+					do_update();
+					break;
+                case 40: //D
+                    params.intensityCoarse *= 0.75;
+					do_update();
+					break;
+                case 32: // Space bar
+					record1();
+					break;
+                default:
+					log.info(keycode);
+                    return; // do nothing if unrecognized key
+                }
+        };
+	function do_action(which) { // TODO
+		    do_kb(which);}
+	
+</script>
+    </body>
+</html>
+
