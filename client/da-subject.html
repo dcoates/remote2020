@@ -372,7 +372,6 @@
 
         document.addEventListener('fullscreenchange',(event) => {
             if (document.fullscreenElement) {
-                setup_webgl();
                 receive_commands("G 0.125 0.8 0 0 0.01 1");
 
                 var elem = document.getElementById("fullscreen_parent");
@@ -402,6 +401,9 @@
                 ctx.lineTo(fixation_size/2,fixation_size); //fixation_size/2, fixation_size);
                 ctx.stroke();
 
+                canvas.width=wid_full;
+                canvas.height=hi_full;
+                setup_webgl();
                 }
             });
 
