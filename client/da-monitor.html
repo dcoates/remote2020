@@ -11,19 +11,19 @@
 
         <table>
             <tr><td>
-        <div id="my_dataviz1" class="graph" onclick="multi_clear(0);"></div>
+        <div id="my_dataviz1" class="graph" onclick="color_cycle(0);" ondblclick="multi_clear(0);"></div>
                 </td><td>
-        <div id="my_dataviz2" class="graph"></div>
+        <div id="my_dataviz2" class="graph" onclick="color_cycle(1);" ondblclick="multi_clear(1);"></div>
                 </td><td>
-        <div id="my_dataviz3" class="graph"></div>
+        <div id="my_dataviz3" class="graph" onclick="color_cycle(2);" ondblclick="multi_clear(2);"></div>
                 </td>
             </tr>
             <tr><td>
-        <div id="my_dataviz4" class="graph"></div>
+        <div id="my_dataviz4" class="graph" onclick="color_cycle(3);" ondblclick="multi_clear(3);"></div>
                 </td><td>
-        <div id="my_dataviz5" class="graph"></div>
+        <div id="my_dataviz5" class="graph" onclick="color_cycle(4);" ondblclick="multi_clear(4);"></div>
                 </td><td>
-        <div id="my_dataviz6" class="graph"></div>
+        <div id="my_dataviz6" class="graph" onclick="color_cycle(5);" ondblclick="multi_clear(5);"></div>
                 </td>
             </tr>
         </table>
@@ -44,6 +44,7 @@
             // <button id="prev" onclick=";" style="border-radius:4px;">&#8249;</button>
 
             var graphs=[];
+            var graphs_color_state=[];
 
             var dict_params = {} // GLOBAL
             function load_code() {
@@ -55,6 +56,7 @@
 				for( var i=1; i<7; i++) {
                     graph1=new aGraph("#my_dataviz"+i,400,340);
                     graphs.push(graph1);
+                    graphs_color_state.push(false);
                 }
             };
 
@@ -145,14 +147,18 @@
                 thePeer2.send(trial_log);
             }
 
+            function color_cycle(which) {
+                graphs_color_state[which]=(graphs_color_state[which]==false);
+            }
+
             var trial_log=[];
             function plot1(which,x,y) {
-
                 // If max is 30min (30*60), /20 goes from 0-90
-                var trial1={'is_correct': false, 'x': x, 'y': y };
+                var trial1={'is_correct': graphs_color_state[which], 'x': x, 'y': y };
                 trial_log.push(trial1);
                 graphs[which].update_graph(trial1);
             }
+
             function test_restart() {
                 clearTimeout(var_timer);
                 var_timer=setTimeout(updateClock, 5000);
