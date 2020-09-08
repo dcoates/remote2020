@@ -413,8 +413,8 @@
             // Test to see if better on iOS:
             //elem.width = width;
             //elem.height = height;
-            wid_full=elem.scrollWidth;
-            hi_full=elem.scrollHeight;
+            wid_full=elem.width; //scrollWidth;
+            hi_full=elem.height; //scrollHeight;
 
             const fixation_size=40;
             cnvFixationLayer=document.getElementById('canvas_layerFixation')
@@ -422,10 +422,8 @@
             cnvFixationLayer.height=hi_full; //fixation_size+"px";
             cnvFixationLayer.style.left=(wid_full/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
             cnvFixationLayer.style.top=hi_full-fixation_size*2.0+"px"; //not sure why I need to add "px" to all these. Seems wrong.
-            //cnvFixationLayer.style.top="0px";
 
             ctxFixationLayer=cnvFixationLayer.getContext('2d');
-            //ctxFixationLayer.fillStyle = '#500000';
 
             var ctx=ctxFixationLayer;
             ctx.strokeStyle = '#500000';
@@ -435,27 +433,14 @@
             ctx.lineTo(fixation_size,fixation_size/2); //fixation_size, fixation_size/2);
             ctx.moveTo(fixation_size/2,0);
             ctx.lineTo(fixation_size/2,fixation_size); //fixation_size/2, fixation_size);
-            //ctx.lineTo(70, 100);
             ctx.stroke();
-
-            //ctx.globalCompositeOperation = 'xor'; // didn't work
-
-
-            //ctxFixationLayer.fillRect(fixation_size/2,fixation_size/2,fixation_size,fixation_size); //fixation_size,fixation_size);
-            //ctxFixationLayer.fillRect(0,0,fixation_size,fixation_size); //fixation_size,fixation_size);
-
-            // Failed circle attempt:
-            //var cx=fixation_size/2.0;
-            //var cy=fixation_size/2.0;
-            //var rad=fixation_size/2.0;
-            //ctxFixationLayer.arc(cx,cy,rad,0,2*Math.PI,false);
-            //ctxFixationLayer.fill();
 
             console.log(elem.width/2,elem.height/2);
 
-            //s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
-
             setup_webgl();
+
+            canvas.width=wid_full;
+            canvas.height=hi_full;
 
             receive_commands("G 0.125 0.8 0 0 0.01 0");
 		};
