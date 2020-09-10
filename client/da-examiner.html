@@ -88,7 +88,7 @@
 
         <div id="my_dataviz" class="graph"></div>
 
-        <button type="button" id="btnReset" onclick="test_restart();"; style="border-radius:4px;">
+        <button type="button" id="btnReset" ondblclick="do_test_restart();"; style="border-radius:4px;">
 <svg width="2.5em" height="2.5em" viewBox="0 0 16 16" class="bi bi-arrow-counterclockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
   <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
@@ -237,7 +237,7 @@
 
                     if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
                         //Sentinel to signal start bleach
-                        thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+3.0);
+                        thePeer2.send(thePeer.peer.id+' '+-2.0+' '+4.0);
                      }
 
                     test_restart(); // clear time-out etc.
@@ -246,14 +246,35 @@
 
             function bleach_done() {
                 do_torch(); // This will turn off
+                test_restart(); // clear time-out etc.
+
                 if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
-                    //Sentinel that testing is beginning
-                    thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+2.5);
+                    //Sentinel that testing is beginning: sec should be back at zero
+                    thePeer2.send(thePeer.peer.id+' '+0.0+' '+3.9);
                 }
             }
 
+            var conn_retries=3;
             function do_upload() {
-                thePeer2.send(trial_log);
+                log.error('DOUP');
+                if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                    trial_log.unshift(thePeer.peer.id); // prepend our ID 
+                    thePeer2.send(trial_log);
+                    trial_log.shift(); // TODO: probably a better way to do this
+                 } else {
+                     log.error('NOCONN');
+                     if (conn_retries >= 0) {
+                            log.error('TRYING');
+                            conn_retries -= 1;
+                            thePeer2=new MyPeer(handler_uploader);
+                            thePeer2.init();
+                            setTimeout( do_upload, 3000 ); // give it three seconds to connect then try to send
+                     } else {
+                         // Don't try again now, but reset, in case they try to hit
+                         // do_upload again later.
+                         conn_retries=3;
+                     }
+                }
             }
 
             var trial_log=[];
@@ -283,6 +304,27 @@
                 trial_log=[];
             }
 
+            function do_test_restart() {
+                // This is what the button calls
+                test_restart();
+            }
+
+            // Used for special (instructor) connections
+            var handler_uploader={
+                id: function(s) {
+                    if ('autoconnect2' in dict_params) { //disable
+                        setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                    }
+                },
+                lost: function(s) {log.info(s);},
+                error: function(s) {log.info(s);},
+                connect: function(s) {log.info('paired '+s);},
+                peer_info: function(s) {log.info(s);},
+                unpair: function (s) {log.info('unpaired',s);},
+                keyboard: function (nkey) {do_kb(nkey);},
+                receive: function (s) {},
+            }
+
             function peer_init() {
                 var handler={
                     id: function(s) {
@@ -308,21 +350,6 @@
                     //thePeer.instructor=true; // not sure if it is instructor or not
                 }
                 thePeer.init();
-
-                var handler_uploader={
-                    id: function(s) {
-                        if ('autoconnect2' in dict_params) { //disable
-                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
-                        }
-                    },
-                    lost: function(s) {log.info(s);},
-                    error: function(s) {log.info(s);},
-                    connect: function(s) {log.info('paired '+s);},
-                    peer_info: function(s) {log.info(s);},
-                    unpair: function (s) {log.info('unpaired',s);},
-                    keyboard: function (nkey) {do_kb(nkey);},
-                    receive: function (s) {},
-                }
 
                 // To handle upload, simplest is to just create a new Peer to talk to instructor
                 // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new

@@ -23,7 +23,7 @@ class aGraph {
               "translate(" + (margin.left+left_extra) + "," + margin.top + ")");
 
     this.xScale = d3.scaleLinear()
-        .domain([0,45])
+        .domain([-2,30])
         .range([0,this.width_graph])
     this.xAxis = d3.axisBottom(this.xScale);
 

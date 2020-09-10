@@ -21,7 +21,7 @@ var svg = d3.select("#my_dataviz")
 //d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
 
 const xScale = d3.scaleLinear()
-        .domain([0,45])
+        .domain([-2,30])
         .range([0,width_graph])
 const xAxis = d3.axisBottom(xScale);
 
