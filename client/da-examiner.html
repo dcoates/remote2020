@@ -28,24 +28,29 @@
   <label for="on" onclick="set_color(0);" style="color:white;">White</label>
 
   <input id="na" name="state-d" type="radio" />
-  <label for="na" class="disabled" onclick="set_color(1);" style="color:green;">Green</label>
+  <label for="na" onclick="set_color(1);" style="color:green;">Green</label>
 
   <input id="off" name="state-d" type="radio" />
   <label for="off" onclick="set_color(2);" style="color:red;">Red</label>
 </div>
 
-	<div class="switch-field">
-		<input type="radio" id="radio-small" name="switch-size" value="Small" onclick="set_size(0);" />
-		<label for="radio-small">Small</label>
-		<input type="radio" id="radio-large" name="switch-size" value="Large" onclick="set_size(1);" checked />
-		<label for="radio-large">Large</label>
-	</div>
+<div class="switch-toggle switch-3 switch-candy">
+  <input id="d1" onclick="set_size(0);" name="state-d2" type="radio" />
+  <label for="d1" onclick="set_size(0);" style="color:red;">1&deg</label>
+
+  <input id="d6" name="state-d2" type="radio" checked="checked" onclick="set_size(1);" />
+  <label for="d6" onclick="set_size(1);" style="color:red;">6&deg</label>
+
+  <input id="d10" name="state-d2" type="radio" onclick="set_size(2);" />
+  <label for="d10" onclick="set_size(2);" style="color:red;">10&deg</label>
+</div>
+<br><br>
 
 	<div class="switch-field">
 		<input type="radio" id="radio-foveal" name="switch-loc" value="Foveal" onclick="set_loc(0);" checked/>
 		<label for="radio-foveal">Foveal</label>
 		<input type="radio" id="radio-periph" name="switch-loc" value="Peripheral" onclick="set_loc(1);" />
-		<label for="radio-perip">Peripheral</label>
+		<label for="radio-perip">Periph. (10&deg)</label>
 	</div>
 
 	<br><br>
@@ -200,7 +205,7 @@
             var count_animation=0;
             var d;
             var gTimeStart;
-            var timeSecElapsed=0;
+            var timeSecElapsed=0.0;
 
             const UPDATE_RATE=5000; // every 5 sec
             var var_timer=null;          // holds the timeout timer
@@ -220,9 +225,31 @@
             }
 
             var torch_on=false;
+            var torch_timer=null;
             function do_torch() {
                 torch_on=(torch_on==false);
                 thePeer.send(torch_on?"1":"0");
+
+                clearTimeout(torch_timer);
+                // Just turned on: set auto-off
+                if (torch_on) {
+                    torch_timer=setTimeout(bleach_done, 1000*60*2); //autoshut-off after 2min
+
+                    if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                        //Sentinel to signal start bleach
+                        thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+3.0);
+                     }
+
+                    test_restart(); // clear time-out etc.
+                } 
+            }
+
+            function bleach_done() {
+                do_torch(); // This will turn off
+                if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                    //Sentinel that testing is beginning
+                    thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+2.5);
+                }
             }
 
             function do_upload() {
@@ -250,9 +277,8 @@
             }
             function test_restart() {
                 clearTimeout(var_timer);
-                var_timer=setTimeout(updateClock, 5000);
                 timer_reset=true;
-                set_html("time_elapsed",0);
+                updateClock();
                 graph_clear_dots();
                 trial_log=[];
             }
@@ -507,7 +533,12 @@
         var gPeriph=0; // Default
 
         function set_size(which){
-            gSize=which?0.23:0.025;
+            if (which==0) {gSize=0.025;}
+            else {
+                if (which==1) {gSize=0.025*6;}
+            else {gSize=0.025*10;}
+            }
+            log.error(gSize);
             do_update();
         }
         function set_color(which){
