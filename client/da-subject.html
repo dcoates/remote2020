@@ -144,7 +144,7 @@
 
                 var elem = document.getElementById("canvas_layerFixation");
                 if (globPeripheral) {
-                    elem.style.display="block";
+                    elem.style.display="inline-block";
                 } else {
                     elem.style.display="none";
                 }
@@ -371,14 +371,14 @@
         };
 
         document.addEventListener('fullscreenchange',(event) => {
-            var elem=document.fullscreenElement
+            var elem=document.fullscreenElement;
             if (elem) {
                 // Restore to fullscreen, hopefully what 2d view had
                 // Test to see if better on iOS:
                 //elem.width = width;
                 //elem.height = height;
-                wid_full=elem.offsetWidth;
-                hi_full=elem.offsetHeight;
+                wid_full=elem.clientWidth;
+                hi_full=elem.clientHeight;
 
                 const fixation_size=40;
                 cnvFixationLayer=document.getElementById('canvas_layerFixation')
