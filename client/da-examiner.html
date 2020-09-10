@@ -261,6 +261,8 @@
                     trial_log.unshift(thePeer.peer.id); // prepend our "real" ID  (not Peer2 ID)
                     thePeer2.send(trial_log);
                     trial_log.shift(); // TODO: probably a better way to do this
+
+                    test_restart();
                  } else {
                      //log.error('NOCONN');
                      if (conn_retries >= 0) {
