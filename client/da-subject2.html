@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>remote2020 - patient</title>
+        <link rel="stylesheet" href="da-subject.css">
+    </head>
+    <body style="background-color:#808080" onload="load_code()">  
+
+		<div class="split left" style="display:none">
+                <div id="receiver-id" style="font-weight: bold;" title="id">ID:</div>
+                <div id="status" style="font-weight: bold;" title="status">Status:</div>
+                <br><br>
+
+            <div id="text" style="display:none;">
+                <button type="button" id="demo1" onclick=";">Tumbling-E Acuity</button>
+
+                <input type="checkbox" id="chkFlanked"><label for='chkFlanked'>Bar Flanks</label>
+                <input type="checkbox" id="chkEFlanked"><label for='chkEFlanked'>E Flanks</label>
+
+                <textarea name="commands" id="commands" style="height:300px;width:90%">Trial code</textarea>
+                <table style="width:100%;height:200px;border-top:1px">
+                    <tr><td width=70%>
+                    <textarea name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct</textarea>
+                    </tr>
+                </table>
+            </div>
+            <div class="buttons" style="display:none">
+                <button type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+                <input type="checkbox" id="chkFullScr"><label for='chkFullScr'>FullScreen</label>
+                <input type="checkbox" id="chkBeep"><label for='chkBeep'>Beep</label>
+                <br>
+                    <span id="lblStair">Staircase (0):</span>
+                    <input type="checkbox" id="chkStair">
+                    <button type="button" id="btnStairStart" onclick="stair_restart();">Restart</button>
+                    <label for="staircase_trials">Staircase Trials:</label>
+                    <input type="text" id="staircase_trials" name="staircase_trials" value="30" style="width:40px">
+
+                <p id="pCanvasSize">Size</p>
+            </div>
+		</div>
+
+        <div id="fullscreen_parent" class="fullscreen_parent">
+            <!-- Specifying height&width here just to aspect ratio stays 1:1, not sure if this is correct. Was having problems.
+            override with style.height and weight anyway. -->
+        <canvas id="canvas_layerFixation" class="canvas_layerFixation"></canvas>
+        <canvas id="canvas">Canvas</canvas>
+        </div>
+
+        <script src="loglevel.min.js"></script>
+        <script src="NoSleep.min.js"></script>
+        <script src="stims.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="peerjs.js"></script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="grating_shader.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            var thePeer=null;
+            var noSleep=null;
+
+            var dict_params = {} // GLOBAL
+            function load_code() {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+
+                noSleep=new NoSleep();
+
+                peer_init();
+                // Get the canvas element form the page
+                canvas = document.getElementById("canvas");
+                 
+                /* Rresize the canvas to occupy the full page, 
+                       by getting the widow width and height and setting it to canvas*/
+                     
+                canvas.width  = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                // set globals which are used by stims.js
+                wid=canvas.width;
+                height=canvas.height;
+                xc=wid/2;
+                yc=height/2;
+
+                console.log('yes')
+                dims="Dims: " +canvas.width+' '+canvas.height;
+                console.log(dims)
+
+                ctx = canvas.getContext("2d");
+
+                clear('white')
+                square(200,'black');
+                ctx.fillStyle = 'black';
+                ctx.font = "30px Arial";
+                ctx.fillText(dims, 10, 100);
+                //ctx.fillText("Please wait", 10, 150);
+
+                document.body.scrollTop = 0; // <-- pull the page back up to the top
+                document.body.style.overflow = 'hidden'; // prevent scroll bars
+
+                document.addEventListener('click', function(event) {
+                    openFullscreen();
+                    do_fullscreen(null); // for Mac IOS
+               	set_torch(false);
+                }, false);
+
+                document.addEventListener('touchstart', function(event) {
+                    openFullscreen();
+                    do_fullscreen(null); // for Mac IOS
+               	set_torch(false);
+                }, false);
+            }
+
+            function setup_webgl() {
+
+                if (!(ctx==null)) {
+                    // Clone the canvas to unhook the canvas
+            	    //canv = document.getElementById("canvas");
+                    var newCvs = canvas.cloneNode(false);
+                    canvas.parentNode.replaceChild(newCvs, canvas);
+                    canvas = newCvs;
+                    ctx=null; // delte the 2d context used only here
+                }
+
+                setupWebGL();
+
+                //document.addEventListener('click', function(event) {
+                    //openFullscreen();
+                //}, false);
+                //showShaderGrating(90,0.01,3.14*45/180);
+            }
+            var globContrastCoarse;
+            var globContrastFine;
+            var globPeripheral;
+            var globRadius;
+            var gaborCancel=false;
+            var count_animation=0;
+
+            function gabor(commands) {
+                arr=commands.split(' ');
+                globRadius= parseFloat(arr[1]);
+                globContrastCoarse= parseFloat(arr[2]);
+                globContrastFine = parseFloat(arr[3]);
+                globColor = parseFloat(arr[4]);
+                globBackground = parseFloat(arr[5]);
+                globPeripheral = parseFloat(arr[6]);
+
+                var elem = document.getElementById("canvas_layerFixation");
+                if (globPeripheral) {
+                    elem.style.display="inline-block";
+                } else {
+                    elem.style.display="none";
+                }
+
+                if (globalAnimationID==null) {
+                    // Start it if not already going
+                    count_animation=0;
+                    gaborCancel=false;
+                    globalAnimationID = requestAnimationFrame(animateDA);
+                } // if already going, param changes will be detected and used
+            }
+
+            // How we respond to peer commands
+            function receive_commands(data) {
+                log.info(data);
+                code=data.substring(0,1)
+                value=data.substring(1)
+                switch (code) {
+                    case '1':
+						set_torch(true);
+                        break;
+                    case '0':
+						set_torch(false);
+                        break;
+                    case 'T':
+                        log.log(value);
+                        commands=value;
+                        rcv_trial();
+                        break;
+                    case 'G':
+                        log.log(value);
+                        commands=value;
+                        gabor(value);
+                        break;
+                    case 'W':
+                        log.log(value);
+                        setup_webgl();
+                        break;
+                    default:
+                        log.log('UNREC: ' +value);
+                        break;
+            }
+            };
+            function peer_init() {
+                var handler={
+                    id: function(s) {
+                        ctx.fillStyle='black';
+                        ctx.fillText('ID: '+s, 10, 50);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {alert(s);},
+                    error: function(s) {alert(s);},
+                    connect: function(s) {
+                        ctx.fillStyle='green';
+                        ctx.fillText('Partner: '+s, 170, 50);
+                        //ctx.fillText('Partner: '+s, 170, 50);
+                        ctx.fillText("Please click to go fullscreen", 10, 150);
+                        setTimeout( function() {thePeer.send("FS "+canvas.width+" "+canvas.height);}, 500 );
+                    },
+                    peer_info: function(s) {},          //shouldn't ever receive this
+                    unpair: function (s) {alert('disconnected')},
+                    keyboard: function (nkey) {},       // shouldn't rcv keys
+                    receive: receive_commands,
+                };
+                thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    thePeer.instructor=false;
+                }
+                thePeer.init();
+            };
+
+            // Command/Action stuff
+            var commands=null;
+            var commands_split=null;
+            var flip_durations=[];
+            var actions=[];
+            var globalAnimationID=null;
+            var indexAction=0;
+            var indexFrame=0;
+            var trial_params={};
+            var in_trial=false;
+
+            function rcv_trial() {
+                // Mutex to make sure we don't clobber action list while in a trial
+                if (in_trial) {
+                    setTimeout(rcv_trial, 500); // wait a half second, repeat until trial is done 
+                    return;
+                } else {
+                    // set mutex to try to avoid race condition
+                    in_trial=true;
+                }
+
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
+
+            function reportSize() {
+                var rightcan = document.getElementById("rightcan");
+                wid=rightcan.clientWidth;
+                height=rightcan.clientHeight;
+                canv.width=wid;
+                canv.height=height;
+                xc=wid/2;
+                yc=height/2;
+
+                document.getElementById("pCanvasSize").innerHTML="Canvas Size: "+rightcan.scrollWidth+"x"+rightcan.scrollHeight;
+            }
+
+            // Global variables
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            var wid=768
+            var height=768;
+            var xc=wid/2;
+            var yc=height/2;
+            var conn = null;
+
+            function do_trial() {
+                // parse commands
+                commands=document.getElementById("commands").value;
+
+                // First replace the meta parameters (since 1 string)
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params )
+
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                in_trial=true;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
+
+            const rate_hz=60; // Hz
+            const duty_cycle=0.25;
+            //const rate_hz=12; // Hz
+            //const duty_cycle=0.25;
+            function animateDA(now) {
+                count_animation += 1;
+                if (gaborCancel) { // not sure if this is ever needed 
+                    cancelAnimationFrame(globalAnimationID);
+                    count_animation=0;
+                    globalAnimationID = null;
+                } else {
+                    if ( (count_animation%rate_hz)<(rate_hz*duty_cycle) ) { // Every Xsec on for Yms
+                        showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,globBackground,count_animation/1000.0);
+                    } else {
+                        clearGrating(globBackground);
+                    }
+                    globalAnimationID = requestAnimationFrame(animateDA);
+                };
+            };
+
+            function animateLoop() {
+                //var trial_params=document.getElementById("trial").value;
+                if (indexAction<actions.length) {
+                    //stats.begin()
+                    //filled=fillTemplate(actions[indexAction],eval(trial_params) )
+                    eval( actions[indexAction] );
+                    //stats.end()
+                    indexFrame += 1;
+                    if (indexFrame>=flip_durations[indexAction]) {
+                        indexFrame = 0;
+                        indexAction += 1;
+                    }
+
+                    globalAnimationID = requestAnimationFrame(animateLoop);
+                } else { // no more actions left
+                    // reset, in case we want to run again
+                    indexAction = 0;
+                    indexFrame = 0;
+
+                    cancelAnimationFrame(globalAnimationID);
+                    in_trial=false;
+                }
+            }
+
+        // audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
+
+        function key_handler(event) {
+            //console.log(event.keyCode);
+            if (!(thePeer === null) ) {
+                thePeer.send("KB "+event.keyCode);
+            }
+
+        };
+
+        document.addEventListener('fullscreenchange',(event) => { do_fullscreen(event); } );
+
+        function do_fullscreen(event) {
+            var elem=document.fullscreenElement;
+
+	    // For IOS where fullscreen doesn't seem to work properly
+	    if (elem==null) {
+		elem=document.getElementById('fullscreen_parent');
+		wid_full=screen.width;  // document.body.scrollWidth;
+		hi_full=screen.height; //document.body.scrollHeight;
+		elem.width=wid_full;
+		elem.height=wid_full;
+	    } else {
+                wid_full=elem.clientWidth;
+                hi_full=elem.clientHeight;
+	    }
+
+            if (elem) {
+                // Restore to fullscreen, hopefully what 2d view had
+                // Test to see if better on iOS:
+                //elem.width = width;
+                //elem.height = height;
+
+                const fixation_size=40;
+                const from_top=20;
+                cnvFixationLayer=document.getElementById('canvas_layerFixation')
+                cnvFixationLayer.width=wid_full; //fixation_size+"px";
+                cnvFixationLayer.height=hi_full; //fixation_size+"px";
+                cnvFixationLayer.style.left=(wid_full/2-fixation_size/2)+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+                cnvFixationLayer.style.top="0px" //hi_full-fixation_size*2.0+"px"; //not sure why I need to add "px" to all these. Seems wrong.
+
+		// For iOS, does it use z-index from stylesheet? IDK
+                cnvFixationLayer.style.zIndex=9;
+                canvas.style.zIndex=2;
+
+                ctxFixationLayer=cnvFixationLayer.getContext('2d');
+                var ctx=ctxFixationLayer;
+                ctx.strokeStyle = '#500000';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(0, fixation_size/2+from_top); //fixation_size/2);
+                ctx.lineTo(fixation_size,fixation_size/2+from_top); //fixation_size, fixation_size/2);
+                ctx.moveTo(fixation_size/2,0+from_top);
+                ctx.lineTo(fixation_size/2,fixation_size+from_top); //fixation_size/2, fixation_size);
+                ctx.stroke();
+
+                canvas.width=wid_full;
+                canvas.height=hi_full;
+
+                setup_webgl();
+                receive_commands("G 0.125 0.8 0 0 0.01 1");
+
+                }
+            };
+
+        var wid_full;
+        var hi_full;
+        var cnvFixationLayer;
+        var ctxFixationLayer;
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                // don't do anything if there is already a fullscreen element
+                return false;
+            }
+
+            // Remember fullscreen size
+            var elem = document.getElementById("fullscreen_parent");
+            var width= elem.width;
+            var height= elem.height;
+
+            noSleep.enable();
+
+            // Do this in case the fullscreen calls crash
+            elem.width = width;
+            elem.height = height;
+
+            var bDidFullscreen=true;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen(); // TODO: check return values?
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            } else {
+                bDidFullscreen=false;
+            }
+
+            return bDidFullscreen;
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+
+        // Keyboard listener
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+        </script> // end of Javascript
+    </body>
+</html>
