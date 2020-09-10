@@ -120,7 +120,7 @@
                     });
                     peer.on('error', function (err) {
                         log.info(err);
-                        alert('' + err);
+                        //alert('' + err);
                         self.notify.error(err);
                     });
                 };
