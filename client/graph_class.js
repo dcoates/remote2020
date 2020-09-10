@@ -95,13 +95,7 @@ class aGraph {
             .attr("r", this.rad)
             .attr("cx", this.xScale(data1.x) )
             .attr("cy", this.yScale(data1.y) )
-            .style("fill", function () {
-                if (data1.is_correct) {
-                    return "green";
-                } else {
-                    return "red";
-                }
-        });
+            .style("fill", data1.color)
     }
 
 };

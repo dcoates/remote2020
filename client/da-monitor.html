@@ -154,7 +154,7 @@
             var trial_log=[];
             function plot1(which,x,y) {
                 // If max is 30min (30*60), /20 goes from 0-90
-                var trial1={'is_correct': graphs_color_state[which], 'x': x, 'y': y };
+                var trial1={'is_correct': graphs_color_state[which]?'yellow':'white', 'x': x, 'y': y };
                 trial_log.push(trial1);
                 graphs[which].update_graph(trial1);
             }
