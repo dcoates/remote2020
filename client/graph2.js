@@ -1,3 +1,5 @@
+            'use strict';
+
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 15, bottom: 30, left: 20},
     //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,

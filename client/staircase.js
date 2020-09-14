@@ -1,4 +1,7 @@
+'use strict';
+
     function generate_ori(nafc) {
+        var ori;
         if (nafc==4) {
             ori=getRandomInt(4)*90;
         } else if (nafc==2) {
@@ -184,7 +187,7 @@
 
     var num_manual_trial=0;      // trial count
     var prev_answered=false;     // was previous trial answered already?
-    map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
+    var map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
        "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
 
     function manual_trial(which_size,nafc,is_YN) {

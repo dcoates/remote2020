@@ -1,3 +1,4 @@
+'use strict';
 
     // HTML-defined callbacks:
     // 'open' 'connection' 'disconnect' 'close' 'error'
