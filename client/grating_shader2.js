@@ -60,31 +60,18 @@ void main() {
 
   float grating=sin(posRotate[0]*sf_div);
   //float mag=1.0*exp(-distanceSqrd/0.01);  // Gaussian
-  float mag_raw=ceil(sigma-distance);
-  float mag=mag_raw*amp;
-  float noiz;
+  //float mag_raw=ceil(sigma-distance);
+  //float mag=mag_raw*amp;
+  // smoothing or ramp ideas:
+  // plt.plot(xr, np.ceil( (0.1-(-xr)**2 ) ), '.-'); plt.plot( xr,1.0-(-xr)**2/(4*np.pi*0.1**2)); plt.plot(xr,(0.1-(-xr)**2)**0.3/0.5); plt.show();
+  //float distance_mask=max(1.0-(distance/(2.0*2.0*3.14*sigma*sigma)),0.0);
+  float distance_mask=ceil(sigma-distance); // circular ramp with sharp edges (at sigma: 0 or 1)
 
   // If too far away (greater than sigma), will go 0 or negative, making this value 0
   // if close (less than sigma), will be 1.0 
-  float distance_mask=ceil(sigma-distance);
   float alpha_mask=distance_mask; 
-
-  //noiz=fract(sin(dot(fragmentPosition+vec2(rando,rando),vec2(12.9898,78.233))) * 43758.5453);
-  //noiz=rnd(fragmentPosition);
-  //float mag_red=pow(mag*color[0]+backbround,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
-  //float mag_green=pow(mag*color[1]+backbround,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
-  //float mag_blue=pow(mag*color[2]+backbround,(1.0/2.4)); // Inverse Gamma (appropriate for a Samsung Sx OLED phone.)
-  //float alp=ceil(mag); 
-    // mag=0===use an alpha of zero, any mag>0, use alpha of 1
-    //(so, for anything outside the sharp-edge circle use an alpha of 0 (transparent)
-  //float colorval=126.0*1.0/255.0;
   float r=noi(fragmentPosition);
-  //float colorval=(fragmentPosition[0]+0.5)/100.0+0.2/255.0;
-    
-  // For testing, only do the magic thing on the top/bottom half
-    // so divide into two regions, where y=0 and y=1
-  //float multy=floor(fragmentPosition[1]+1.0);
-  float colorval=amp;
+  float colorval=1.0*amp;
 
     // Noisy bit method (Allard/Faubert 2008)
     // Add random jitter btwn -0.5 and 0.5 "8 bit levels"
@@ -92,12 +79,8 @@ void main() {
   colorval+=(noi(fragmentPosition)-0.5)/255.0;
 
   colorval *= distance_mask; // don't need distance mask? (Since in alpha)
-  //float alp=1.0-mag_raw;
 
   colorval=pow(colorval+background, (1.0/2.4)); // then do the inverse Gamma
-
-  //gl_FragColor = vec4(0.1, mag_raw, mag_raw, 1.0 );
-  //gl_FragColor = vec4(mag_red, mag_green, mag_blue, 1.0 );
   gl_FragColor = vec4(colorval, colorval, colorval, 1.0);
 }
 `;
