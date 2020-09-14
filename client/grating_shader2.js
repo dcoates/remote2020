@@ -98,7 +98,7 @@ void main() {
 
   //gl_FragColor = vec4(0.1, mag_raw, mag_raw, 1.0 );
   //gl_FragColor = vec4(mag_red, mag_green, mag_blue, 1.0 );
-  gl_FragColor = vec4(colorval, colorval, colorval, alpha_mask);
+  gl_FragColor = vec4(colorval, colorval, colorval, 1.0);
 }
 `;
 
