@@ -431,7 +431,7 @@
 			set_html('lbl_value',params.intensityCoarse.toFixed(6));
 			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
             stim_size=(gSize==0)?0.0025:0.25;
-            stim_color=gColor;
+            var stim_color=gColor;
             
 			thePeer.send("G "+stim_size+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background'))
 		}

@@ -218,8 +218,8 @@
                 }
                 d=new Date();
                 timeSecElapsed=(d.getTime()-gTimeStart)/1000;
-                sec=(Math.trunc(timeSecElapsed%60));
-                s=Math.trunc(timeSecElapsed/60) + ':' + (sec<10?'0':'') + sec;
+                var sec=(Math.trunc(timeSecElapsed%60));
+                var s=Math.trunc(timeSecElapsed/60) + ':' + (sec<10?'0':'') + sec;
                 set_html("time_elapsed",s);
                 var_timer=setTimeout(updateClock, 5000);
             }
@@ -281,7 +281,7 @@
 
             var trial_log=[];
             function record1() {
-				ypos=Math.log10(params.intensityCoarse)+2.0;
+				var ypos=Math.log10(params.intensityCoarse)+2.0;
 
                 // If max is 30min (30*60), /20 goes from 0-90
                 var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
@@ -583,7 +583,7 @@
 			update_line(params.intensityCoarse);
 			set_html('lbl_value',params.intensityCoarse.toFixed(6));
 			set_html('lbl_value2',Math.pow(params.intensityCoarse,1.0/2.4).toFixed(6))
-            stim_color=gColor;
+            var stim_color=gColor;
             
 			thePeer.send("G "+gSize+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background')+" "+gPeriph)
 		}

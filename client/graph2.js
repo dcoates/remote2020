@@ -273,7 +273,7 @@ function create_line() {
 create_line();
 
 function update_line(yval) {
-	ypos=yScale( Math.log10(yval)+2.0 );
+	var ypos=yScale( Math.log10(yval)+2.0 );
 	line_indicator.y1.baseVal.value=ypos;
 	line_indicator.y2.baseVal.value=ypos;
 }
