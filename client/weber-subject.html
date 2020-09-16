@@ -409,7 +409,7 @@
                 hi_full=elem.clientHeight;
 
                 const fixation_size=40;
-                const from_top=20;
+                const from_top=20; //hi_full/2-fixation_size/2;
                 cnvFixationLayer=document.getElementById('canvas_layerFixation')
                 cnvFixationLayer.width=wid_full; //fixation_size+"px";
                 cnvFixationLayer.height=hi_full; //fixation_size+"px";
@@ -435,7 +435,7 @@
                 canvas.height=hi_full;
 
                 setup_webgl();
-                receive_commands("G 0.125 0.001 0 0 0.05 1");
+                receive_commands("G 0.125 0.001 0 0 0.1 1 0");
 
                 }
             };
