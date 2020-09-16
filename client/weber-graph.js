@@ -1,10 +1,10 @@
 'use strict';
 
 // set the dimensions and margins of the graph
-var margin = {top: 0, right: 5, bottom: 0, left: 25},
+var margin = {top: 0, right: 5, bottom: 15, left: 25},
     //width_graph = document.getElementById('table_graph').scrollWidth - margin.left - margin.right,
-    width_graph = 600 - margin.left - margin.right,
-    height_graph = 380 - margin.top - margin.bottom;
+    width_graph = 400 - margin.left - margin.right,
+    height_graph = 220 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -24,7 +24,8 @@ const xScale = d3.scaleLinear()
 const xAxis = d3.axisBottom(xScale);
 
 svg.append("g")
-    .attr("transform", "translate(0," + 340 + ")")
+    .attr("class", "axisRed")
+    .attr("transform", "translate(10," + (height_graph-margin.bottom) + ")")
     .call(d3.axisBottom(xScale));
 
 const g = svg.append("g");
@@ -32,15 +33,14 @@ const g = svg.append("g");
 
 // Add Y axis
 var yScale = d3.scaleLinear()
-  .domain([-5, 0.0])
-  .range([ height_graph, 0 ]);
+  .domain([-4, 0.0])
+  .range([ height_graph, 50 ]);
 
   // Add the Y Axis
   svg.append("g")
     .attr("class", "axisRed")
-    //.attr("transform", "translate(10,0)")
+    .attr("transform", "translate(10,-15)")
     .call(d3.axisLeft(yScale));
-	
 
 var data=[{x:0,y:0.5},{x:1,y:6.0},{x:2,y:3.0}];
 // Define the line
@@ -140,14 +140,14 @@ function graph_clear_dots() {
 
 function graph_clear() {
     graph_clear_dots()
-    svg.selectAll('path').remove()
+    //svg.selectAll('path').remove() // REMOVES AXIS as well.. ARGH
 }
 
 function update_graph(data1) {
     // MANY MANY failed attempts to add successively add colored dots
     // using d3.js. Eventually just used svg.
 
-    const rad=2;
+    const rad=3;
 
    // force.nodes(data);
    // force.on('tick', function (e) {

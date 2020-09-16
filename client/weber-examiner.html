@@ -4,10 +4,10 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
         <title>remote2020 - examiner</title>
-        <link rel="stylesheet" href="sandbox.css">
-        <link rel="stylesheet" href="graph.css">
+        <link rel="stylesheet" href="weber-theme.css">
+        <link rel="stylesheet" href="graph2.css">
     </head>
-    <body style="background-color:#808080" onload="load_code()">  
+    <body style="background-color:#000000" onload="load_code()">  
 
 		<div class="split left" id='lefty'>
 				<input type="text" id="receiver-id" title="Enter ID" size="8">
@@ -20,12 +20,19 @@
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
-                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
+                <input type="button" mode="adv" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
+ 
+            <label mode="both" id="lblBack">Background:</label>
+			<input type="text" id="background" title="Enter ID" size="8" value="0.1" mode="both">
 
-				<p class="boxed" mode="both" id="keygroup">
+        <div class="switch-field" style="width: 6em; position: relative; display: inline-block;">
+		<input type="checkbox" id="radio-filter" name="switch-loc" value="Filter" onclick=";"/>
+		<label for="radio-filter">Filter</label>
+	</div>
+				<p class="boxed" mode="adv" id="keygroup">
 					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="16px"></object>
-					Keyboard
+                    <label id="lbl_keyboard">Keyboard</label>
 					<input type="checkbox" id="chkKeys">
 				</p>
  
@@ -42,7 +49,6 @@
               <span class="slider round"></span>
             </label>nAFC
             </div>
-			<input type="text" id="background" title="Enter ID" size="8" value="0.1" mode="both">
 
 				<div class="boxed" mode="adv">
 					<object type="image/svg+xml" data="img/bs_arrow_box.svg"></object>
@@ -51,15 +57,17 @@
 				</div>
 
                 <br><br>
-
                 <br mode="adv"><br mode="adv">
-                    <span mode="both" id="lblStair">Staircase (0)</span>
+                    <label mode="both" id="lblStair">Staircase (0)</label>
                     <input mode="adv" type="checkbox" id="chkStair" style="display:none;">
-                    <button mode="both" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
+
+                    <button mode="both" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart
+					<object type="image/svg+xml" data="img/bs_play.svg"></object></button>
+
                     <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
-                Mean reversals:<span mode="both" id="lblMean">Undefined</span>
+                    <br><br><label mode="both" id="lblMean">Staircase mean: Undefined</label>
 
                 <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
                     <br mode="adv"><br mode="adv">
@@ -73,13 +81,11 @@
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF1</button>
                 <button mode="adv" type="button" id="demo2b" onclick="demo2b()">CSFx</button>
 
-                <table mode="adv" id="table_graph" class="table_graph" style="table-layout: fixed; width:100%;height:100px;border-top:1px;" hidden=true>
-                    <tr><td width="20px"></td><td width="20px"></td><td width="400px" class="td_graph" id='td_graph'><div id="xmy_dataviz" class="graph"></div></td></tr>
-                </table>
+                <div id="my_dataviz" width="300px" height="200px" class="graph"></div>
 
                 <table mode="graph" id="table_arrows" class="arrows" hidden=true>
                     <tr><td>
-                            <button id="btnTrash" onclick="do_trash()"><span class="bs_reset_ccw"></span></button>
+                            <button id="btnTrash" onclick="do_trash()" style="display:none;"><span class="bs_reset_ccw"></span></button>
                     </td><td>
                             <button id="btnUp" onclick="do_kb(38);"><span class="resp_up"></span></button>
                     </td><td id="dim_place"></td>
@@ -97,8 +103,8 @@
 					</tr>
                 </table>
                 <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
-                    <textarea move="both" name="trial" id="trial" style="width:100%;height:6em;">Trial parameters</textarea>
-                    <textarea move="both" name="metap" id="metap" style="width:100%;height:12em;">Meta parameters</textarea>
+                    <textarea mode="adv" name="trial" id="trial" style="width:100%;height:6em;">Trial parameters</textarea>
+                    <textarea mode="adv" name="metap" id="metap" style="width:100%;height:12em;">Meta parameters</textarea>
                 <table mode="adv" style="width:100%;height:200px;border-top:1px">
                     <tr><td width=70%>
                         </td><td>
@@ -111,7 +117,6 @@
 
 		<div class="split right" id='righty'>
             <canvas id="canvas2">Canvas</canvas>
-            <div id="my_dataviz" class="graph"></div>
         </div>
 		<canvas id="canvas" hidden=true style="visibility:hidden">Canvas</canvas>
 
@@ -143,7 +148,7 @@
             function load_code() {
                 peer_init();
                 demo1(); // preload E acuity
-                build_table(); // create graph table
+                //build_table(); // create graph table
 
                 // Testing/initial config: simulate a phantom display connection 
                 //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
@@ -155,6 +160,9 @@
                 [].forEach.call(lefty.children, a => {
                     a.old_display=a.style.display;
                 });
+
+                document.body.scrollTop = 0; 
+                document.body.style.overflow = 'hidden'; 
 
                 // Read "command line" parameters
                 location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
@@ -173,7 +181,10 @@
                     id: function(s) {set_html('my-id','ID:'+s);},
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
-                    connect: function(s) {set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);},
+                    connect: function(s) {
+                        set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);
+                        set_value('receiver-id',s+': OK');
+                    },
                     peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
@@ -409,8 +420,7 @@
 
                 // fullscreen hints:
                 //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; 
-                //document.body.style.overflow = 'hidden'; 
+
 		function openFullscreen() {
 
             if (document.fullscreenElement) {
@@ -553,7 +563,7 @@
 
                 if (revs_last.length>0) {
                     var mean_last=revs_last.reduce( (total,t1)=>t1.size+total,0)/revs_last.length
-                    set_html('lblMean',mean_last);
+                    set_html('lblMean',"Mean: "+mean_last.toPrecision(4));
                 }
             } else {
                 if (get_checked("chkMOCS")) {
