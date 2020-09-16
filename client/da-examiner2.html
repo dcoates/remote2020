@@ -217,12 +217,24 @@
                 s=Math.trunc(timeSecElapsed/60) + ':' + (sec<10?'0':'') + sec;
                 set_html("time_elapsed",s);
                 var_timer=setTimeout(updateClock, 5000);
+
+                if (torch_on) {
+                    var btnTorch=document.getElementById('torch-button');
+
+                    if (timeSecElapsed%10>5) {
+                        btnTorch.style.backgroundColor='black';
+                    } else {
+                        btnTorch.style.backgroundColor='red';
+                    }
+
+			        thePeer.send("G "+gSize+" "+params.intensityCoarse+" 0.0 "+stim_color+" "+get_value('background')+" "+gPeriph)
+                }
             }
 
             var torch_on=false;
             function do_torch() {
                 torch_on=(torch_on==false);
-                thePeer.send(torch_on?"1":"0");
+                //thePeer.send(torch_on?"1":"0");
             }
 
             function do_upload() {
@@ -231,7 +243,9 @@
 
             var trial_log=[];
             function record1() {
-				ypos=Math.log10(params.intensityCoarse)+2.0;
+                ypos=Math.log10(params.intensityCoarse)+2.0;
+
+                torch_on=false;
 
                 // If max is 30min (30*60), /20 goes from 0-90
                 var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
@@ -241,6 +255,7 @@
                 if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
                     thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+ypos);
                 }
+
 
                 if (timeSecElapsed==0) {
                     timer_reset=true;
