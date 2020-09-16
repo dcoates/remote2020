@@ -160,7 +160,7 @@ function update_graph(data1) {
     // Join new data with old elements, if any.
     svg.append('circle')
         .attr("r", rad)
-        .attr("cx", xScale(data1.x) )
+        .attr("cx", xScale(data1.x+1) ) // TODO: I HATE D3
         .attr("cy", yScale( Math.log10(data1.y)) )
         .style("fill", function () {
 			if (data1.is_correct) {
