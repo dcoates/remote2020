@@ -183,7 +183,8 @@ function showShaderGrating(sf,sigma,amp,theta,color,background,rando,which) {
 }
 
 function clearGrating(background_color) {
-  gl.clearColor(background_color,background_color,background_color, 1.0);
+  var back_gammad=Math.pow(background_color,1.0/2.4);
+  gl.clearColor(back_gammad,back_gammad,back_gammad, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
