@@ -142,6 +142,7 @@
             var globPeripheral;
             var globRadius;
             var globWhich;
+            var globRepeatsRemaining=1;
 
             var globFrequency=120; // how often stimulus appears (in flips)
             var globDuration=12;  // how long stimulus is "on" for (in flips)
@@ -161,6 +162,8 @@
 
                 globFrequency = parseInt(arr[8]);
                 globDuration = parseInt(arr[9]);
+
+                globRepeatsRemaining=1;
 
                 var elem = document.getElementById("canvas_layerFixation");
                 if (globPeripheral) {
@@ -343,10 +346,15 @@
                     count_animation=0;
                     globalAnimationID = null;
                 } else {
-                    if ( (count_animation%globFrequency)<(globDuration) ) { // Every Xsec on for Yms
+                    if ( ((count_animation%globFrequency)<(globDuration)) && (globRepeatsRemaining>0) ) { // Every Xsec on for Yms
                         showShaderGrating(0,globRadius,globContrastCoarse+globContrastFine,0,globColor,globBackground,count_animation/1000.0,globWhich);
                     } else {
                         clearGrating(globBackground);
+
+                        // Only show once. TODO: Could eventually support show "X" number of times
+                        if (globRepeatsRemaining>0) {
+                            globRepeatsRemaining=0;
+                        }
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
