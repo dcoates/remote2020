@@ -177,7 +177,15 @@
                     count_animation=0;
                     gaborCancel=false;
                     globalAnimationID = requestAnimationFrame(animateDA);
-                } // if already going, param changes will be detected and used
+                } else {
+					// PREVIOUSLY: if already going, param changes will be detected and used
+			
+					//Now, cancel and restart
+					cancelAnimationFrame(globalAnimationID);
+                    count_animation=0;
+                    gaborCancel=false;
+                    globalAnimationID = requestAnimationFrame(animateDA);
+				}
             }
 
             // How we respond to peer commands
