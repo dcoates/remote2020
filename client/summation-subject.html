@@ -348,7 +348,6 @@
             }
 
             function animateDA(now) {
-                count_animation += 1;
                 if (gaborCancel) { // not sure if this is ever needed 
                     cancelAnimationFrame(globalAnimationID);
                     count_animation=0;
@@ -366,6 +365,8 @@
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
+
+                count_animation += 1;
             };
 
             function animateLoop() {
