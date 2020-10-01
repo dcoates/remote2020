@@ -17,6 +17,9 @@
 					Connect
 				</button>
 
+                <label mode="both" id="lblCode">Cond. code:</label>
+				<input type="text" id="condcode" title="Enter Code" size="8">
+
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
@@ -232,6 +235,27 @@
                 thePeer=new MyPeer(handler);
                 //thePeer.id_requested="aaaaaa";
                 thePeer.init();
+
+                var handler_uploader={
+                    id: function(s) {
+                        if ('autoconnect2' in dict_params) { //disable
+                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {log.info(s);},
+                    error: function(s) {log.info(s);},
+                    connect: function(s) {log.info('paired '+s);},
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info('unpaired',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
+
+                // To handle upload, simplest is to just create a new Peer to talk to instructor
+                // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new
+                // Peer connection in mypeer. (one -> many ( ok, here two) )
+                thePeer2=new MyPeer(handler_uploader);
+                thePeer2.init();
             };
 
             function pair_screen_info(s) {
@@ -252,6 +276,7 @@
             };
 
             var thePeer = null; 
+            var thePeer2 = null; 
 
             function reportSize() {
                 wid=canv.width;
@@ -534,6 +559,10 @@
             // Start 50% above background
             theStaircase.restart(get_value('background')*1.3,nafc);
             theStaircase.next(); // show first trial
+
+            if (thePeer2 && thePeer2.conn && thePeer2.conn.open && (get_value('condcode').length>0) ) {
+                thePeer2.send(thePeer.peer.id+' '+get_value('condcode')+' START');
+            }
         }
 
         function do_mocs_restart() {
@@ -608,6 +637,10 @@
                 if (revs_last.length>0) {
                     var mean_last=revs_last.reduce( (total,t1)=>t1.size+total,0)/revs_last.length
                     set_html('lblMean',"Mean: "+mean_last.toPrecision(4));
+
+                    if (thePeer2 && thePeer2.conn && thePeer2.conn.open && (get_value('condcode').length>0))  {
+                        thePeer2.send(thePeer.peer.id+' '+get_value('condcode')+' '+mean_last.toPrecision(4));
+                    }
                 }
             } else {
                 if (get_checked("chkMOCS")) {
