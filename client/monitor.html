@@ -267,7 +267,7 @@
                 	var groupid=fields[0];
                 	var col=fields[1];
 			var colnum=col.charCodeAt(0)-65;
-                	var row=parseInt(col[1])-1;
+                	var row=parseInt(col.substr(1))-1;
                 	var dat=fields[2];
 	
 			//console.log(col);
