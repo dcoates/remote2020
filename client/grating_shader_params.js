@@ -71,7 +71,7 @@ void main() {
   // if close (less than sigma), will be 1.0 
   float alpha_mask=distance_mask; 
   float r=noi(fragmentPosition);
-  float colorval=1.0*amp;
+  float colorval=grating*amp;
 
     // Noisy bit method (Allard/Faubert 2008)
     // Add random jitter btwn -0.5 and 0.5 "8 bit levels"

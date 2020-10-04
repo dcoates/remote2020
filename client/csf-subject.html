@@ -146,7 +146,7 @@
                 dbgCommand=commands;
                 globGaborParams=JSON.parse(commands.substr(1)); // It should be " {...JSON...}
 
-                globRepeatsRemaining=1;
+                globRepeatsRemaining=globGaborParams.repeats;
 
                 var elem = document.getElementById("canvas_layerFixation");
                 var is_periph=globGaborParams.isPeripheral;
@@ -338,19 +338,14 @@
                     globalAnimationID = null;
                 } else {
                     if ( ((count_animation%globGaborParams.repeat_freq)<(globGaborParams.duration)) && (globRepeatsRemaining>0) ) { // Every X flips on for Y flips
-                        globGaborParams.theta=0;
                         globGaborParams.rando=count_animation/1000.0; // for random numbers
-                        globGaborParams.sf=90;
-
                         showShaderGrating(globGaborParams);
                         //0,globRadius,globContrastCoarse+globContrastFine,0,globColor,globBackground,count_animation/1000.0,globWhich);
                     } else {
                         clearGrating(globGaborParams.background);
 
                         // Only show once. TODO: Could eventually support show "X" number of times
-                        if (globRepeatsRemaining>0) {
-                            globRepeatsRemaining=0;
-                        }
+                        globRepeatsRemaining -= 1;
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
@@ -444,10 +439,15 @@
                 canvas.height=hi_full;
 
                 setup_webgl();
-                //receive_commands("G 0.125 0.001 0 0 0.1 1 0 120 12"); // now it's in JSON fmt
 
+
+                //receive_commands("G "+JSON.stringify(gabor_defaults));
                 }
             };
+
+        var gabor_defaults={"background":0.1,"color":0, "contrast":0.02,
+            "duration":60, "repeat_freq":120, "isPeripheral":0, "ori":0, "radius":0.5, "rando":0,
+            "sf":384, "theta":0,"repeats":10};
 
         var wid_full;
         var hi_full;

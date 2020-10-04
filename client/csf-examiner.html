@@ -38,11 +38,25 @@
             <label mode="adv" id="lblFrequency">Frequency:</label>
 			<input type="text" id="frequency" title="Enter Frequency" size="8" value="120" mode="adv">
             <label mode="both" id="lblDuration">Duration:</label>
-			<input type="text" id="duration" title="Enter Duration" size="8" value="12" mode="both">
+			<input type="text" id="duration" title="Enter Duration" size="8" value="120" mode="both">
+            <label mode="both" id="lblRepeats">Repeats:</label>
+			<input type="text" id="repeats" title="Repeats" size="8" value="1" mode="both">
 
             <br>
             <label mode="both" id="lblSize">Size: (0.0-1.0)</label>
-			<input type="text" id="size" title="Enter Size" size="8" value="0.125" mode="both">
+			<input type="text" id="size" title="Enter Size" size="8" value="0.5" mode="both">
+
+            <br>
+            <label mode="both" id="lblSF">SF (10-384):</label>
+			<input type="text" id="sf" title="SF" size="8" value="100" mode="both">
+            <br>
+            <label mode="both" id="lblTheta">Theta (0-3.14):</label>
+			<input type="text" id="theta" title="SF" size="8" value="0" mode="both">
+            <br>
+            <label mode="both" id="lblDist">Distance (cm):</label>
+			<input type="text" id="dist" title="SF" size="8" value="40" mode="both">
+            <label mode="both" id="lblScreenSize">Scrn Size (cm):</label>
+			<input type="text" id="distScreenSize" title="screen_size" size="8" value="6" mode="both">
 
 				<p class="boxed" mode="adv" id="keygroup">
 					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="16px"></object>
@@ -396,9 +410,9 @@
 
                 trial_params=eval(document.getElementById("trial").value);
                 gWhich=trial_params['orientation'];
-                var theFrequency=get_value('frequency');
-                var theDuration=get_value('duration');
-                gSize=get_value('size');
+                var theFrequency=parseInt(get_value('frequency'));
+                var theDuration=parseInt(get_value('duration'));
+                gSize=parseFloat(get_value('size'));
 
                 if ( get_checked("chkRemoteStair")) {
                     // 0 0 = gIntensityFine (unused)  color=0 (white)
@@ -407,7 +421,8 @@
                     'contrast':theStaircase.stair_size,
                     'background':get_value('background'), 'ori':gWhich,
                     'repeat_freq':theFrequency, 'duration': theDuration, 'color':0,
-                    'isPeripheral':0}
+                    'isPeripheral':0, 'theta':parseFloat(get_value('theta')), 'sf':parseFloat(get_value('sf')),
+                    'repeats':parseInt(get_value('repeats'))}
 
                     thePeer.send("G "+JSON.stringify(stim_params));
 
@@ -567,7 +582,7 @@
             get_metap(); // make sure to load in meta parameters TODO:fixme
 
             // Start 50% above background
-            theStaircase.restart(get_value('background')*1.3,nafc);
+            theStaircase.restart(get_value('background')*0.75,nafc);
             theStaircase.next(); // show first trial
 
 				send_monitor('START');
