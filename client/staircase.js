@@ -208,20 +208,20 @@
     // TODO: This UI doesn't really belong here
     function update_manual_table_corr(nwhich,correct) {
         var thisid='count_'+nwhich;
-        strCurrent=get_html(thisid);
-        fields=strCurrent.split('/');
+        var strCurrent=get_html(thisid);
+        var fields=strCurrent.split('/');
         set_html(thisid,(parseInt(fields[0])+correct)+'/'+fields[1]);
     }
     function update_manual_table_outof(nwhich) {
         var thisid='count_'+nwhich;
-        strCurrent=get_html(thisid);
-        fields=strCurrent.split('/');
+        var strCurrent=get_html(thisid);
+        var fields=strCurrent.split('/');
         set_html(thisid,fields[0]+'/'+(parseInt(fields[1])+1));
     }
 
     // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
     function export_manual_table() {
-        s = "";
+        var s = "";
         s += "size,num_correct,num_presented";
         s += ","+get_value("text_condition") + "\n";
         for (var nrow = nrows_mocs_table; nrow>=0; nrow--) {

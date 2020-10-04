@@ -55,10 +55,14 @@
         <script src="NoSleep.min.js"></script>
         <script src="stims.js"></script>
         <script src="drc-misc.js"></script>
-        <script src="peerjs.js"></script>
+
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+
         <script src="mypeer.js" type="text/javascript"> </script>
 
         <script type="text/javascript">
+            'use strict';
+
             // Globals
             var noSleep=null;
             var thePeer=null;
@@ -97,7 +101,7 @@
                 yc=height/2;
 
                 console.log('yes')
-                dims="Dims: " +canvas.width+' '+canvas.height;
+                var dims="Dims: " +canvas.width+' '+canvas.height;
                 console.log(dims)
 
                 ctx = canvas.getContext("2d");
@@ -110,13 +114,13 @@
                 ctx.fillText("Please wait", 10, 150);
 
                 noSleep=new NoSleep();
-                noSleep.enable();
+                //noSleep.enable();
             }
 
             // How we respond to peer commands
             function receive_commands(data) {
-                code=data.substring(0,1)
-                value=data.substring(1)
+                var code=data.substring(0,1)
+                var value=data.substring(1)
                 switch (code) {
                     case '1':
                         openFullscreen()
@@ -179,14 +183,14 @@
 
                 actions=commands.split("flip")
                 flip_durations=[];
-                for (i=1; i<actions.length; i++) {
+                for (var i=1; i<actions.length; i++) {
                     // Assume the first number in each item looks like: (60)\n;...next...
                     // Since the 'flip' was stripped out
 
-                    dur=parseInt(actions[i].substr(1))
+                    var dur=parseInt(actions[i].substr(1))
                     flip_durations.push(dur);
 
-                    start_of_next_line=actions[i].indexOf(')');
+                    var start_of_next_line=actions[i].indexOf(')');
                     actions[i]=actions[i].substr(start_of_next_line+1);
                 }
                 // remote last flip (empty action) if we need to.

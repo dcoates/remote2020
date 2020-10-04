@@ -1,3 +1,4 @@
+'use strict';
                 var scale=0.1;
                 
                 function clear(colr) {
@@ -142,7 +143,7 @@
             };
 
 
-var canvVis=document.getElementById(id="canvas2");
+var canvVis=document.getElementById("canvas2");
 var canvTemp=document.createElement('canvas','canvas_render')
 function resizeTo(canvas,pct){
 	/* https://stackoverflow.com/questions/34866171/resize-html-canvas-with-scale */
