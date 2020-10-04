@@ -403,8 +403,17 @@
                 if ( get_checked("chkRemoteStair")) {
                     // 0 0 = gIntensityFine (unused)  color=0 (white)
                     // last 0 = no fixation cross
-			        thePeer.send("G "+gSize+" "+theStaircase.stair_size+" 0 0 "+get_value('background')
-                        +" 0 "+gWhich+" "+theFrequency+" "+theDuration);
+                    var stim_params={'radius':gSize,
+                    'contrast':theStaircase.stair_size,
+                    'background':get_value('background'), 'ori':gWhich,
+                    'repeat_freq':theFrequency, 'duration': theDuration, 'color':0,
+                    'isPeripheral':0}
+
+                    thePeer.send("G "+JSON.stringify(stim_params));
+
+                    //thePeer.send("G "+gSize+" "+theStaircase.stair_size+" 0 0
+                    //"+get_value('background') +" 0 "+gWhich+" "+theFrequency+"
+                    //"+theDuration); }
                 }
             }
 
@@ -448,7 +457,7 @@
                 canv = newCvs;
 
                 setupWebGL();
-                showShaderGrating(1.0,0.01,3.14*45/180);
+                showShaderGrating(90,0.01,3.14*45/180);
 
                 set_value("metap","metap={\n\tsigma: 0.1,\n\ttheta:45,\n\tsf:80,\n\t}");
             }
