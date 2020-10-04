@@ -1,9 +1,32 @@
 'use strict';
                 var scale=0.1;
+                const GAMMA=2.4;
                 
                 function clear(colr) {
                     ctx.fillStyle = colr;
                     ctx.fillRect(0, 0, wid, height);
+                }
+
+                var val; //global for debuggin
+                // https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast/34203206#34203206
+                function contrastImage(imgData, contrast){  //input range 0..1
+                        var d = imgData.data;
+                        for(var i=0;i<d.length;i+=4){   //r,g,b,a
+                            val=d[i];
+                            if (val<255)  {   
+                                val=(255.0-val)/255.0;           // convert pix from 0..255 to 1..0 (tested: pix=0.0 or 1.0)
+                                val=val*contrast;               // apply contrast
+                                val=1.0-val;                    // we are using negative contrast
+                                val=Math.floor( (val*255.0)+Math.random()-0.5); // apply noisy bit
+                                val=255.0*Math.pow(val/255.0, GAMMA); // approx. gamma correct
+                                val=Math.max(0,Math.min(val,255));  // clamp to 0..255
+                                val=parseInt(val);              
+                            };
+                            d[i] = val;
+                            d[i+1] = val;
+                            d[i+2] = val;
+                        }
+                        return imgData;
                 }
 
                 const image = new Image();
@@ -18,6 +41,10 @@
 					ctx.drawImage(image, -siz/2, -siz/2, siz, siz);
                     ctx.resetTransform();
     				//ctx.restore(); 
+                    
+                    var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+                    var contrast=0.005;
+                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
