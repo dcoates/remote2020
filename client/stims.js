@@ -33,7 +33,13 @@
                 image.src = 'img/tumbling_e.png'
 
 				const TO_RADIANS = Math.PI/180; 
+
+                // Assume 100% contrast. Stub for compatibility
                 function draw_e(posx,posy,siz,rotation) {
+                    draw_e_contrast(posx,posy,siz,rotation,1.0);
+                }
+
+                function draw_e_contrast(posx,posy,siz,rotation,contrast) {
                     ctx.imageSmoothingEnabled=false;
 					//ctx.save(); 
 					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
@@ -43,21 +49,26 @@
     				//ctx.restore(); 
                     
                     var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
-                    var contrast=0.005;
                     ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
+                // Assume 100% contrast. Stub for compatibility
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
+                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0);
+                }
+
+                // This one takes the contrast
+                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
                     if (which=='E') {
-							draw_e(posx,posy,siz*5.0,ori);
+							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
                        }
                     if (esep>=0) {
-							draw_e(posx-siz*5*esep,posy,siz*5,90);
-							draw_e(posx+siz*5*esep,posy,siz*5,0);
-							draw_e(posx,-siz*5*esep+posy,siz*5,180);
-							draw_e(posx,+siz*5*esep+posy,siz*5,270);
+							draw_e_contrast(posx-siz*5*esep,posy,siz*5,90,contrast);
+							draw_e_contrast(posx+siz*5*esep,posy,siz*5,0,contrast);
+							draw_e_contrast(posx,-siz*5*esep+posy,siz*5,180,contrast);
+							draw_e_contrast(posx,+siz*5*esep+posy,siz*5,270,contrast);
                     }
                     if (barsep>=0) { // TODO: Untested; not centered well?
                         ctx.beginPath();

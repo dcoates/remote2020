@@ -35,11 +35,25 @@
                 do_trial();  // TODO: refactor out of UI
 
                 this.stair_trial += 1;
-                set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals}`);
+                this.compute_mean();
+
+                set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${this.mean_last.toPrecision(4)}`);
 
                 // Did enough reversals? 
                 if (this.nReversals>metap.staircase_reversals.length ) { // TODO: rmv from UI
                     set_checked( "chkStair", false);
+                }
+            }
+
+            compute_mean() {
+                var revs_last=this.trial_history
+                    .filter(t1=>t1.is_reversal)         // extract reversals
+                    .filter( (word,idx,arr) => idx>1)   // remove first two
+
+                if (revs_last.length>0) {
+                    this.mean_last=revs_last.reduce( (total,t1)=>t1.size+total,0)/revs_last.length
+                } else {
+                    this.mean_last=-1;
                 }
             }
 
@@ -94,13 +108,15 @@
                     // Get next one:
                     var oriNew=generate_ori(4) 
                     // Set up trial parameters, which are merged with the code to do 1 trial
-                    set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
-                        this.stair_size+"\n}");
+                    set_value("trial",`trial_params={\n\torientation: ${oriNew},
+                        \n\tsize:${this.stair_size},
+                        \n\tcontrast:${this.contrast}
+                    }`);
 
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
-                        set_html("lblStair","FINISHED");
+                        set_html("lblStair",`FINISHED threshold=${this.mean_last.toPrecision(4)}`);
                         //beep(1,440,80);
                     } else {
                         this.next(); // execute next

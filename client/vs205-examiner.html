@@ -50,10 +50,17 @@
 					<input mode="adv" type="checkbox" id="chkRemoteStair">
 				</div>
 
-                <br mode="adv"><br mode="adv">
-                    <span mode="adv" id="lblStair">Staircase (0)</span>
-                    <input mode="adv" type="checkbox" id="chkStair" style="display:none;">
-                    <button mode="adv" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart</button>
+                <br mode="acuity">
+                <label mode="acuity" id="lblSize">Size:</label>
+				<input mode="acuity" type="text" value="12" id="textSize" title="Value" size="6">
+                <label mode="acuity" id="lblContrast">Contrast:</label>
+				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="6">
+
+                <br mode="acuity">
+                    <span mode="acuity" id="lblStair">Staircase (0)</span>
+                    <input mode="acuity" type="checkbox" id="chkStair" style="display:none;">
+                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart E Acuity</button>
+                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_contrast_restart();">Restart E Contrast</button>
                     <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
@@ -146,8 +153,13 @@
                     set_mode("graph","adv");
                 }
 
-                demo1(); // preload E acuity
-                build_table(); // create graph table
+                if (dict_params['lab']!='acuity') {
+                    build_table(); // create graph table
+                    demo1(); // preload E acuity
+                } else {
+                    // Acuity lab:
+                    preset_contrast(); // preload E acuity
+                };
 
                 // Testing/initial config: simulate a phantom display connection 
                 //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
@@ -362,6 +374,13 @@
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
+            function preset_contrast() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:0.5\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
             function demo1() {
                 document.getElementById("commands").value=
                 "clear('#ffffff');\nfixation(0,0,80,8,'green','X');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,80,8,'black','X');flip(1);"
@@ -493,16 +512,25 @@
         //stats.dom.style.top="90%";
         //document.body.appendChild( stats.dom );
 
-        var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
-        var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theStaircase=new staircase(8,4); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theMOCS=new MOCS(); 
 
         function do_stair_restart() {
+            graph_clear();
+
             set_checked('chkStair',true);
             set_checked('chkMOCS',false);
             set_html("lblStair","Staircase 0 0");
             nafc=get_checked('chkNafc')?4:2;
-
+ 
             get_metap(); // make sure to load in meta parameters TODO:fixme
+            // TODO: Something fishy about the very first trial
+            theStaircase.contrast=get_value('textContrast');
+            set_value("trial",`trial_params={\n\torientation: 0,
+                \n\tsize:${metap.stair_start},
+                \n\tcontrast:${theStaircase.contrast}
+            }`);
+
             theStaircase.restart(parseInt(metap.stair_start),nafc);
             theStaircase.next(); // show first trial
         }
