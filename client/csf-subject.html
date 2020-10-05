@@ -146,6 +146,8 @@
                 dbgCommand=commands;
                 globGaborParams=JSON.parse(commands.substr(1)); // It should be " {...JSON...}
 
+                globGaborParams["phase"]=Math.random()*3.14;  // put in a random phase. Here, not in animation loop
+
                 globRepeatsRemaining=globGaborParams.repeats;
 
                 var elem = document.getElementById("canvas_layerFixation");

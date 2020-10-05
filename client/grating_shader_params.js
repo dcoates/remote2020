@@ -32,6 +32,7 @@ uniform float theta;
 uniform vec3 color;
 uniform float background;
 uniform float rando;
+uniform float phase; 
 
 /*
 float rnd(vec2 x)
@@ -58,7 +59,7 @@ void main() {
   vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
                       sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
 
-  float grating=sin(posRotate[0]*sf_div);
+  float grating=sin(posRotate[0]*sf_div+phase); // phase random, but same for all pixels
   //float mag=1.0*exp(-distanceSqrd/0.01);  // Gaussian
   //float mag_raw=ceil(sigma-distance);
   //float mag=mag_raw*amp;
@@ -148,12 +149,14 @@ function showShaderGrating(params) {
   var locationOfColor = gl.getUniformLocation(program, "color");
   var locationOfBackground = gl.getUniformLocation(program, "background");
   var locationOfRando = gl.getUniformLocation(program, "rando");
+  var locationOfPhase = gl.getUniformLocation(program, "phase");
 
 //sf,sigma,amp,theta,color,background,rando,which) {
   gl.uniform1f(locationOfSf, params.sf);
   gl.uniform1f(locationOfSigma, params.radius);
   gl.uniform1f(locationOfAmp, params.contrast);
   gl.uniform1f(locationOfTheta, params.theta);
+  gl.uniform1f(locationOfPhase, params.phase);
 
   var r, g, b;
   switch(params.color) {
