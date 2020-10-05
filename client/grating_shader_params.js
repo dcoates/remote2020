@@ -59,7 +59,7 @@ void main() {
   vec2 posRotate=vec2(cos(theta)*fragmentPosition[0]-sin(theta)*fragmentPosition[1],
                       sin(theta)*fragmentPosition[0]+cos(theta)*fragmentPosition[1]);
 
-  float grating=sin(posRotate[0]*sf_div+phase); // phase random, but same for all pixels
+  float grating=sin(posRotate[0]*sf_div*6.28+phase); // phase random, but same for all pixels
   //float mag=1.0*exp(-distanceSqrd/0.01);  // Gaussian
   //float mag_raw=ceil(sigma-distance);
   //float mag=mag_raw*amp;
