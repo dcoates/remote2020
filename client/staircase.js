@@ -103,7 +103,14 @@
 						// Make aliases for x and y just to make drawing easier
 
                     this.trial_history.push(trial1);
-					update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
+
+                    if (trial1.y <1.0) { // TODO: Have a flag whether to plot on log scale!!?
+                        if (trial1.y>0) { // Hopefully won't interfere with 0 for Y/N manual acuity
+                            trial1.y = Math.log10(trial1.y)*25.0+100.0 
+                        };
+                    };
+
+                    update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
                     var oriNew=generate_ori(4) 

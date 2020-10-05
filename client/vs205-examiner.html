@@ -52,15 +52,15 @@
 
                 <br mode="acuity">
                 <label mode="acuity" id="lblSize">Size:</label>
-				<input mode="acuity" type="text" value="12" id="textSize" title="Value" size="6">
+				<input mode="acuity" type="text" value="25" id="textSize" title="Value" size="6">
                 <label mode="acuity" id="lblContrast">Contrast:</label>
 				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="6">
 
                 <br mode="acuity">
                     <span mode="acuity" id="lblStair">Staircase (0)</span>
                     <input mode="acuity" type="checkbox" id="chkStair" style="display:none;">
-                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart E Acuity</button>
-                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_contrast_restart();">Restart E Contrast</button>
+                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart E Acuity</button>
+                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
                     <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
@@ -158,7 +158,8 @@
                     demo1(); // preload E acuity
                 } else {
                     // Acuity lab:
-                    preset_contrast(); // preload E acuity
+                    //preset_acuity(); // preload E acuity
+                    ;
                 };
 
                 // Testing/initial config: simulate a phantom display connection 
@@ -374,11 +375,18 @@
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
-            function preset_contrast() {
+            function preset_acuity() {
                 document.getElementById("commands").value=
                 "clear('#ffffff');draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
-                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:0.5\n}";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function preset_contrast() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
             function demo1() {
@@ -515,7 +523,7 @@
         var theStaircase=new staircase(8,4); // 3-up 1-down, default size of "8" (but hopefully never used)
         var theMOCS=new MOCS(); 
 
-        function do_stair_restart() {
+        function do_stair_restart(which) {
             graph_clear();
 
             set_checked('chkStair',true);
@@ -523,15 +531,30 @@
             set_html("lblStair","Staircase 0 0");
             nafc=get_checked('chkNafc')?4:2;
  
-            get_metap(); // make sure to load in meta parameters TODO:fixme
             // TODO: Something fishy about the very first trial
-            theStaircase.contrast=get_value('textContrast');
-            set_value("trial",`trial_params={\n\torientation: 0,
-                \n\tsize:${metap.stair_start},
-                \n\tcontrast:${theStaircase.contrast}
-            }`);
 
-            theStaircase.restart(parseInt(metap.stair_start),nafc);
+            if (dict_params['lab']=='acuity') {
+                if (which==0) {
+                    preset_acuity(); 
+                    get_metap(); 
+
+                    theStaircase.contrast=get_value('textContrast');
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+            
+                } else {
+                    preset_contrast(); 
+                    get_metap(); 
+
+                    theStaircase.contrast=get_value('textSize');
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+                }
+            }
+
+            theStaircase.restart(metap.stair_start,nafc);
             theStaircase.next(); // show first trial
         }
 
