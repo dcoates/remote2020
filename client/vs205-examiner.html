@@ -30,14 +30,14 @@
 					Keybrd<input type="checkbox" id="chkKeys">
 				</p>
  
-            <div class="boxed" mode="both">
+            <div class="boxed" id="switch_afc" mode="both">
             2AFC <label class="switch" height="16px">
               <input type="checkbox" id="chkNafc" checked>
               <span class="slider round"></span>
             </label>4AFC
             </div>
  
-            <div class="boxed" mode="both">
+            <div class="boxed" id="switch_yn" mode="both">
             Y/N <label class="switch" height="16px">
               <input type="checkbox" id="chkYN" checked>
               <span class="slider round"></span>
@@ -51,16 +51,21 @@
 				</div>
 
                 <br mode="acuity">
-                <label mode="acuity" id="lblSize">Size:</label>
-				<input mode="acuity" type="text" value="25" id="textSize" title="Value" size="6">
-                <label mode="acuity" id="lblContrast">Contrast:</label>
-				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="6">
+                <label mode="acuity" id="lblContrast" style='display: inline-block; width: 4em; text-align: right;'>Contrast:</label>
+				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
+                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart E Acuity</button>
+
+                    
 
                 <br mode="acuity">
+                    <label mode="acuity" id="lblSize" style='display: inline-block; width: 4em; text-align: right;'>Size:</label>
+                    <input mode="acuity" type="text" value="25" id="textSize" title="Value" size="3">
+                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+                <br mode="acuity">
+
                     <span mode="acuity" id="lblStair">Staircase (0)</span>
                     <input mode="acuity" type="checkbox" id="chkStair" style="display:none;">
-                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart E Acuity</button>
-                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+
                     <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
 
@@ -76,7 +81,7 @@
                 <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
 
                 <table mode="graph" id="table_graph" class="table_graph" style="table-layout: fixed; width:100%;height:100px;border-top:1px;" hidden=true>
-                    <tr><td width="50px"></td><td width="50px"></td><td width="600px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
+                    <tr><td id='placeholder_td1' width="50px"></td><td id="placeholder_td2" width="50px"></td><td width="600px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
                 </table>
 
                 <table mode="graph" id="table_arrows" class="arrows" hidden=true>
@@ -157,9 +162,9 @@
                     build_table(); // create graph table
                     demo1(); // preload E acuity
                 } else {
-                    // Acuity lab:
-                    //preset_acuity(); // preload E acuity
-                    ;
+                    // Acuity lab: // home some stuff
+                    document.getElementById('switch_afc').style.display="none";
+                    document.getElementById('switch_yn').style.display="none";
                 };
 
                 // Testing/initial config: simulate a phantom display connection 
@@ -534,6 +539,10 @@
             // TODO: Something fishy about the very first trial
 
             if (dict_params['lab']=='acuity') {
+
+                document.getElementById("placeholder_td1").width="1px";
+                document.getElementById("placeholder_td2").width="1px";
+
                 if (which==0) {
                     preset_acuity(); 
                     get_metap(); 
@@ -548,6 +557,7 @@
                     get_metap(); 
 
                     theStaircase.contrast=get_value('textSize');
+                    theStaircase.plot_log=true;
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
                         \n\tcontrast:${theStaircase.contrast} }`);
