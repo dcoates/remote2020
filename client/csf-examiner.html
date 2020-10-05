@@ -30,8 +30,8 @@
 			<input type="text" id="background" title="Background" size="8" value="0.1" mode="both">
 
             <div class="switch-field" style="width: 6em; position: relative; display: inline-block;">
-                <input type="checkbox" id="radio-filter" name="switch-loc" value="Filter" onclick=";"/>
-                <label for="radio-filter">Filter</label>
+                <input type="checkbox" id="radio-periph" name="switch-loc" value="Periph" onclick=";"/>
+                <label for="radio-periph">Periph.</label>
             </div>
 
             <br>
@@ -40,7 +40,7 @@
             <label mode="both" id="lblDuration">Duration:</label>
 			<input type="text" id="duration" title="Enter Duration" size="8" value="120" mode="both">
             <label mode="both" id="lblRepeats">Repeats:</label>
-			<input type="text" id="repeats" title="Repeats" size="8" value="1" mode="both">
+			<input type="text" id="repeats" title="Repeats" size="4" value="1" mode="both">
 
             <br>
             <label mode="both" id="lblSize">Size: (0.0-1.0)</label>
@@ -415,13 +415,11 @@
                 gSize=parseFloat(get_value('size'));
 
                 if ( get_checked("chkRemoteStair")) {
-                    // 0 0 = gIntensityFine (unused)  color=0 (white)
-                    // last 0 = no fixation cross
                     var stim_params={'radius':gSize,
                     'contrast':theStaircase.stair_size,
                     'background':get_value('background'), 'ori':gWhich,
                     'repeat_freq':theFrequency, 'duration': theDuration, 'color':0,
-                    'isPeripheral':0, 'theta':parseFloat(get_value('theta')), 'sf':parseFloat(get_value('sf')),
+                    'isPeripheral':get_checked('radio-periph'), 'theta':parseFloat(get_value('theta')), 'sf':parseFloat(get_value('sf')),
                     'repeats':parseInt(get_value('repeats'))}
 
                     thePeer.send("G "+JSON.stringify(stim_params));
