@@ -18,6 +18,7 @@
             constructor(size,stair_N) {
                 this.stair_N=stair_N; // N-up-1down
                 this.restart(size); 
+                this.plot_log=false;
             }
 
             restart(size,nafc) {
@@ -104,10 +105,8 @@
 
                     this.trial_history.push(trial1);
 
-                    if (trial1.y <1.0) { // TODO: Have a flag whether to plot on log scale!!?
-                        if (trial1.y>0) { // Hopefully won't interfere with 0 for Y/N manual acuity
-                            trial1.y = Math.log10(trial1.y)*25.0+100.0 
-                        };
+                    if (this.plot_log) {
+                        trial1.y = Math.log10(trial1.y)*25.0+100.0 
                     };
 
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
