@@ -25,15 +25,14 @@
                 <input type="button" mode="adv" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
  
-            <label mode="both" id="lblBack">Background:</label>
-			<input type="text" id="background" title="Background" size="8" value="0.5" mode="both">
+            <label mode="adv" id="lblBack">Background:</label>
+			<input type="text" id="background" title="Background" size="8" value="0.5" mode="adv">
 
-            <div class="switch-field" style="width: 6em; position: relative; display: inline-block;">
+            <div mode='adv' class="switch-field" style="width: 6em; position: relative; display: inline-block;">
                 <input type="checkbox" id="radio-periph" name="switch-loc" value="Periph" onclick=";"/>
                 <label for="radio-periph">Periph.</label>
             </div>
 
-            <br>
             <label mode="adv" id="lblFrequency">Frequency:</label>
 			<input mode="adv" type="text" id="frequency" title="Enter Frequency" size="8" value="120" mode="adv">
             <label mode="adv" id="lblDuration">Duration:</label>
@@ -41,26 +40,28 @@
             <label mode="adv" id="lblRepeats">Repeats:</label>
 			<input mode="adv" type="text" id="repeats" title="Repeats" size="4" value="1" mode="both">
 
+            <label mode="adv" id="lblTheta">Theta (0-3.14):</label>
+			<input mode="adv" type="text" id="theta" title="SF" size="8" value="0" mode="both">
+
             <br>
+
+            <label mode="both" id="lblScreenSize">Diam. (cm):</label>
+			<input type="text" id="measured_size" title="screen_size" size="8" value="3.0" mode="both">
+            <br>
+
+            <label mode="both" id="lblDist">Dist. (cm):</label>
+			<input type="text" id="dist" title="dist" size="8" value="40" mode="both">
+
             <label mode="both" id="lblSize">Size: (0.0-1.0)</label>
 			<input type="text" id="size" title="Enter Size" size="8" value="0.25" mode="both">
 
             <br>
-            <label mode="adv" id="lblTheta">Theta (0-3.14):</label>
-			<input mode="adv" type="text" id="theta" title="SF" size="8" value="0" mode="both">
-            <br>
-            <label mode="both" id="lblDist">Dist. (cm):</label>
-			<input type="text" id="dist" title="dist" size="8" value="40" mode="both">
-            <label mode="both" id="lblScreenSize">Diam. (cm):</label>
-			<input type="text" id="measured_size" title="screen_size" size="8" value="3.0" mode="both">
-
-            <br>
-            <label mode="both" id="lblSF">SF (debug):</label>
-			<input type="text" id="sf" title="SF" size="8" value="100" mode="both">
+            <label mode="adv" id="lblSF">SF (debug):</label>
+			<input type="text" id="sf" title="SF" size="8" value="100" mode="adv">
 
             <br>
             <label mode="both" id="lblSF">SF: (c/d)</label>
-			<input type="text" id="sf_real" title="SF" size="8" value="100" mode="both">
+			<input type="text" id="sf_real" title="SF" size="8" value="5" mode="both">
 
 
 				<p class="boxed" mode="adv" id="keygroup">
@@ -208,7 +209,7 @@
             var dists=[40.0,40.0,40.0,40.0,40.0,40.0,80.0,80.0,80.0,20.0,20.0,20.0,20.0];
             var sizes=[0.125,0.125,0.125,0.125,0.125,0.125,0.25,0.25,0.25,
                 0.63,0.63,0.63,0.63];
-            var cycles=[2.5,5.0,10.0,20.0,40.0,80.0,40.0,80.0,20.0,10.0,10.0,5.0,1.0];
+            var cycles=[2.5,5.0,10.0,20.0,40.0,80.0,20.0,40.0,80.0,10.0,10.0,5.0,1.0];
 
             function set_code(val) {
                 var num=parseInt(val.substr(1));
