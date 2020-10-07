@@ -54,16 +54,15 @@
 				</div>
 
                 <br mode="acuity">
-                <label mode="acuity" id="lblContrast" style='display: inline-block; width: 4em; text-align: right;'>Contrast:</label>
+                <label mode="acuity" id="lblContrast" style='display: inline-block; width: 7em; text-align: right;'>Contrast:</label>
 				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
                     <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart E Acuity</button>
 
-                    
-
                 <br mode="acuity">
-                    <label mode="acuity" id="lblSize" style='display: inline-block; width: 4em; text-align: right;'>Size:</label>
-                    <input mode="acuity" type="text" value="25" id="textSize" title="Value" size="3">
+                    <label mode="acuity" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Size (MAR, cm)</label>
+                    <input mode="acuity" type="text" value="0.6" id="textSize" title="Value" size="3">
                     <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+
                 <br mode="acuity">
 
                     <span mode="acuity" id="lblStair">Staircase (0)</span>
@@ -551,6 +550,7 @@
                     get_metap(); 
 
                     theStaircase.contrast=get_value('textContrast');
+                    theStaircase.plot_log=false;
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
                         \n\tcontrast:${theStaircase.contrast} }`);
@@ -559,7 +559,8 @@
                     preset_contrast(); 
                     get_metap(); 
 
-                    theStaircase.contrast=get_value('textSize');
+                    // box has size 200 pixels across
+                    theStaircase.contrast=get_value('textSize')/get_value("box_size")*200.0;
                     theStaircase.plot_log=true;
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},

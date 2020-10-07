@@ -58,7 +58,12 @@
                     this.mean_last=0;
                 }
 
-                this.mean_cm=this.mean_last/200.0*get_value("box_size");
+                if (this.plot_log==true) { // Hack: means probably contrast, don't divide out cm
+                    this.mean_cm=this.mean_last;
+                } else {
+                    this.mean_cm=this.mean_last/200.0*get_value("box_size");
+                }
+
                 console.log(this.mean_last);
                 console.log(this.mean_cm);
             }
