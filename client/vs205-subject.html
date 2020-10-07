@@ -111,7 +111,7 @@
                 ctx.fillStyle = 'black';
                 ctx.font = "30px Arial";
                 ctx.fillText(dims, 10, 100);
-                ctx.fillText("Please wait", 10, 150);
+                //ctx.fillText("Please wait", 10, 150);
 
                 noSleep=new NoSleep();
                 //noSleep.enable();
@@ -149,6 +149,7 @@
                     connect: function(s) {
                         ctx.fillStyle='green';
                         ctx.fillText('Partner: '+s, 170, 50);
+                        ctx.fillText("Please click to go fullscreen", 10, 150);
                         setTimeout( function() {thePeer.send("FS "+canvas.width+" "+canvas.height);}, 500 );
                     },
                     peer_info: function(s) {},          //shouldn't ever receive this

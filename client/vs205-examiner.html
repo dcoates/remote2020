@@ -20,7 +20,7 @@
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
-				<input type="text" value="Enter condition" id="text_condition" title="Condition info" size="22">
+				<input type="text" value="Enter condition" id="condcode" title="Condition info" size="22">
                 <br>
                 <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
@@ -203,7 +203,28 @@
                     thePeer.instructor=true;
                 }
                 thePeer.init();
+
+                // To handle upload, simplest is to just create a new Peer to talk to instructor
+                // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new
+                // Peer connection in mypeer. (one -> many ( ok, here two) )
+                thePeer2=new MyPeer(handler_uploader);
+                thePeer2.init();
             };
+
+                var handler_uploader={
+                    id: function(s) {
+                        if ('autoconnect2' in dict_params) { //disable
+                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {log.info(s);},
+                    error: function(s) {log.info(s);},
+                    connect: function(s) {log.info('paired '+s);},
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info('unpaired',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
 
             function examiner_receive(msg) {
                 // TODO: Check if we are instructor?
@@ -231,6 +252,7 @@
             };
 
             var thePeer = null; 
+            var thePeer2 = null; 
 
             function reportSize() {
                 wid=canv.width;
@@ -570,7 +592,30 @@
 
             theStaircase.restart(metap.stair_start,nafc);
             theStaircase.next(); // show first trial
+
+            send_monitor('START');
         }
+
+        var conn_retries=3;
+        function send_monitor(s_add) {
+				var s=thePeer.peer.id+' '+get_value('condcode')+' '+s_add;
+		
+					if (thePeer2 && thePeer2.conn && thePeer2.conn.open && (get_value('condcode').length>0) ) {
+						thePeer2.send(s);
+					} else {
+                     	if (conn_retries >= 0) {
+                            conn_retries -= 1;
+                            thePeer2=new MyPeer(handler_uploader);
+                            thePeer2.init();
+                            setTimeout( send_monitor, 3000 ); // give it three seconds to connect then try to send
+						 } else {
+								 // Don't try again now, but reset, in case they try to hit
+								 // do_upload again later.
+								 conn_retries=3;
+						}
+                }
+			}
+
 
         function do_mocs_restart() {
             set_checked('chkStair',false);
@@ -634,6 +679,8 @@
                 var correct=(ori_resp==trial_params['orientation']);
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+
+                send_monitor(theStaircase.mean_cm.toPrecision(4));
             } else {
                 if (get_checked("chkMOCS")) {
                     var correct=(ori_resp==trial_params['orientation']);
