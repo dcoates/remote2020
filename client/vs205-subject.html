@@ -115,6 +115,16 @@
 
                 noSleep=new NoSleep();
                 //noSleep.enable();
+
+                document.addEventListener('click', function(event) {
+                clear('white');
+                square(200,'black');
+                }, false);
+
+                document.addEventListener('touchstart', function(event) {
+                clear('white');
+                square(200,'black');
+                }, false);
             }
 
             // How we respond to peer commands
