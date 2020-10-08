@@ -17,10 +17,11 @@
 					Connect
 				</button>
 
+                <label mode="both" id="lblCode">Cond. code:</label>
+				<input type="text" value="Enter condition" id="condcode" title="Condition info" size="12">
+                <br>
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
-                <br>
-				<input type="text" value="Enter condition" id="condcode" title="Condition info" size="22">
                 <br>
                 <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
@@ -31,7 +32,7 @@
 				</p>
 
             <label mode="both" id="lblScreenSize">Box width (cm):</label>
-			<input type="text" id="box_size" title="screen_size" size="8" value="3.1" mode="both">
+			<input type="text" id="box_size" title="screen_size" size="6" value="3.1" mode="both">
  
             <div class="boxed" id="switch_afc" mode="both">
             2AFC <label class="switch" height="16px">
