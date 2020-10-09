@@ -704,14 +704,6 @@
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
 
-                revs_last=theStaircase.trial_history
-                    .filter(t1=>t1.is_reversal)         // extract reversals
-                    .filter( (word,idx,arr) => idx>1)   // remove first two
-
-                if (revs_last.length>0) {
-                    var mean_last=revs_last.reduce( (total,t1)=>t1.size+total,0)/revs_last.length
-                    set_html('lblMean',"Mean: "+mean_last.toPrecision(4));
-
 			send_monitor(mean_last.toPrecision(4));
                 }
             } else {
