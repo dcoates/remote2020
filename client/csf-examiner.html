@@ -704,8 +704,7 @@
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
 
-			send_monitor(mean_last.toPrecision(4));
-                }
+			    send_monitor(mean_last.toPrecision(4));
             } else {
                 if (get_checked("chkMOCS")) {
                     var correct=(ori_resp==trial_params['orientation']);
