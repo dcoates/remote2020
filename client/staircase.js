@@ -122,7 +122,7 @@
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
-                    var oriNew=generate_ori(4) 
+                    var oriNew=generate_ori(this.nafc) 
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
@@ -219,8 +219,6 @@
 
     var num_manual_trial=0;      // trial count
     var prev_answered=false;     // was previous trial answered already?
-    var map_size={"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9,
-       "10":10, "11":16, "12":25, "13":40, "14":63, "15":100} // log10 steps
 
     function manual_trial(which_size,nafc,is_YN) {
         // Get random orientation
@@ -323,7 +321,7 @@
 
         // Rescale our linear indexed scale (0-15) to the actual size scale, although sizes won't correspond
         // Button one is a phantom button to leave space
-        var ylocGraph=(nwhich)*98/15.0
+        var ylocGraph=(nwhich)*98/nrows_mocs_table;
         var trial1={'is_correct': correct, 'x': num_manual_trial-1, 'y':ylocGraph };
         update_graph(trial1);
         //app1(this.trial_history); // TODO

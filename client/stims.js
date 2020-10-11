@@ -31,6 +31,8 @@
 
                 const image = new Image();
                 image.src = 'img/tumbling_e.png'
+                const image_v = new Image();
+                image_v.src = 'img/vernier.png'
 
 				const TO_RADIANS = Math.PI/180; 
 
@@ -52,6 +54,25 @@
                     ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
+                function draw_v_contrast(posx,posy,siz,rotation,contrast) {
+                    ctx.imageSmoothingEnabled=false;
+					//ctx.save(); 
+                    if (rotation==0) {
+					    ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					    ctx.drawImage(image_v, -siz/2, -siz/2, siz, siz);
+                    } else {
+					    ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+                        ctx.translate(image_v.width,0); // Redundant??!
+                        ctx.scale(-1,1);
+					    ctx.drawImage(image_v, -siz/2, -siz/2, siz, siz);
+                    }
+                    ctx.resetTransform();
+    				//ctx.restore(); 
+                    
+                    var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
+                }
+
                 // Assume 100% contrast. Stub for compatibility
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
                     draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0);
@@ -63,7 +84,10 @@
 
                     if (which=='E') {
 							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
-                       }
+                    } else if (which=='|') {
+							draw_v_contrast(posx,posy,siz*5.0,ori,contrast);
+                    }
+
                     if (esep>=0) {
 							draw_e_contrast(posx-siz*5*esep,posy,siz*5,90,contrast);
 							draw_e_contrast(posx+siz*5*esep,posy,siz*5,0,contrast);

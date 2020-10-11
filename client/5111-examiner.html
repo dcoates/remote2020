@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024">
+        <title>remote2020 - examiner</title>
+        <link rel="stylesheet" href="vs205.css">
+        <link rel="stylesheet" href="graph.css">
+    </head>
+    <body style="background-color:#808080" onload="load_code()">  
+
+		<div class="split left" id='lefty'>
+				<input type="text" id="receiver-id" title="Enter ID" size="8">
+				<button id="connect-button" onclick="do_connect()" style="border-radius:4px;">
+					<object type="image/svg+xml" onclick="do_connect()" data="img/link.svg"> </object>
+					<object type="image/svg+xml" onclick="do_connect()" data="img/bs_person_square.svg"></object>
+					Connect
+				</button>
+
+                <label mode="both" id="lblCode">Cond. code:</label>
+				<input type="text" value="Enter condition" id="condcode" title="Condition info" size="12">
+                <br>
+                <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
+                <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
+                <br>
+                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
+                <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
+
+
+				<p class="boxed" mode="adv" id="keygroup">
+					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="16px"></object>
+					Keybrd<input type="checkbox" id="chkKeys" checked>
+				</p>
+
+            <label mode="both" id="lblScreenSize">Box width (cm):</label>
+			<input type="text" id="box_size" title="screen_size" size="6" value="1.25" mode="both">
+ 
+            <div class="boxed" id="switch_afc" mode="adv">
+            2AFC <label class="switch" height="16px">
+              <input type="checkbox" id="chkNafc" checked>
+              <span class="slider round"></span>
+            </label>4AFC
+            </div>
+ 
+            <div class="boxed" id="switch_yn" mode="adv">
+            Y/N <label class="switch" height="16px">
+              <input type="checkbox" id="chkYN" checked>
+              <span class="slider round"></span>
+            </label>nAFC
+            </div>
+
+				<div class="boxed" mode="adv">
+					<object type="image/svg+xml" data="img/bs_arrow_box.svg"></object>
+					To Subject
+					<input mode="adv" type="checkbox" id="chkRemoteStair">
+				</div>
+
+                <br mode="acuity">
+                <label mode="acuity" id="lblContrast" style='display: inline-block; width: 7em; text-align: right;'>Contrast:</label>
+				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
+
+                <br>
+                <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">
+					<object type="image/png" onclick="do_stair_restart(2)" data="img/tumbling_e.png"> </object>
+                    Restart E Acuity staircase</button>
+                <br>
+				<button id="btnV" onclick="do_stair_restart(2)" style="border-radius:4px;">
+					<object type="image/png" onclick="do_stair_restart(2)" data="img/vernier.png"> </object>
+					Restart Vernier Staircase
+				</button>
+
+                <br mode="adv">
+                    <label mode="adv" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Size (MAR, cm)</label>
+                    <input mode="adv" type="text" value="0.6" id="textSize" title="Value" size="3">
+                    <button mode="adv" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+
+                <br mode="acuity">
+
+                    <span mode="acuity" id="lblStair">Staircase (0)</span>
+                    <input mode="acuity" type="checkbox" id="chkStair" style="display:none;">
+
+                    <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
+                    <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
+
+                <button mode="adv" type="button" id="btnRun" onclick="do_trial();">RUN 1 Trial!</button>
+                    <br mode="adv"><br mode="adv">
+
+                <button mode="adv" type="button" id="demo1" onclick="demo1()">Tumbling-E (fovea)</button>
+                <button mode="adv" type="button" id="demo1p" onclick="demo1p()">Tumbling-E (5deg)</button>
+
+                <button mode="adv" type="button" id="mocs1" onclick="mocs1()">E MOCS (fovea)</button>
+                <button mode="adv" type="button" id="mocs1p" onclick="mocs1p()">E MOCS (5deg)</button>
+
+                <button mode="adv" type="button" id="demo2" onclick="demo2()">CSF</button>
+
+                <table mode="graph" id="table_graph" class="table_graph" style="table-layout: fixed; width:100%;height:100px;border-top:1px;" hidden=true>
+                    <tr><td id='placeholder_td1' width="50px"></td><td id="placeholder_td2" width="50px"></td><td width="600px" class="td_graph" id='td_graph'><div id="my_dataviz" class="graph"></div></td></tr>
+                </table>
+
+                <table mode="graph" id="table_arrows" class="arrows" hidden=true>
+                    <tr><td>
+                            <button id="btnTrash" onclick="do_trash()"><span class="bs_reset_ccw"></span></button>
+                    </td><td>
+                            <button id="btnUp" onclick="do_kb(38);"><span class="resp_up"></span></button>
+                    </td>
+                    <td><button id="btnClip" onclick="export_manual_table();"><span class="clipboard"></span></button> </td>
+					<td id="minican" rowspan=3>
+            				<canvas id="canvas2">Canvas</canvas>
+					</td></tr>
+
+					<tr><td>
+							<button id="btnLeft" onclick="do_kb(37)"><span class="resp_left"></span></button>
+					</td><td></td><td>
+							<button id="btnRight" onclick="do_kb(39)"><span class="resp_right"></span></button>
+					</td></tr>
+	
+					<tr><td ></td><td >
+							<button id="btnDown" onclick="do_kb(40)"><span class="resp_down"></span></button>
+                            <td id="dim_place"></td></tr>
+                </table>
+     			<canvas id="canvas" hidden=true>Canvas</canvas>
+
+                <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
+                <table mode="adv" style="width:100%;height:200px;border-top:1px" id="table_text">
+                    <tr><td width=70%>
+                    <textarea  name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
+                    <textarea  name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
+                        </td><td>
+                    <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
+                    <button type="button" id="btnExport" onclick="navigator.clipboard.writeText(get_html('log'))">Copy</button>
+                    <textarea name="log" id="log" style="width:90%;height:75%;">trial,size,ori,resp,correct,is_reversal,num_reversals</textarea>
+                    </tr>
+                </table>
+		</div>
+
+		<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="loglevel.min.js"></script>
+        <script src="NoSleep.min.js"></script>
+        <script src="drc-misc.js"></script>
+        <script src="staircase.js"></script>
+        <script src="stims.js"></script>
+        <script src="mypeer.js" type="text/javascript"> </script>
+        <script src="grating.js"></script>
+        <script src="graph_short.js"></script>
+
+        <script type="text/javascript">
+            // Globals
+            var noSleep=null;
+
+            function clear_log() {
+                set_html('log',"trial,size,ori,resp,correct,is_reversal,num_reversals");
+            }
+
+            var metap = []; // GLOBAL
+            function get_metap() {
+                // TODO: A callback when it changes instead?
+                eval( document.getElementById("metap").value );
+            }
+
+            var dict_params = {} // GLOBAL
+            function load_code() {
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+                if (dict_params['mode']=='vs205') {
+                    set_mode("graph","adv");
+                    document.getElementById('btnSetup').hidden=true;
+                    set_checked('chkKeys',true);
+                }
+                if (dict_params['mode']=='graph') {
+                    set_mode("graph","adv");
+                }
+
+                if (dict_params['lab']!='acuity') {
+                    build_table(); // create graph table
+                    demo1(); // preload E acuity
+                } else {
+                    // Acuity lab: // home some stuff
+                    document.getElementById('switch_afc').style.display="none";
+                    document.getElementById('switch_yn').style.display="none";
+                };
+
+                // Testing/initial config: simulate a phantom display connection 
+                //pair_screen_info('FS 548 738'); // DRC's Hauwei Tablet
+                pair_screen_info('FS 408 712'); // DRC's Samsung S8
+
+                document.getElementById('canvas').style.visibility="hidden";
+                document.getElementById('canvas').style.display="none";
+                // Save default style for each. set_mode sets style to "none" to hide. Need this to restore
+                var lefty=document.getElementById('lefty');
+                [].forEach.call(lefty.children, a => {
+                    a.old_display=a.style.display;
+                });
+
+                noSleep=new NoSleep();
+                peer_init();
+                //noSleep.enable();
+            };
+
+            function peer_init() {
+                var handler={
+                    id: function(s) {set_html('my-id','ID:'+s);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {set_html('status',s);},
+                    error: function(s) {set_html('status',s);},
+                    connect: function(s) {set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);},
+                    peer_info: function(s) {pair_screen_info(s);},
+                    unpair: function (s) {set_html ('status',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {examiner_receive(s);},
+                }
+                thePeer=new MyPeer(handler);
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    thePeer.instructor=true;
+                }
+                thePeer.init();
+
+                // To handle upload, simplest is to just create a new Peer to talk to instructor
+                // Will get new ID, etc. Wasteful, but simple. Eventually could just create a new
+                // Peer connection in mypeer. (one -> many ( ok, here two) )
+                thePeer2=new MyPeer(handler_uploader);
+                thePeer2.init();
+            };
+
+                var handler_uploader={
+                    id: function(s) {
+                        if ('autoconnect2' in dict_params) { //disable
+                            setTimeout( function() {thePeer2.join(dict_params['autoconnect2']);}, 500 );
+                        }
+                    },
+                    lost: function(s) {log.info(s);},
+                    error: function(s) {log.info(s);},
+                    connect: function(s) {log.info('paired '+s);},
+                    peer_info: function(s) {log.info(s);},
+                    unpair: function (s) {log.info('unpaired',s);},
+                    keyboard: function (nkey) {do_kb(nkey);},
+                    receive: function (s) {},
+                }
+
+            function examiner_receive(msg) {
+                // TODO: Check if we are instructor?
+                log.info(msg);
+                if (msg.substr(0,2)=='KB') {
+                    do_kb(parseInt(msg.substr(3)));
+                }
+            }
+
+            function pair_screen_info(s) {
+                var list_dims=s.split(' ');
+                var width=parseInt(list_dims[1]); // first is "0" FS specifier code
+                var height=parseInt(list_dims[2]);
+
+                // Make our 'shadow' canvas match theirs
+                canv.width=width;
+                canv.height=height;
+                reportSize(); // adjust our drawing stuff
+
+                set_html("dim_place",width+"x"+height);
+            }
+
+            function do_connect() {
+                thePeer.join(get_value('receiver-id'));
+            };
+
+            var thePeer = null; 
+            var thePeer2 = null; 
+
+            function reportSize() {
+                wid=canv.width;
+                height=canv.height;
+                xc=wid/2;
+                yc=height/2;
+            }
+
+            // For us, we are changing the distance
+            // Since 200=1.25cm, 16=1mm MAR
+            var map_size={"1":16, "2":16, "3":16, "4":16, "5":16};
+
+            const nrows_mocs_table=5;
+            function build_table() {
+                var table=document.getElementById('table_graph');
+                var td_graph=document.getElementById('td_graph');
+                td_graph.rowSpan=nrows_mocs_table+2;
+
+                for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
+
+                    tr = table.insertRow(-1);
+                    var td = document.createElement('td');
+                    td = tr.insertCell(0);
+                    var button = document.createElement('input');
+                    button.setAttribute('type', 'button');
+                    button.setAttribute('value', nrows_mocs_table-nrow);
+                    button.setAttribute('onclick', 'table_button_click('+(nrows_mocs_table-nrow)+')');
+                    button.style.width="6ch";
+                    td.appendChild(button);
+
+                    td = tr.insertCell(0);
+                    td.id='count_'+(nrows_mocs_table-nrow);
+                    td.width = "20px";
+                    td.innerHTML="0/0";
+                }
+                tr = table.insertRow(-1); // add a blank row at end to better line up with graph
+                td = tr.insertCell(0);
+                var button = document.createElement('input');
+                button.setAttribute('type', 'button');
+                button.setAttribute('value', nrows_mocs_table-nrow);
+                button.setAttribute('onclick', 'table_button_click(0)');
+                td.appendChild(button);
+                td = tr.insertCell(0);
+                td.id='count_0';
+                button.style.width="6ch";
+                td.innerHTML="0/0";
+
+                if (false) { // If on bottom, need this (horizontal-arranged stimuli)
+                    tr = table.insertRow(-1);
+                    for (var nrow = 0; nrow <= nrows- 1; nrow++) {
+                        var td = document.createElement('td');
+                        td = tr.insertCell(-1);
+					    td.id='count_'+nrow;
+					    td.innerHTML="0";
+                    }
+                }
+            }
+
+            function set_mode(show,hide) {
+                var lefty=document.getElementById('lefty');
+                [].forEach.call(lefty.children, a => {
+                    if (a.getAttribute("mode")==hide) {
+                        a.hidden=true;
+                        a.style.display="none";
+                    } else if (a.getAttribute("mode")==show) {
+                        a.hidden=false; // Needed for graph table and arrow 
+                        a.style.display=a.old_display;
+                    } // IF neither (not matching show or hide, do nothing)
+                });
+            }
+
+            // Global variables
+            var c = document.getElementById("canvas");
+            var canv = document.getElementById("canvas");
+            var ctx = canv.getContext("2d");
+            var wid=768
+            var height=768;
+            var xc=wid/2;
+            var yc=height/2;
+
+            var mode_setup="E";
+
+            // Command/Action stuff
+            var commands=null;
+            var commands_split=null;
+            var flip_durations=[];
+            var actions=[];
+            var globalAnimationID=null;
+            var indexAction=0;
+            var indexFrame=0;
+            var trial_params={};
+
+            var in_trial=false;
+
+            // shader grating stuff:
+            var gl, program; // these are used in grating_shader.
+            // window.addEventListener("load", setupWebGL, false); //now we call explicit and swtich context
+
+            //c = document.getElementById("canvas");
+            //ctx = c.getContext("2d");
+
+            function send_trial() {
+                // get commands
+                var commands=document.getElementById("commands").value;
+                // Replace the meta parameters (since 1 string);
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params );
+                var msg="T "+commands;
+                if (thePeer && thePeer.conn && thePeer.conn.open) {
+			        thePeer.send(msg);
+                }
+            }
+
+            function do_trial() {
+                if ( get_checked("chkRemoteStair")) {
+                    send_trial(); 
+                }
+
+                //var chkFullScr = document.getElementById("chkFullScr");
+                //if (chkFullScr.checked) {
+                    //openFullscreen();
+                //}
+
+                // parse commands
+                commands=document.getElementById("commands").value;
+
+                // First replace the meta parameters (since 1 string)
+                trial_params=eval(document.getElementById("trial").value);
+                commands=fillTemplate(commands,trial_params )
+
+                actions=commands.split("flip")
+                flip_durations=[];
+                for (i=1; i<actions.length; i++) {
+                    // Assume the first number in each item (except the first) looks like: (60)\n;...next...
+                    // Since the 'flip' was stripped out
+
+                    dur=parseInt(actions[i].substr(1))
+                    flip_durations.push(dur);
+
+                    start_of_next_line=actions[i].indexOf(')');
+                    actions[i]=actions[i].substr(start_of_next_line+1);
+                }
+                // remote last flip (empty action) if we need to.
+                if (actions[i-1].length<2) {
+                    actions.pop();
+                }
+
+                // Start the animation
+                indexAction=0;
+                indexFrame=0;
+                in_trial=true;
+                globalAnimationID = requestAnimationFrame(animateLoop);
+            }
+
+            function preset_acuity() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function preset_vernier() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('|',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function preset_contrast() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function demo1() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');\nfixation(0,0,80,8,'green','X');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,80,8,'black','X');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+            function mocs1() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');\nfixation(0,0,80,8,'green','X');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nflip(1);\n\n\ndraw_letter('E',${orientation},0,0,10,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,0,80,8,'black','X');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function demo1p() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,${size},'black',-1,-1);\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:72\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+
+            function mocs1p() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');\nfixation(0,-700,20,4,'green');\nflip(30);\n\nclear('#ffffff');\n//beep(1,880,30);\nfixation(0,-700,20,4,'black');\nflip(1);\n\nfixation(0,-700,20,4,'black');\ndraw_letter('E',${orientation},0,333,20,'black',-1,${size});\nflip(10)\t\/\/Draw for 10 frames (160ms);\n\nclear('#ffffff');\nfixation(0,-700,20,4,'black');flip(1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:72\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function demo2() {
+                //document.getElementById("commands").value=
+                //"make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\n//beep(1,880,30); flip(1); \
+                //animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(0,0,10,2,'black');flip(1);"
+
+                // Clone the canvas to unhook the canvas
+                var newCvs = c.cloneNode(false);
+                c.parentNode.replaceChild(newCvs, c);
+                c = newCvs;
+
+                setupWebGL();
+                showShaderGrating();
+            }
+
+            function animateLoop() {
+            	//var canv = document.getElementById("canvas");
+                //var ctx = canv.getContext("2d");
+
+                //var trial_params=document.getElementById("trial").value;
+                if (indexAction<actions.length) {
+                    //stats.begin()
+                    //filled=fillTemplate(actions[indexAction],eval(trial_params) )
+                    eval( actions[indexAction] );
+
+					// after draws:
+					resizeTo(canv,0.25);
+
+                    //stats.end()
+                    indexFrame += 1;
+                    if (indexFrame>=flip_durations[indexAction]) {
+                        indexFrame = 0;
+                        indexAction += 1;
+                    }
+
+                    globalAnimationID = requestAnimationFrame(animateLoop);
+                } else { // no more actions left
+                    // reset, in case we want to run again
+                    indexAction = 0;
+                    indexFrame = 0;
+                    cancelAnimationFrame(globalAnimationID);
+                    in_trial=false;
+                }
+            }
+
+
+                // fullscreen hints:
+                //canvas.className = "fullscreen"
+                //document.body.scrollTop = 0; 
+                //document.body.style.overflow = 'hidden'; 
+		function openFullscreen() {
+
+            if (document.fullscreenElement) {
+                return;
+            }
+
+                  var elem = document.getElementById("canvas");
+		  if (elem.requestFullscreen) {
+		    elem.requestFullscreen();
+		  } else if (elem.mozRequestFullScreen) { /* Firefox */
+		    elem.mozRequestFullScreen();
+		  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+		    elem.webkitRequestFullscreen();
+		  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+		    elem.msRequestFullscreen();
+		  }
+    		elem.width = document.body.clientWidth; //document.width is obsolete
+    		elem.height = document.body.clientHeight; //document.height is obsolete
+
+			s= elem.scrollWidth + ' ' + elem.scrollHeight + ' ' + elem.width + ' ' + elem.height;
+			//conn.send(s);
+		};
+
+		function closeFullscreen() {
+            try {
+              /*if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else
+                */
+                
+              if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              } 
+            } catch (error) {
+                  //console.error(error);
+                  console.log('Error: Exit Fullscr');
+            }
+		}
+
+        // Main Javascript entry:
+        reportSize();//call once to set initial size
+        //window.addEventListener('resize', reportSize);
+        //audio=new AudioContext() // for beeping. browsers limit the number of concurrent audio contexts, so you better re-use'em
+
+        //var stats = new Stats();
+        //stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        //stats.dom.style.position="absolute";
+        //stats.dom.style.top="90%";
+        //document.body.appendChild( stats.dom );
+
+        var theStaircase=new staircase(8,4); // 3-up 1-down, default size of "8" (but hopefully never used)
+        var theMOCS=new MOCS(); 
+
+        function do_stair_restart(which) {
+            graph_clear();
+
+            set_checked('chkStair',true);
+            set_checked('chkMOCS',false);
+            set_html("lblStair","Staircase 0 0");
+            nafc=get_checked('chkNafc')?4:2;
+ 
+            // TODO: Something fishy about the very first trial
+
+            //if (dict_params['lab']=='acuity') {
+            if (true) {
+
+                document.getElementById("placeholder_td1").width="1px";
+                document.getElementById("placeholder_td2").width="1px";
+
+                if (which==0) {
+                    preset_acuity(); 
+                    get_metap(); 
+
+                    theStaircase.contrast=get_value('textContrast');
+                    theStaircase.plot_log=false;
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+
+                } else if (which==2) { // Vernier
+                    preset_vernier(); 
+                    get_metap(); 
+                    nafc=2;
+
+                    theStaircase.contrast=get_value('textContrast');
+                    theStaircase.plot_log=false;
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+            
+                } else {
+                    preset_contrast(); 
+                    get_metap(); 
+
+                    // box has size 200 pixels across
+                    theStaircase.contrast=get_value('textSize')/get_value("box_size")*200.0;
+                    theStaircase.plot_log=true;
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+                }
+            }
+
+            theStaircase.restart(metap.stair_start,nafc);
+            theStaircase.next(); // show first trial
+
+            send_monitor('START');
+        }
+
+        var conn_retries=3;
+        function send_monitor(s_add) {
+				var s=thePeer.peer.id+' '+get_value('condcode')+' '+s_add;
+		
+					if (thePeer2 && thePeer2.conn && thePeer2.conn.open && (get_value('condcode').length>0) ) {
+						thePeer2.send(s);
+					} else {
+                     	if (conn_retries >= 0) {
+                            conn_retries -= 1;
+                            thePeer2=new MyPeer(handler_uploader);
+                            thePeer2.init();
+                            setTimeout( send_monitor, 3000 ); // give it three seconds to connect then try to send
+						 } else {
+								 // Don't try again now, but reset, in case they try to hit
+								 // do_upload again later.
+								 conn_retries=3;
+						}
+                }
+			}
+
+
+        function do_mocs_restart() {
+            set_checked('chkStair',false);
+            set_checked('chkMOCS',true);
+            set_html("lblStair","MOCS X");
+            nafc=get_checked('chkNafc')?4:2;
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
+            theMOCS.next(); // show first trial
+        }
+        function table_button_click(which) {
+            var thisid='count_'+which;
+            nafc=get_checked('chkNafc')?4:2;
+            is_YN=get_checked('chkYN')?false:true;
+
+            log.info(thisid);
+            update_manual_table_outof(which);
+            manual_trial(which,nafc,is_YN);
+        }
+
+        // Keyboard stuff:
+        document.addEventListener('keydown', function(event) {key_handler(event);} );
+
+        function key_handler(event) {
+            if (get_checked("chkKeys") ) {
+                do_kb(event.keyCode);
+            }
+        }
+
+        var prev_manual_trial=null; // TODO: FIXME (put into OO staircase class)
+
+        function do_trash() {
+            graph_clear();
+
+            for (var nrow = 0; nrow <= nrows_mocs_table; nrow++) {
+                var count_id='count_'+nrow;
+                set_html(count_id,"0/0");
+            }
+            // clear "manual"
+            prev_manual_trial=null;
+            num_manual_trial=0;
+        }
+
+        function do_kb(keycode) {
+            var ori_resp;
+            switch (keycode) {
+                case 37: //L
+                    ori_resp=180; break;
+                case 38: //U
+                    ori_resp=90; break;
+                case 39: //R
+                    ori_resp=0; break;
+                case 40: //D
+                    ori_resp=270; break;
+                default:
+                    return; // do nothing if unrecognized key
+                }
+
+            if (get_checked("chkStair")) {
+                var correct=(ori_resp==trial_params['orientation']);
+                theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+
+                send_monitor(theStaircase.mean_cm.toPrecision(4));
+            } else {
+                if (get_checked("chkMOCS")) {
+                    var correct=(ori_resp==trial_params['orientation']);
+                    theMOCS.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
+                    // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
+                } else {
+                    if (prev_manual_trial) {
+                        // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
+                        is_YN=get_checked('chkYN')?false:true;
+                        if (thePeer.instructor) {
+                            allow_multiple=true;
+                        } else {
+                            allow_multiple=false;
+                        }
+                        process_manual(ori_resp, is_YN,allow_multiple);
+                    }
+                }
+            }
+        };
+</script>
+    </body>
+</html>
+
