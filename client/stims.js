@@ -33,6 +33,8 @@
                 image.src = 'img/tumbling_e.png'
                 const image_v = new Image();
                 image_v.src = 'img/vernier.png'
+                const image_spot = new Image();
+                image_spot.src = 'img/spot.png'
 
 				const TO_RADIANS = Math.PI/180; 
 
@@ -73,6 +75,26 @@
                     ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
+                function draw_spot_contrast(posx,posy,siz,rotation,contrast) {
+                    ctx.imageSmoothingEnabled=false;
+					//ctx.save(); 
+                    ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+
+                    if (rotation==0) {
+					    ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					    ctx.drawImage(image_spot, -siz/2, -siz/2, siz, siz);
+					    //ctx.drawImage(image_v, -siz/2, -siz/2, siz, siz);
+                    } else {
+                        ; //noop: don't draw
+                    }
+
+                    ctx.resetTransform();
+    				//ctx.restore(); 
+                    
+                    var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
+                }
+
                 // Assume 100% contrast. Stub for compatibility
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
                     draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0);
@@ -85,7 +107,11 @@
                     if (which=='E') {
 							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
                     } else if (which=='|') {
-							draw_v_contrast(posx,posy,siz*5.0,ori,contrast);
+                            // Image for vernier is bigger to allow lines to be longer
+							draw_v_contrast(posx,posy,siz*10.0,ori,contrast);
+                    } else if (which=='.') {
+                            // Image for vernier is bigger to allow lines to be longer
+							draw_spot_contrast(posx,posy,siz*5.0,ori,contrast);
                     }
 
                     if (esep>=0) {

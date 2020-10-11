@@ -23,9 +23,8 @@
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
-                <input type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
+                <input mode="adv" type="button" id="btnE" onclick='set_mode("graph","adv");' class="button-tumbling_e">
                 <input type="button" id="btnSetup" onclick='set_mode("adv","graph")' class="button-setup">
-
 
 				<p class="boxed" mode="adv" id="keygroup">
 					<object type="image/svg+xml" data="img/bs_keyboard.svg" height="16px"></object>
@@ -60,13 +59,18 @@
 				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
 
                 <br>
-                <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">
-					<object type="image/png" onclick="do_stair_restart(2)" data="img/tumbling_e.png"> </object>
+                <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);" style="border-radius:4px; width:15em">
+					<object type="image/png" onclick="do_stair_restart(2)" data="img/tumbling_e.png" width="20px"> </object>
                     Restart E Acuity staircase</button>
                 <br>
-				<button id="btnV" onclick="do_stair_restart(2)" style="border-radius:4px;">
-					<object type="image/png" onclick="do_stair_restart(2)" data="img/vernier.png"> </object>
+				<button id="btnV" onclick="do_stair_restart(2)" style="border-radius:4px; width:15em">
+					<object type="image/png" onclick="do_stair_restart(2)" data="img/vernier.png" width="20px"> </object>
 					Restart Vernier Staircase
+				</button>
+                <br>
+				<button id="btnS" onclick="do_stair_restart(3)" style="border-radius:4px; width:15em">
+					<object type="image/png" onclick="do_stair_restart(3)" data="img/spot.png" width="20px"> </object>
+					Restart Detection Staircase
 				</button>
 
                 <br mode="adv">
@@ -173,7 +177,8 @@
 
                 if (dict_params['lab']!='acuity') {
                     build_table(); // create graph table
-                    demo1(); // preload E acuity
+                    manual_acuity(); // preload E acuity
+                    //preset_acuity();
                 } else {
                     // Acuity lab: // home some stuff
                     document.getElementById('switch_afc').style.display="none";
@@ -421,17 +426,16 @@
                 in_trial=true;
                 globalAnimationID = requestAnimationFrame(animateLoop);
             }
-
-            function preset_acuity() {
+            function preset_vernier() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                "clear('#ffffff');draw_letter2('|',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
-            function preset_vernier() {
+            function preset_spot() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');draw_letter2('|',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                "clear('#ffffff');draw_letter2('.',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
@@ -441,6 +445,20 @@
                 "clear('#ffffff');draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function preset_acuity() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+            }
+
+            function manual_acuity() {
+                document.getElementById("commands").value=
+                "clear('#ffffff');draw_letter('E',${orientation},0,0,${size},'black',-1,-1);"
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32\n}";
+                document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
             function demo1() {
@@ -605,6 +623,18 @@
 
                 } else if (which==2) { // Vernier
                     preset_vernier(); 
+                    get_metap(); 
+                    nafc=2;
+
+                    theStaircase.contrast=get_value('textContrast');
+                    theStaircase.plot_log=false;
+                    set_value("trial",`trial_params={\n\torientation: 0,
+                        \n\tsize:${metap.stair_start},
+                        \n\tcontrast:${theStaircase.contrast} }`);
+            
+
+                } else if (which==3) { // Spot detection
+                    preset_spot(); 
                     get_metap(); 
                     nafc=2;
 
