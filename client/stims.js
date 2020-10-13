@@ -111,7 +111,7 @@
 							draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
                     } else if (which=='.') {
                             // Image for vernier is bigger to allow lines to be longer
-							draw_spot_contrast(posx,posy,siz*5.0,ori,contrast);
+							draw_spot_contrast(posx,posy,siz*1.0,ori,contrast);
                     }
 
                     if (esep>=0) {
