@@ -77,7 +77,7 @@
                 receive_commands("G "+JSON.stringify(gabor_defaults));
                 adapt_sf = get_value("adapt_sf")*size_deg;
 
-                gabor_defaults.theta = get_value('theta');
+                gabor_defaults.theta = get_value('theta')/180*3.1416;
                 receive_commands("G "+JSON.stringify(gabor_defaults));
             }
 
@@ -452,7 +452,7 @@
 
                         gabor_defaults.contrast=gabor_defaults.background;
                         gabor_defaults.sf=adapt_sf;
-                        gabor_defaults.theta=get_value("adapt_theta");
+                        gabor_defaults.theta=get_value("adapt_theta")/180*3.1416;
 
                         adapter=setInterval(adapt, 80);
                         adapting=true;
@@ -462,7 +462,7 @@
 
                         gabor_defaults.contrast=contrast_save;
                         gabor_defaults.sf=sf_save;
-                        gabor_defaults.theta=get_value("theta");
+                        gabor_defaults.theta=get_value("theta")/180*3.1416;
                         receive_commands("G "+JSON.stringify(gabor_defaults));
                     }
                     break;
