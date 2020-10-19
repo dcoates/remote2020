@@ -61,8 +61,8 @@
 
         <script type="text/javascript">
             'use strict';
-            var thePeer=null;
             var noSleep=null;
+            var thePeer=null;
 
             var dict_params = {} // GLOBAL
             function load_code() {
@@ -259,14 +259,14 @@
 
                 actions=commands.split("flip")
                 flip_durations=[];
-                for (i=1; i<actions.length; i++) {
+                for (var i=1; i<actions.length; i++) {
                     // Assume the first number in each item looks like: (60)\n;...next...
                     // Since the 'flip' was stripped out
 
-                    dur=parseInt(actions[i].substr(1))
+                    var dur=parseInt(actions[i].substr(1))
                     flip_durations.push(dur);
 
-                    start_of_next_line=actions[i].indexOf(')');
+                    var start_of_next_line=actions[i].indexOf(')');
                     actions[i]=actions[i].substr(start_of_next_line+1);
                 }
                 // remote last flip (empty action) if we need to.
