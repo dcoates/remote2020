@@ -149,6 +149,7 @@
         <script src="graph_short.js"></script>
 
         <script type="text/javascript">
+            'use strict';
             // Globals
             var noSleep=null;
 
@@ -211,7 +212,10 @@
                     },
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
-                    connect: function(s) {set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);},
+                    connect: function(s) {
+                        set_html('status','Paired:'+ s); set_checked("chkRemoteStair",true);
+                        set_value('receiver-id',s+': OK');
+                    },
                     peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
@@ -536,8 +540,7 @@
 
                 // fullscreen hints:
                 //canvas.className = "fullscreen"
-                //document.body.scrollTop = 0; 
-                //document.body.style.overflow = 'hidden'; 
+
 		function openFullscreen() {
 
             if (document.fullscreenElement) {
