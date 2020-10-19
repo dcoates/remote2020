@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=1024">
         <title>remote2020 - examiner</title>
         <link rel="stylesheet" href="weber-theme.css">
         <link rel="stylesheet" href="graph2.css">
@@ -197,6 +197,8 @@
 
         <script type="text/javascript">
             'use strict';
+            // Globals
+            var noSleep=null;
 
             function clear_log() {
                 set_html('log',"trial,size,ori,resp,correct,is_reversal,num_reversals");
@@ -235,7 +237,17 @@
 
             var dict_params = {} // GLOBAL
             function load_code() {
-                peer_init();
+                // Read "command line" parameters
+                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
+                if (dict_params['mode']=='vs205') {
+                    set_mode("graph","adv");
+                    document.getElementById('btnSetup').hidden=true;
+                    set_checked('chkKeys',true);
+                }
+                if (dict_params['mode']=='graph') {
+                    set_mode("graph","adv");
+                }
+
                 demo1(); // preload E acuity
                 //build_table(); // create graph table
 
@@ -253,21 +265,18 @@
                 document.body.scrollTop = 0; 
                 document.body.style.overflow = 'hidden'; 
 
-                // Read "command line" parameters
-                location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
-                if (dict_params['mode']=='vs205') {
-                    set_mode("graph","adv");
-                    document.getElementById('btnSetup').hidden=true;
-                    set_checked('chkKeys',true);
-                }
-                if (dict_params['mode']=='graph') {
-                    set_mode("graph","adv");
-                }
+                noSleep=new NoSleep();
+                peer_init();
+                //noSleep.enable();
             };
 
             function peer_init() {
                 var handler={
-                    id: function(s) {set_html('my-id','ID:'+s);},
+                    id: function(s) {set_html('my-id','ID:'+s);
+                        if ('autoconnect' in dict_params) {
+                            setTimeout( function() {thePeer.join(dict_params['autoconnect']);}, 500 );
+                        }
+                    },
                     lost: function(s) {set_html('status',s);},
                     error: function(s) {set_html('status',s);},
                     connect: function(s) {
@@ -277,10 +286,13 @@
                     peer_info: function(s) {pair_screen_info(s);},
                     unpair: function (s) {set_html ('status',s);},
                     keyboard: function (nkey) {do_kb(nkey);},
-                    receive: function (s) {},
+                    receive: function (s) {examiner_receive(s);},
                 }
                 thePeer=new MyPeer(handler);
-                //thePeer.id_requested="aaaaaa";
+                if ('id' in dict_params) { // if id= parameter passed in, use that
+                    thePeer.id_requested=dict_params['id'];
+                    thePeer.instructor=true;
+                }
                 thePeer.init();
 
                 // To handle upload, simplest is to just create a new Peer to talk to instructor
