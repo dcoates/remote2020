@@ -63,9 +63,6 @@
                 } else {
                     this.mean_cm=this.mean_last/200.0*get_value("box_size");
                 }
-
-                console.log(this.mean_last);
-                console.log(this.mean_cm);
             }
 
             update(correct,ori_resp) {

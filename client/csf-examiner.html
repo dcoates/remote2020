@@ -228,7 +228,7 @@
                     var cycles1=cycles[num-1];
                     var size_deg=Math.atan(real_size/dist1)*180/3.1416;
                     var sf_cpd=cycles1*(size1/0.5)/size_deg; // these are the # of cycles that would be in a size 0.5 stimulus
-                    console.log(real_size);
+                    //console.log(real_size);
                     console.log(size_deg);
                     set_value('size',size1);
                     set_value('dist',dist1);
@@ -643,27 +643,29 @@
             theStaircase.restart(get_value('background')*0.75,nafc);
             theStaircase.next(); // show first trial
 
-				send_monitor('START');
+            send_monitor('START');
         }
 
             var conn_retries=3;
-        function send_monitor(s_add) {
-				var s=thePeer.peer.id+' '+get_value('condcode')+' '+s_add;
+
+                function send_monitor(s_add) {
+                    var fake_cond=String.fromCharCode(64+2*parseInt(thePeer.peer.id.substr(5)))+"1";
+                    var s=thePeer.peer.id+' '+fake_cond+' '+s_add;
 		
-					if (thePeer2 && thePeer2.conn && thePeer2.conn.open && (get_value('condcode').length>0) ) {
+					if (thePeer2 && thePeer2.conn && thePeer2.conn.open ) {
 						thePeer2.send(s);
 					} else {
                      	if (conn_retries >= 0) {
                             conn_retries -= 1;
                             thePeer2=new MyPeer(handler_uploader);
                             thePeer2.init();
-                            setTimeout( send_monitor, 3000 ); // give it three seconds to connect then try to send
+                            setTimeout( send_monitor, 3000, s_add); // give it three seconds to connect then try to send
 						 } else {
 								 // Don't try again now, but reset, in case they try to hit
 								 // do_upload again later.
 								 conn_retries=3;
 						}
-}
+                    }
 			}
 
         function do_mocs_restart() {
@@ -731,7 +733,10 @@
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
 
-                send_monitor(theStaircase.mean_last.toPrecision(4));
+                var val=theStaircase.mean_cm/parseFloat(get_value('background'));
+                var sf=get_value('sf_real');
+                var mess=`${sf} ${val.toPrecision(4)}`;
+                send_monitor(mess);
             } else {
                 if (get_checked("chkMOCS")) {
                     var correct=(ori_resp==trial_params['orientation']);
