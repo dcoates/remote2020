@@ -463,6 +463,11 @@
                 var theDuration=parseInt(get_value('duration'));
                 gSize=parseFloat(get_value('size'));
 
+                if (get_checked("chk_flicker")) {
+                    theFrequency=12; // 50% duty cycle at 12 flips = 5hz;
+                    theDuration=6;
+                }
+
 		//DRC: Now get sf from real_sf, allowing our (UHCO) to change them
                 //var sf_cpd=cycles1*(size1/0.5)/size_deg; // these are the # of cycles that would be in a size 0.5 stimulus
                 var real_size=gSize/0.5*parseFloat(get_value('measured_size'));

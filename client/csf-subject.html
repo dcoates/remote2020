@@ -347,7 +347,7 @@
                         clearGrating(globGaborParams.background);
 
                         // Only show once. TODO: Could eventually support show "X" number of times
-                        globRepeatsRemaining -= 1;
+                        // globRepeatsRemaining -= 1; // For now, allow flicker by not decrementing count
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
