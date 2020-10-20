@@ -46,13 +46,13 @@
             <br>
 
             <label mode="both" id="lblScreenSize">Diam. (cm):</label>
-			<input type="text" id="measured_size" title="screen_size" size="4" value="3.0" mode="both">
+			<input type="text" id="measured_size" title="screen_size" size="4" value="2.4" mode="both">
             <label mode="both" id="lblDist">Dist. (cm):</label>
 			<input type="text" id="dist" title="dist" size="4" value="40" mode="both">
             <br>
 
             <label mode="both" id="lblSize">Size: (%)</label>
-			<input type="text" id="size" title="Enter Size" size="4" value="0.25" mode="both">
+			<input type="text" id="size" title="Enter Size" size="4" value="0.5" mode="both">
 
             <label mode="both" id="lblBack">Background:</label>
 			<input type="text" id="background" title="Background" size="4" value="0.5" mode="both">
@@ -213,19 +213,21 @@
             }
 
             var dists=[40.0,40.0,40.0,40.0,40.0,40.0,80.0,80.0,80.0,20.0,20.0,20.0,20.0];
-            var sizes=[0.125,0.125,0.125,0.125,0.125,0.125,0.25,0.25,0.25,
-                0.63,0.63,0.63,0.63];
-            var cycles=[2.5,5.0,10.0,20.0,40.0,80.0,20.0,40.0,80.0,10.0,10.0,5.0,1.0];
+            //var sizes=[0.125,0.125,0.125,0.125,0.125,0.125,0.25,0.25,0.25,0.63,0.63,0.63,0.63];
+            var sizes=[0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.63,0.63,0.63,0.63];
+            var cycles=[0.625,1.25,2.5,5.0,10.0,20.0,20.0,40.0,80.0,10.0,10.0,5.0,1.0];
 
             function set_code(val) {
                 var num=parseInt(val.substr(1));
                 if (num>=1 && num <= 9) {
                     var size1=sizes[num-1];
-                    var real_size=size1/0.25*parseFloat(get_value('measured_size'));
+			// Measure size should match a radius of "0.25", then this is what proportion of that
+			// is desired..
+                    var real_size=size1/0.5*parseFloat(get_value('measured_size'));
                     var dist1=dists[num-1];
                     var cycles1=cycles[num-1];
                     var size_deg=Math.atan(real_size/dist1)*180/3.1416;
-                    var sf_cpd=cycles1*(size1/0.5)/size_deg;
+                    var sf_cpd=cycles1*(size1/0.5)/size_deg; // these are the # of cycles that would be in a size 0.5 stimulus
                     console.log(real_size);
                     console.log(size_deg);
                     set_value('size',size1);
@@ -461,12 +463,18 @@
                 var theDuration=parseInt(get_value('duration'));
                 gSize=parseFloat(get_value('size'));
 
+		//DRC: Now get sf from real_sf, allowing our (UHCO) to change them
+                //var sf_cpd=cycles1*(size1/0.5)/size_deg; // these are the # of cycles that would be in a size 0.5 stimulus
+                var real_size=gSize/0.5*parseFloat(get_value('measured_size'));
+                var size_deg=Math.atan(real_size/parseFloat(get_value('dist')))*180/3.1416;
+		var cycles1 = parseFloat(get_value('sf_real'))/(gSize/0.5) * parseFloat(size_deg)
+
                 if ( get_checked("chkRemoteStair")) {
                     var stim_params={'radius':gSize,
                     'contrast':theStaircase.stair_size,
                     'background':get_value('background'), 'ori':gWhich,
                     'repeat_freq':theFrequency, 'duration': theDuration, 'color':0,
-                    'isPeripheral':get_checked('radio-periph'), 'theta':parseFloat(get_value('theta')), 'sf':parseFloat(get_value('sf')),
+                    'isPeripheral':get_checked('radio-periph'), 'theta':parseFloat(get_value('theta')), 'sf':cycles1,
                     'repeats':parseInt(get_value('repeats'))}
 
                     thePeer.send("G "+JSON.stringify(stim_params));

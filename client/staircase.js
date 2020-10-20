@@ -38,8 +38,8 @@
                 this.stair_trial += 1;
                 this.compute_mean();
 
-                val=this.mean_last;
-                set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${this.mean_cm.toPrecision(4)}`);
+                var val=this.mean_cm/parseFloat(get_value('background'));
+                set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${val.toPrecision(4)}`);
 
                 // Did enough reversals? 
                 if (this.nReversals>metap.staircase_reversals.length ) { // TODO: rmv from UI
@@ -132,7 +132,8 @@
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
-                        set_html("lblStair",`FINISHED threshold=${this.mean_cm.toPrecision(4)}`);
+                	var val=this.mean_cm/parseFloat(get_value('background'));
+                        set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
                         //beep(1,440,80);
                     } else {
                         this.next(); // execute next
