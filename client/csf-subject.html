@@ -103,25 +103,25 @@
                 document.body.scrollTop = 0; // <-- pull the page back up to the top
                 document.body.style.overflow = 'hidden'; // prevent scroll bars
 
-
                 document.addEventListener('click', function(event) {
-                    openFullscreen();
+                    //openFullscreen();
                     do_fullscreen(null); // for Mac IOS
                	//set_torch(false);
                 }, false);
 
+                if (false) {
                 document.addEventListener('touchstart', function(event) {
                     openFullscreen();
                     do_fullscreen(null); // for Mac IOS
                	//set_torch(false);
                 }, false);
+                    };
             }
 
             function setup_webgl() {
 
                 if (!(ctx==null)) {
                     // Clone the canvas to unhook the canvas
-            	    //canv = document.getElementById("canvas");
                     var newCvs = canvas.cloneNode(false);
                     canvas.parentNode.replaceChild(newCvs, canvas);
                     canvas = newCvs;
@@ -129,11 +129,6 @@
                 }
 
                 setupWebGL();
-
-                //document.addEventListener('click', function(event) {
-                    //openFullscreen();
-                //}, false);
-                //showShaderGrating(90,0.01,3.14*45/180);
             }
             var globRepeatsRemaining=1;
             var globGaborParams; // A JSON string from the examiner with the params
