@@ -1,0 +1,292 @@
+/* Split the screen in half */
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  /*padding-top: 20px;*/
+}
+
+@font-face {
+    font-family: "Sloan";
+    src: url("Sloan.ttf");
+}
+
+
+/* Control the left side */
+.left {
+  left: 0;
+  background-color: #808080;
+}
+
+/* Control the right side */
+.right {
+  right: 5%;
+  width: 40%;
+  top: 5%;
+  height: 90%;
+  background-color: #c0c0c0;
+  border-color: teal;
+  border-style: solid;
+}
+
+/* If you want the content centered horizontally and vertically */
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Style the image inside the centered container, if needed */
+.centered img {
+  width: 150px;
+  border-radius: 50%;
+}
+
+/*
+input
+{
+    height:100%;
+    width:100%;
+    padding:0px;
+    border:0px;
+    overflow:hidden;
+    font-size:14pt;
+}
+*/
+
+#text{
+    position: absolute;
+    width: 100%;
+    height: 80%; 
+    /*box-sizing: border-box; */
+}
+
+textarea {
+    /*position:absolute;*/
+    /* width: 80%; */
+    /* height: 50%; */
+    /*top:5%; left:5%; right:0; bottom:0; padding:1em; */
+}
+
+.buttons {
+    position:absolute;
+    top:10%;
+    left:15px;
+}
+
+canvas{
+    width: 100%; 
+    height: 50%;
+    /*height: 150px; */
+    /*width: 200px; */
+    background-color: gray;
+	margin-left:1px;
+    display:block;
+}
+
+.methods_trainer{
+    position: absolute;
+    width: 100%;
+    height: 100%; 
+    background-color: purple;
+    /*box-sizing: border-box; */
+}
+
+input.button-setup {
+    background-image: url(img/Tools24.png); 
+    background-color: #909090; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: 1;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 28px;           /* make this the size of your image */
+    padding-left: 24px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+	border-radius: 4px;
+}
+
+input.button-tumbling_e {
+    background-image: url(img/tumbling_e.png); 
+    background-color: #ffffff; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 7px 7px;  
+    border: 1;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 28px;           /* make this the size of your image */
+    padding-left: 22px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+	border-radius: 4px;
+}
+
+.icon-link {
+	height: 24px;
+	width: 24px;
+    background-image : url(./link.svg) no-repeat;
+    background-position: center center;
+}
+
+.bi {
+  display: inline-block;
+  content: "";
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' clip-rule='evenodd'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+}
+
+.resp_arrow {
+    background-position: center center;
+    background-repeat: no-repeat;  /* make the background image appear only once */
+}
+
+span.resp_up {
+    background: url(img/bs_arrow_up.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_down {
+    background: url(img/bs_arrow_down.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_left {
+    background: url(img/bs_arrow_left.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+span.resp_right {
+    background: url(img/bs_arrow_right.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+
+.bs2 {
+  display: inline-block;
+  background-image: url("data:image/svg+xml,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-link-45deg' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.715 6.542L3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.001 1.001 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z'/%3E%3Cpath d='M5.712 6.96l.167-.167a1.99 1.99 0 0 1 .896-.518 1.99 1.99 0 0 1 .518-.896l.167-.167A3.004 3.004 0 0 0 6 5.499c-.22.46-.316.963-.288 1.46z'/%3E%3Cpath d='M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 0 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 0 0-4.243-4.243L6.586 4.672z'/%3E%3Cpath d='M10 9.5a2.99 2.99 0 0 0 .288-1.46l-.167.167a1.99 1.99 0 0 1-.896.518 1.99 1.99 0 0 1-.518.896l-.167.167A3.004 3.004 0 0 0 10 9.501z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+}
+
+.bs_person_square {
+background-image: url("data:image/svg+xml,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-person-square' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z'/%3E%3Cpath fill-rule='evenodd' d='M2 15v-1c0-1 1-4 6-4s6 3 6 4v1H2zm6-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+}
+
+span.bs_trash {
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+  background-repeat: no-repeat;
+background-image: url("data:image/svg+xml,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-trash' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z'/%3E%3Cpath fill-rule='evenodd' d='M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z'/%3E%3C/svg%3E");
+}
+
+span.bs_reset_ccw {
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+  background-repeat: no-repeat;
+background-image: url("data:image/svg+xml,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' class='bi bi-arrow-counterclockwise' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M12.83 6.706a5 5 0 0 0-7.103-3.16.5.5 0 1 1-.454-.892A6 6 0 1 1 2.545 5.5a.5.5 0 1 1 .91.417 5 5 0 1 0 9.375.789z'/%3E%3Cpath fill-rule='evenodd' d='M7.854.146a.5.5 0 0 0-.708 0l-2.5 2.5a.5.5 0 0 0 0 .708l2.5 2.5a.5.5 0 1 0 .708-.708L5.707 3 7.854.854a.5.5 0 0 0 0-.708z'/%3E%3C/svg%3E");
+}
+
+
+.boxed {
+ border: 1px solid black;
+ border-radius: 3px;
+ display: inline-block;
+ padding: 2px;
+}
+
+table.table_graph { table-layout:fixed; }
+table.table_graph td { overflow: hidden; }
+
+table.td_graph { ; }
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 16px;
+  bottom: 0px;
+  top: 1px;
+  padding: 2px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  background-color: #aaa;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 1px;
+  bottom: 1px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* don't change the color of the slider when checked or not */
+/*
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+*/
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+}
+
+/* Rounded sliders */
+/* rounded container */
+.slider.round {
+  border-radius: 34px;
+}
+
+/* rounded inner ball */
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
