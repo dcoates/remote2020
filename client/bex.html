@@ -405,7 +405,7 @@
 
             function mocs1p() {
                 document.getElementById("commands").value=
-                "draw_letter('E',${orientation},${target_ecc},0,${target_pix},'black',-1,${size},${flankers});\nflip(4)\t\/\/Draw for 4 frames (64ms);\n\nclear('#ffffff');\nfixation(${fixationx},0,${fixation_pix},4,'black','+');flip(1);"
+                "clear('#ffffff');\nfixation(${fixationx},0,${fixation_pix},4,'black','+');\ndraw_letter('E',${orientation},${target_ecc},0,${target_pix},'black',-1,${size},${flankers});\nflip(4)\t\/\/Draw for 4 frames (64ms);\n\nclear('#ffffff');\nfixation(${fixationx},0,${fixation_pix},4,'black','+');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.2,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[ 1.2,1.62452643,2.19923844,2.97726749,4.03054144,5.45643426,7.38676808,10.,99],\n\tmocs_repeats:10}";
                 // 8 steps log-spaced from 1.2-10X
