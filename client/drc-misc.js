@@ -1,13 +1,29 @@
-fillTemplate = function (templateString, templateVars) {
+'use strict';
+
+function fillTemplate (templateString, templateVars) {
     var parsed = templateString;
     Object.keys(templateVars).forEach(
         (key) => {
             const value = templateVars[key]
-            parsed = parsed.replace('${'+key+'}',value)
+            const keystr= '${'+key+'}';
+            while (parsed.search(key)>=0) {
+                // TODO: Like new replaceAll. Search doesn't work with braces like in keystr though
+                parsed = parsed.replace(keystr,value)
+            }
         }
     )
     return parsed
 }
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 
 function set_html(html,value) {
     document.getElementById(html).innerHTML=value;
