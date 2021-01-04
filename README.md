@@ -27,7 +27,7 @@ There are a wealth of projects that allow simple design and execution of psychol
 I believe that our concerns are quite different.
 - For our teaching labs, students needn't *design* experiments, but they are expected to be heavily engaged in the testing experience, gaining experience as both subject and as an experimenter. Thus the peer-to-peer aspect is essential.
 - Recruitment, saving data, etc., is not an issue. For us that can be done in a peer-to-peer, more ad-hoc fashion. In fact, it may be advantageous (for IRB approval, etc.) to NOT be hosted on a server.
-- We wanted very precise control of the stimuli, which wasn't obvious in some of the existing solutions. I'm not a fan (and don't always see the benefit) of the GUI tools. They seem great for 80% of what one might want to do, then the last 20% becomes painful or impossible. Thus I didn't mind a fully javascript solution, especially since the tools built into browsers are really impressive. But then again, I love VI too...
+- We wanted very precise control of the stimuli, which wasn't obvious in some of the existing web-based solutions. I'm not a fan (and don't always see the benefit) of the GUI tools. They seem great for 80% of what one might want to do, then the last 20% becomes painful or impossible. Thus I didn't mind a fully javascript solution, especially since the tools built into browsers are really impressive. 
 
 
 | Them  | Us |

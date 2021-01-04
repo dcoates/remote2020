@@ -73,12 +73,12 @@
                 var size_deg=Math.atan(size/dist)*180/3.1416;
                 var bars_for_widget=get_value("sf")*size_deg; // cycles per circle
                 set_value("size_deg",size_deg);
-                gabor_defaults.sf = bars_for_widget;
-                receive_commands("G "+JSON.stringify(gabor_defaults));
+                gabor_params.sf = bars_for_widget;
+                receive_commands("G "+JSON.stringify(gabor_params));
                 adapt_sf = get_value("adapt_sf")*size_deg;
 
-                gabor_defaults.theta = get_value('theta')/180*3.1416;
-                receive_commands("G "+JSON.stringify(gabor_defaults));
+                gabor_params.theta = get_value('theta')/180*3.1416;
+                receive_commands("G "+JSON.stringify(gabor_params));
             }
 
             var dict_params = {} // GLOBAL
@@ -372,7 +372,8 @@
                         clearGrating(globGaborParams.background);
 
                         // Only show once. TODO: Could eventually support show "X" number of times
-                        globRepeatsRemaining -= 1;
+                        //globRepeatsRemaining -= 1;
+                        // Show forever: allows flicker condition 
                     }
                     globalAnimationID = requestAnimationFrame(animateDA);
                 };
@@ -409,9 +410,10 @@
         var sf=0.5;
 
         var adapting=false;
+        var flickering=false;
         var adapter;
         function adapt()  {
-                receive_commands("G "+JSON.stringify(gabor_defaults));
+                receive_commands("G "+JSON.stringify(gabor_params));
         }
 
         var contrast_save;
@@ -427,7 +429,7 @@
             var keycode=event.keyCode;
             switch (keycode) {
                 case 38: //U
-                    gabor_defaults.contrast *= 1.15;
+                    gabor_params.contrast *= 1.15;
                     break;
                 case 39: //R
                     set_value("sf",get_value("sf")*2.0);
@@ -438,21 +440,18 @@
                     update_dist();
                     break;
                 case 40: //D
-                    gabor_defaults.contrast /= 1.15;
+                    gabor_params.contrast /= 1.15;
                     break;
 
-                case 67: // "c"
-                    contrast_display=(contrast_display==false); // invert
-                    break;
 
                 case 65: // "a"
                     if (adapting==false) {
-                        contrast_save=gabor_defaults.contrast;
-                        sf_save=gabor_defaults.sf;
+                        contrast_save=gabor_params.contrast;
+                        sf_save=gabor_params.sf;
 
-                        gabor_defaults.contrast=gabor_defaults.background;
-                        gabor_defaults.sf=adapt_sf;
-                        gabor_defaults.theta=get_value("adapt_theta")/180*3.1416;
+                        gabor_params.contrast=gabor_params.background;
+                        gabor_params.sf=adapt_sf;
+                        gabor_params.theta=get_value("adapt_theta")/180*3.1416;
 
                         adapter=setInterval(adapt, 80);
                         adapting=true;
@@ -460,26 +459,42 @@
                         clearTimeout(adapter);
                         adapting=false;
 
-                        gabor_defaults.contrast=contrast_save;
-                        gabor_defaults.sf=sf_save;
-                        gabor_defaults.theta=get_value("theta")/180*3.1416;
-                        receive_commands("G "+JSON.stringify(gabor_defaults));
+                        gabor_params.contrast=contrast_save;
+                        gabor_params.sf=sf_save;
+                        gabor_params.theta=get_value("theta")/180*3.1416;
+                        //receive_commands("G "+JSON.stringify(gabor_params)); // looks like already done below (?)
                     }
                     break;
+
+                case 67: // "c"
+                    contrast_display=(contrast_display==false); // invert
+                    break;
+
+                case 70: // "f"
+                    flickering=(flickering==false); // invert it
+                    if (flickering==true) {
+                        gabor_params.repeat_freq=12;
+                        gabor_params.duration=6;
+                    } else {
+                        gabor_params.repeat_freq=120;
+                        gabor_params.duration=120;
+                    }
+                    break;
+
 
                 default:
                     return; // do nothing if unrecognized key
                 }
 
-            if (gabor_defaults.contrast > gabor_defaults.background) {
-                gabor_defaults.contrast = gabor_defaults.background;
+            if (gabor_params.contrast > gabor_params.background) {
+                gabor_params.contrast = gabor_params.background;
             }
 
             if (contrast_display) {
-                set_value('contrast',gabor_defaults.contrast/gabor_defaults.background);
+                set_value('contrast',gabor_params.contrast/gabor_params.background);
             }
 
-            receive_commands("G "+JSON.stringify(gabor_defaults));
+            receive_commands("G "+JSON.stringify(gabor_params));
         };
 
         document.addEventListener('fullscreenchange',(event) => { do_fullscreen(event); } );
@@ -535,15 +550,15 @@
 
                 setup_webgl();
 
-                receive_commands("G "+JSON.stringify(gabor_defaults_calibrate));
+                receive_commands("G "+JSON.stringify(gabor_params_calibrate));
                 }
             };
 
-        var gabor_defaults={"background":0.5,"color":0, "contrast":0.1,
+        var gabor_params={"background":0.5,"color":0, "contrast":0.1,
             "duration":120, "repeat_freq":120, "isPeripheral":0, "ori":0, "radius":0.5, "rando":0,
             "sf":10, "theta":0,"repeats":10};
 
-        var gabor_defaults_calibrate={"background":0.5,"color":0, "contrast":0.99,
+        var gabor_params_calibrate={"background":0.5,"color":0, "contrast":0.99,
             "duration":120, "repeat_freq":120, "isPeripheral":0, "ori":0, "radius":0.5, "rando":0,
             "sf":0, "theta":0,"repeats":10};
 
