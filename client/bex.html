@@ -542,7 +542,7 @@
             var deg_per_pix=Math.atan(parseFloat(get_value('box_size'))/200.0/parseFloat(get_value('distance')) )/3.1416*180;
             subject_globals["deg_per_pix"]=deg_per_pix;
             subject_globals["target_pix"]=parseFloat(get_value('target_size'))/deg_per_pix/5.0; // The SW typically uses strokeW
-            subject_globals["fixation_pix"]=subject_globals["target_pix"]
+            subject_globals["fixation_pix"]=subject_globals["target_pix"]*5.0;
             subject_globals["target_ecc"]=subject_globals["fixationx"] + parseFloat(get_value('target_ecc'))/deg_per_pix;
             console.log(subject_globals);
 
