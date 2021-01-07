@@ -29,8 +29,12 @@
                         return imgData;
                 }
 
-                const image = new Image();
-                image.src = 'img/sloan-u.png'
+                const image_e = new Image();
+                image_e.src = 'img/tumbling_e.png'
+                const image_u = new Image();
+                image_u.src = 'img/sloan-u.png'
+                const image_t = new Image();
+                image_t.src = 'img/sloan-t.png'
                 const image_n = new Image();
                 image_n.src = 'img/sloan-n.png'
                 const image_v = new Image();
@@ -45,10 +49,10 @@
                     draw_e_contrast(posx,posy,siz,rotation,1.0);
                 }
 
-                function draw_flanker(posx,posy,str,siz,contrast) {
+                function draw_flanker(posx,posy,str,siz,contrast,img_target) {
                     if (parseInt(str)>=0) {
                         // It's a rotated U. 0=upright/normal
-                        draw_i_contrast(image,posx,posy,siz,parseInt(str)*90,contrast);
+                        draw_i_contrast(img_target,posx,posy,siz,parseInt(str)*90,contrast);
                     } else {
                         // Letter flanker
                         draw_string(posx,posy+siz/2.0,str,siz);
@@ -139,8 +143,15 @@
                 function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
-                    if (which=='E') {
-							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
+					var target=image_e;
+					if (which=='U') {
+						target=image_u;
+					} else if (which=='T') {
+						target=image_t;
+					}
+
+                    if (which=='E' || which=='U' || which=='T') {
+							draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
                     } else if (which=='|') {
                             // Image for vernier is bigger to allow lines to be longer
 							draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
@@ -150,10 +161,10 @@
                     }
 
                     if (esep>=0) {
-							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast);
-							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast);
-							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast);
-							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast);
+							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,target);
+							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,target);
+							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,target);
+							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,target);
                     }
                     if (barsep>=0) { // TODO: Untested; not centered well?
                         ctx.beginPath();
