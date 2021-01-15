@@ -126,8 +126,10 @@
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
-                        \n\tcontrast:${this.contrast}
-                    }`);
+                        \n\tcontrast:${this.contrast},
+                        \n\tflankers:"'xxxx'"}`);
+
+					console.log(trial);
 
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
