@@ -68,6 +68,12 @@
 					<input mode="adv" type="checkbox" id="chkLetters">
 				</div>
 
+
+				<div class="boxed" mode="adv">
+				    LVF
+					<input mode="adv" type="checkbox" id="chkLVF" unchecked>
+				</div>
+
                 <br mode="adv"><br mode="adv">
                     <span mode="adv" id="lblStair">Staircase (0)</span>
                     <input mode="adv" type="checkbox" id="chkStair" style="display:none;">
@@ -110,15 +116,15 @@
 							<button id="btnDown" onclick="do_kb(40)"><span class="resp_down"></span></button>
 					</tr>
                 </table>
-                <textarea name="commands" id="commands" mode="adv" style="height:300px;width:90%">Trial code</textarea>
+                <textarea name="commands" id="commands" mode="adv" style="height:200px;width:90%">Trial code</textarea>
                 <table mode="adv" style="width:100%;height:200px;border-top:1px">
-                    <tr><td width=30%>
-                    <textarea  name="trial" id="trial" style="width:100%;height:75%;">Trial parameters</textarea>
-                    <textarea  name="metap" id="metap" style="width:100%;height:75%;">Meta parameters</textarea>
+                    <tr height=100%><td width=30%>
+                    <textarea  name="trial" id="trial" style="width:100%;height:25%;">Trial parameters</textarea>
+                    <textarea  name="metap" id="metap" style="width:100%;height:25%;">Meta parameters</textarea>
                         </td><td>
                     <button type="button" id="btnClearLog" onclick="clear_log();">Clear Log</button>
                     <button type="button" id="btnExport" onclick="navigator.clipboard.writeText(get_html('log'))">Copy</button>
-                    <textarea name="log" id="log" style="width:99%;height:75%;"></textarea>
+                    <textarea name="log" id="log" style="width:99%;height:75%;font-size:8pt;"></textarea>
                     </tr>
                 </table>
 		</div>
@@ -209,8 +215,8 @@
 
             function pair_screen_info(s) {
                 var list_dims=s.split(' ');
-                var subject_width=parseInt(list_dims[1]); // first is "0" FS specifier code
-                var subject_height=parseInt(list_dims[2]);
+                subject_width=parseInt(list_dims[1]); // first is "0" FS specifier code
+                subject_height=parseInt(list_dims[2]);
 
                 // Make our 'shadow' canvas match theirs
                 canv.width=subject_width;
@@ -219,7 +225,8 @@
 
                 set_html("dim_place",subject_width+"x"+subject_height);
 
-                subject_globals["fixationx"]=-subject_width/4.0;
+				// This is now done in Restart MOCS
+                //subject_globals["fixationx"]=-subject_width/4.0;
             }
 
             function do_connect() {
@@ -405,7 +412,7 @@
 
             function mocs1p() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');\nfixation(${fixationx},0,${fixation_pix},4,'black','+');\ndraw_letter('E',${orientation},${target_ecc},0,${target_pix},'black',-1,${size},${flankers});\nflip(4)\t\/\/Draw for 4 frames (64ms);\n\nclear('#ffffff');\nfixation(${fixationx},0,${fixation_pix},4,'black','+');flip(1);"
+                "clear('#ffffff');\nfixation(${fixation_x},${fixation_y},${fixation_pix},4,'black','+');\ndraw_letter('E',${orientation},${target_x},${target_y},${target_pix},'black',-1,${size},${flankers});\nflip(4)\t\/\/Draw for 4 frames (64ms);\n\nclear('#ffffff');\nfixation(${fixation_x},${fixation_y},${fixation_pix},4,'black','+');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.2,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:72,\nmocs_spacings:[ 1.2,1.62452643,2.19923844,2.97726749,4.03054144,5.45643426,7.38676808,10.,99],\n\tmocs_repeats:10}";
                 // 8 steps log-spaced from 1.2-10X
@@ -519,23 +526,8 @@
         var theStaircase=new staircase(8,3); // 3-up 1-down, default size of "8" (but hopefully never used)
         var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
 
-        function do_stair_restart() {
-            set_checked('chkStair',true);
-            set_checked('chkMOCS',false);
-            set_html("lblStair","Staircase 0 0");
-            var nafc=get_checked('chkNafc')?4:2;
-            graph_clear();
-
-            get_metap(); // make sure to load in meta parameters TODO:fixme
-            theStaircase.restart(parseInt(metap.stair_start),nafc);
-            theStaircase.next(); // show first trial
-        }
-
-        function do_mocs_restart() {
-            set_checked('chkStair',false);
-            set_checked('chkMOCS',true);
-            set_html("lblStair","MOCS X");
-            var nafc=get_checked('chkNafc')?4:2;
+		// Shared prep for MOCS and staircase
+		function stair_restart_both() {
             graph_clear();
             clear_log();
 
@@ -543,14 +535,48 @@
             subject_globals["deg_per_pix"]=deg_per_pix;
             subject_globals["target_pix"]=parseFloat(get_value('target_size'))/deg_per_pix/5.0; // The SW typically uses strokeW
             subject_globals["fixation_pix"]=subject_globals["target_pix"]*2.5;
-            subject_globals["target_ecc"]=subject_globals["fixationx"] + parseFloat(get_value('target_ecc'))/deg_per_pix;
+			
+			if (get_checked('chkLVF')) {
+            	subject_globals["fixation_x"]=0;
+            	subject_globals["fixation_y"]=-subject_height/8.0*3.0;
+            	subject_globals["target_x"]=0;
+            	subject_globals["target_y"]=subject_globals["fixation_y"] + parseFloat(get_value('target_ecc'))/deg_per_pix;
+			} else {
+            	subject_globals["fixation_x"]=-subject_width/4.0;
+            	subject_globals["fixation_y"]=0;
+            	subject_globals["target_x"]=subject_globals["fixation_x"] + parseFloat(get_value('target_ecc'))/deg_per_pix;
+            	subject_globals["target_y"]=0;
+			}
             console.log(subject_globals);
+
+		}
+
+        function do_stair_restart() {
+            set_checked('chkStair',true);
+            set_checked('chkMOCS',false);
+            set_html("lblStair","Staircase 0 0");
+            var nafc=get_checked('chkNafc')?4:2;
+
+			stair_restart_both();
+
+            get_metap(); // make sure to load in meta parameters TODO:fixme
+            theStaircase.restart(parseInt(metap.stair_start),nafc);
+        }
+
+        function do_mocs_restart() {
+            set_checked('chkStair',false);
+            set_checked('chkMOCS',true);
+            set_html("lblStair","MOCS X");
+            var nafc=get_checked('chkNafc')?4:2;
+
+			stair_restart_both();
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
             theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
 
             //theMOCS.next(); // show first trial -- don't actually do one
         }
+
         function table_button_click(which) {
             var thisid='count_'+which;
             nafc=get_checked('chkNafc')?4:2;
@@ -596,7 +622,12 @@
                 case 40: //D
                     ori_resp=270; break;
                 case 32: //go!
-                    theMOCS.next();
+					if (get_checked("chkMOCS")) {
+                    	theMOCS.next();
+					} else {
+                    	theStaircase.next();
+					};
+
                     return; // Don't do the handling
                 default:
                     return; // do nothing if unrecognized key
