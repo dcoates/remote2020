@@ -170,17 +170,23 @@
                         ctx.beginPath();
                         ctx.lineWidth=siz;
                         ctx.strokeStyle=color;
-                        ctx.moveTo(xc-siz*barsep+posx, yc-siz*barsep/2.0+posy);
-                        ctx.lineTo(xc-siz*barsep+posx, yc+siz*barsep/2.0+posy);
 
-                        ctx.moveTo(xc+siz*barsep+posx, yc-siz*barsep/2.0+posy);
-                        ctx.lineTo(xc+siz*barsep+posx, yc+siz*barsep/2.0+posy);
+						// Left
+                        ctx.moveTo(posx+xc-siz*3.0-siz*barsep, posy+yc-siz*5.0/2.0 );
+                        ctx.lineTo(posx+xc-siz*3.0-siz*barsep, posy+yc+siz*5.0/2.0 );
 
-                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc-siz*barsep+posy);
-                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc-siz*barsep+posy);
+						// Right
+                        ctx.moveTo(posx+xc+siz*3.0+siz*barsep, posy+yc-siz*5.0/2.0 );
+                        ctx.lineTo(posx+xc+siz*3.0+siz*barsep, posy+yc+siz*5.0/2.0 );
 
-                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
-                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
+						// Up
+                        ctx.moveTo(posx+xc-siz*5.0/2.0, posy+yc-siz*3.0-siz*barsep);
+                        ctx.lineTo(posx+xc+siz*5.0/2.0, posy+yc-siz*3.0-siz*barsep);
+
+						// Down
+                        ctx.moveTo(posx+xc-siz*5.0/2.0, posy+yc+siz*3.0+siz*barsep);
+                        ctx.lineTo(posx+xc+siz*5.0/2.0, posy+yc+siz*3.0+siz*barsep);
+
                         ctx.stroke()
                     }
                 }
