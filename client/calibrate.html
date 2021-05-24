@@ -9,6 +9,10 @@
 
         <label style='display: inline-block; width: 20em; text-align: right;'>Please enter intensity proportion (0.0-1.0)</label>
         <input type="text" id="intensity" title="Enter intensity prop. " value="0.5" size="8" onchange="update_prop()">
+		<br>
+        <label style='display: inline-block; width: 20em; text-align: right;'>Gamma to try:</label>
+        <input type="text" id="gamma" title="gamma" value="1.0" size="8">
+
 		<button type="button" id="change" onclick="update_prop();">Change</button>
 
         <script src="drc-misc.js"></script>
@@ -17,7 +21,11 @@
             'use strict';
 
 function update_prop() {
-	var val=rgbToHex( parseInt( get_value("intensity") * 255 ));
+	var level=get_value("intensity")
+	var gamma=get_value("gamma");
+	var corrected=Math.pow(level,1/gamma);
+	var val=rgbToHex( parseInt( corrected  * 255 ));
+
 	var colr='#'+val+val+val;
 	//console.log(colr);
 	changeBackground( colr);
