@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>r2020: Calibration </title>
+    </head>
+    <body style="background-color:#808080">  
+
+        <label style='display: inline-block; width: 20em; text-align: right;'>Please enter intensity proportion (0.0-1.0)</label>
+        <input type="text" id="intensity" title="Enter intensity prop. " value="0.5" size="8" onchange="update_prop()">
+		<button type="button" id="change" onclick="update_prop();">Change</button>
+
+        <script src="drc-misc.js"></script>
+
+        <script type="text/javascript">
+            'use strict';
+
+function update_prop() {
+	var val=rgbToHex( parseInt( get_value("intensity") * 255 ));
+	var colr='#'+val+val+val;
+	//console.log(colr);
+	changeBackground( colr);
+}
+
+function changeBackground(color) {
+   document.body.style.background = color;
+}
+
+var rgbToHex = function (rgb) {
+  var hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+       hex = "0" + hex;
+  }
+  return hex;
+};
+
+        </script> 
+    </body>
+</html>
