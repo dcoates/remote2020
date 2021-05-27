@@ -162,6 +162,7 @@
                     remaining.push(level1);
                 });
                 this.remaining=remaining;
+                this.index_which=getRandomInt(this.remaining.length);
                 };
 
             total_remaining() {
