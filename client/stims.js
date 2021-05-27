@@ -1,6 +1,7 @@
 'use strict';
                 var scale=0.1;
-                const GAMMA=2.4;
+                const GAMMA=2.45;
+                const INVGAMMA=1/2.45;
                 
                 function clear(colr) {
                     ctx.fillStyle = colr;
@@ -8,23 +9,29 @@
                 }
 
                 var val; //global for debuggin
+				const con_background=0.5;
+
                 // https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast/34203206#34203206
                 function contrastImage(imgData, contrast){  //input range 0..1
                         var d = imgData.data;
                         for(var i=0;i<d.length;i+=4){   //r,g,b,a
                             val=d[i];
                             if (val<255)  {   
+								// Just do for non-background pixels
                                 val=(255.0-val)/255.0;           // convert pix from 0..255 to 1..0 (tested: pix=0.0 or 1.0)
-                                val=val*contrast;               // apply contrast
-                                val=1.0-val;                    // we are using negative contrast
+                                val=val*(con_background+contrast);               // apply contrast
+                                //val=1.0-val;                    // we are using negative contrast
                                 val=Math.floor( (val*255.0)+Math.random()-0.5); // apply noisy bit
-                                val=255.0*Math.pow(val/255.0, GAMMA); // approx. gamma correct
+                                val=255.0*Math.pow(val/255.0, INVGAMMA); // approx. gamma correct
                                 val=Math.max(0,Math.min(val,255));  // clamp to 0..255
                                 val=parseInt(val);              
-                            };
-                            d[i] = val;
-                            d[i+1] = val;
-                            d[i+2] = val;
+                            } else {
+								val=255.0*Math.pow(con_background, INVGAMMA);
+							};
+
+							d[i] = val;
+							d[i+1] = val;
+							d[i+2] = val;
                         }
                         return imgData;
                 }
