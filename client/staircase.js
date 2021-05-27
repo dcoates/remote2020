@@ -68,6 +68,8 @@
             update(correct,ori_resp) {
                 var isReversal = false;
 
+				get_metap();
+
                 // N-up-1-down logic
                 if (true) {
                     var step_size=metap.staircase_reversals[this.nReversals];
@@ -113,6 +115,7 @@
                     this.trial_history.push(trial1);
 
                     if (this.plot_log) {
+                        //trial1.x = this.stair_trial*10;
                         trial1.y = Math.log10(trial1.y)*25.0+100.0 
                     };
 
@@ -157,6 +160,7 @@
                     remaining.push(level1);
                 });
                 this.remaining=remaining;
+				this.index_which=getRandomInt(this.remaining.length); // start with some random trial. Maybe necessary
                 };
 
             total_remaining() {
