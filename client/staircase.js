@@ -115,7 +115,6 @@
                     this.trial_history.push(trial1);
 
                     if (this.plot_log) {
-                        //trial1.x = this.stair_trial*10;
                         trial1.y = Math.log10(trial1.y)*25.0+100.0 
                     };
 
@@ -123,11 +122,24 @@
 					app1(this.trial_history); // TODO
                     // Get next one:
                     var oriNew=generate_ori(this.nafc) 
+                
+					var flanker_code;
+					if (get_checked( "chkNFlankers" )) {
+						var oris=['6','7','8','9'];
+						shuffleArray(oris);
+						flanker_code=oris.join('');
+					} 
+					if (get_checked( "chkEFlankers" )) {
+						var oris=['0','1','2','3'];
+						shuffleArray(oris);
+						flanker_code=oris.join('');
+					}
+					
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
-                        \n\tcontrast:${this.contrast}
-                    }`);
+                        \n\tcontrast:${this.contrast},`+
+                        "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
 
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
@@ -174,7 +186,7 @@
             update(correct,ori_resp) {
 
                 set_html("log",get_html("log")+"\n"+
-                    this.num_trial+","+this.remaining[this.index_which]['which']+","+trial_params['orientation']+','+ori_resp+','+correct+',0,0');
+                    this.num_trial+","+this.remaining[this.index_which]['which']+","+trial_params['orientation']+','+ori_resp+','+correct+',0,0,'+trial_params["flankers"]);
 
                 var spac=this.remaining[this.index_which]['which']
                 if (spac<10) {
@@ -209,10 +221,20 @@
 
                 // Get random orientation
                 var oriNew=getRandomInt(4)*90
+                
+                var flanker_code;
+                if (get_checked( "chkFlankers" )) {
+                    var oris=['0','1','2','3'];
+                    shuffleArray(oris);
+                    flanker_code=oris.join('');
+                } else {
+                    flanker_code='    ';
+                }
 
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
-                        this.remaining[this.index_which]['which']+"\n}");
+                        this.remaining[this.index_which]['which']+
+                    ",\n\tflankers:'\\'"+flanker_code+"\\''\n}");
 
                 do_trial(); // TODO: figure out better place for this
             };

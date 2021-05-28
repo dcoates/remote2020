@@ -41,15 +41,19 @@
 							d[i+1] = newval;
 							d[i+2] = newval;
                         }
-						console.warn(d[0],d0,contrast);
+						//console.warn(d[0],d0,contrast);
 						document.imdat=d;
                         return imgData;
                 }
 
                 const image = new Image();
                 image.src = 'img/tumbling_e.png'
+                const image_e = new Image();
+                image_e.src = 'img/tumbling_e.png'
                 const image_v = new Image();
                 image_v.src = 'img/vernier.png'
+                const image_noise = new Image();
+                image_noise.src = 'img/noise1.png'
                 const image_spot = new Image();
                 image_spot.src = 'img/spot.png'
 
@@ -57,23 +61,60 @@
 
                 // Assume 100% contrast. Stub for compatibility
                 function draw_e(posx,posy,siz,rotation) {
-                    draw_e_contrast(posx,posy,siz,rotation,1.0);
+                    draw_e_contrast(image_e,posx,posy,siz,rotation,1.0);
                 }
 
-                function draw_e_contrast(posx,posy,siz,rotation,contrast) {
+                function draw_flanker(posx,posy,str,siz,contrast,img_target) {
+                    if (parseInt(str)>=6) {
+                        draw_e_contrast(image_noise,posx,posy,siz,parseInt(str)*90,1.0);
+					} else {
+						if (parseInt(str)>=0) {
+                        // It's a rotated U. 0=upright/normal
+                        	draw_e_contrast(image_e,posx,posy,siz,parseInt(str)*90,contrast);
+                    	} else {
+                        	// Letter flanker
+                        	draw_string(posx,posy+siz/2.0,str,siz);
+                    	}
+					}
+                }
+
+                function draw_string(posx,posy,str,siz) {
+                    ctx.fillStyle="#000000";
+                    var newFont=siz+'px Sloan';
+                    ctx.font=newFont;
+                    ctx.textAlign="center";
+                    ctx.fillText(str,xc+posx,yc+posy);
+                }
+
+                function draw_e_contrast(imx,posx,posy,siz,rotation,contrast) {
                     ctx.imageSmoothingEnabled=false;
 					//ctx.save(); 
 					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
 					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 
-					ctx.drawImage(image, -siz/2, -siz/2, siz, siz);
+					ctx.drawImage(imx, -siz/2, -siz/2, siz, siz);
 
                     ctx.resetTransform();
 
-                    var imgData=ctx.getImageData(posx+xc-siz/2,posy+yc-siz/2, siz+1, siz+1);
-                    ctx.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2,posy+yc-siz/2);
+					if (contrast<1.0) {
+                    	var imgData=ctx.getImageData(posx+xc-siz/2-1,posy+yc-siz/2-1, siz+3, siz+3);
+                    	ctx.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2-1,posy+yc-siz/2-1);
+					}
+				}
 
+                // Pass in arbitrary image as "i"
+                function draw_i_contrast(i,posx,posy,siz,rotation,contrast) {
+                    ctx.imageSmoothingEnabled=false;
+					//ctx.save(); 
+					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
+					ctx.drawImage(i, -siz/2, -siz/2, siz, siz);
+                    ctx.resetTransform();
     				//ctx.restore(); 
+                    
+					// Just modify the region containing the letter, not the whole canvas
+                    var imgData=ctx.getImageData(posx+xc-siz/2-1,posy+yc-siz/2-1, siz+3, siz+3);
+                    ctx.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2-1,posy+yc-siz/2-1);
                 }
 
                 function draw_v_contrast(posx,posy,siz,rotation,contrast) {
@@ -116,16 +157,23 @@
                 }
 
                 // Assume 100% contrast. Stub for compatibility
-                function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
-                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0);
+                function draw_letter(which,ori,posx,posy,siz,color,barsep,esep,flankers) {
+                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0,flankers);
                 }
 
                 // This one takes the contrast
-                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast) {
+                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
-                    if (which=='E') {
-							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
+					var target=image_e;
+					if (which=='U') {
+						target=image_u;
+					} else if (which=='T') {
+						target=image_t;
+					}
+
+                    if (which=='E' || which=='U' || which=='T') {
+							draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
                     } else if (which=='|') {
                             // Image for vernier is bigger to allow lines to be longer
 							draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
@@ -135,10 +183,11 @@
                     }
 
                     if (esep>=0) {
-							draw_e_contrast(posx-siz*5*esep,posy,siz*5,90,contrast);
-							draw_e_contrast(posx+siz*5*esep,posy,siz*5,0,contrast);
-							draw_e_contrast(posx,-siz*5*esep+posy,siz*5,180,contrast);
-							draw_e_contrast(posx,+siz*5*esep+posy,siz*5,270,contrast);
+						var im_flanker=image_noise;
+						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
+						draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
+						draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
+						draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
                     }
                     if (barsep>=0) { // TODO: Untested; not centered well?
                         ctx.beginPath();

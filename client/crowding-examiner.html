@@ -37,8 +37,13 @@
             <label mode="both" id="lblDist">Distance (cm):</label>
 			<input type="text" id="dist" title="dist" size="6" value="50" mode="both">
 
-	    <span mode="both" id="lblFlankers">Flankers</span>
-	    <input mode="both" type="checkbox" id="chkFlankers">
+            <label mode="both" id="lblEcc">Ecc (deg):</label>
+			<input type="text" id="dist" title="dist" size="6" value="5" mode="both">
+
+	    <span mode="both" id="lblFlankers">E Flankers</span>
+	    <input mode="both" type="checkbox" id="chkEFlankers">
+	    <span mode="both" id="lblFlankers">Noise Flankers</span>
+	    <input mode="both" type="checkbox" id="chkNFlankers">
 
 	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
@@ -415,6 +420,7 @@
                 // First replace the meta parameters (since 1 string)
                 trial_params=eval(document.getElementById("trial").value);
                 commands=fillTemplate(commands,trial_params )
+				//console.warn(commands);
 
                 actions=commands.split("flip")
                 flip_durations=[];
@@ -455,9 +461,9 @@
 
             function preset_contrast() {
                 document.getElementById("commands").value="clear('#c0c0c0');\nfixation(-400,0,16,4,'black','+');"+
-					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(20);"+
+					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,1.4,${size},${flankers});flip(20);"+
                 	"\nclear('#c0c0c0');fixation(-400,0,16,4,'black','+');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5\n}";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
@@ -664,12 +670,14 @@
                     // box has size 200 pixels across
                     // box has size 200 pixels across . /5 since it expects bar size / MAR (not whole letter size)
                     theStaircase.contrast=200.0/get_value('box_size')*Math.tan(get_value("textSize")/180.0*3.1416)/5.0 * get_value('dist');
-					console.log(theStaircase.contrast,get_value('box_size'),get_value("textSize"));
+					//console.log(theStaircase.contrast,get_value('box_size'),get_value("textSize"));
 
                     theStaircase.plot_log=true;
+					var flanker_code='0123';
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
-                        \n\tcontrast:${theStaircase.contrast} }`);
+                        \n\tcontrast:${theStaircase.contrast},`+
+                        "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
                 }
             }
 
