@@ -50,6 +50,8 @@
                 image.src = 'img/tumbling_e.png'
                 const image_e = new Image();
                 image_e.src = 'img/tumbling_e.png'
+                const image_e_flanker = new Image();
+                image_e_flanker.src = 'img/tumbling_e.png'
                 const image_v = new Image();
                 image_v.src = 'img/vernier.png'
                 const image_noise = new Image();
@@ -69,8 +71,7 @@
                         draw_e_contrast(image_noise,posx,posy,siz,parseInt(str)*90,1.0);
 					} else {
 						if (parseInt(str)>=0) {
-                        // It's a rotated U. 0=upright/normal
-                        	draw_e_contrast(image_e,posx,posy,siz,parseInt(str)*90,contrast);
+                        	draw_e_contrast(image_e_flanker,posx,posy,siz,parseInt(str)*90,0.2);
                     	} else {
                         	// Letter flanker
                         	draw_string(posx,posy+siz/2.0,str,siz);
