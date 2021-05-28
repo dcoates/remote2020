@@ -36,6 +36,11 @@
 
             <label mode="both" id="lblDist">Distance (cm):</label>
 			<input type="text" id="dist" title="dist" size="6" value="50" mode="both">
+
+	    <span mode="both" id="lblFlankers">Flankers</span>
+	    <input mode="both" type="checkbox" id="chkFlankers">
+
+	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
             <div class="boxed" id="switch_afc" mode="adv">
             2AFC <label class="switch" height="16px">
@@ -63,29 +68,29 @@
                     <button mode="both" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
 
 
-                <br mode="acuity">
-                <label mode="acuity" id="lblContrast" style='display: inline-block; width: 7em; text-align: right;'>Contrast:</label>
-				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
+                <br mode="adv"> 
+                <label mode="adv" id="lblContrast" style='display: inline-block; width: 7em; text-align: right;'>Contrast:</label>
+				<input mode="adv" type="text" value="1.0" id="textContrast" title="Value" size="3">
 
                 <br>
-                <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);" style="border-radius:4px; width:15em">
+                <button mode="adv" type="button" id="btnStairStart" onclick="do_stair_restart(0);" style="border-radius:4px; width:15em">
 					<object type="image/png" onclick="do_stair_restart(2)" data="img/tumbling_e.png" width="20px"> </object>
                     Restart E Acuity staircase</button>
                 <br>
-				<button id="btnV" onclick="do_stair_restart(2)" style="border-radius:4px; width:15em">
+				<button mode="adv" id="btnV" onclick="do_stair_restart(2)" style="border-radius:4px; width:15em">
 					<object type="image/png" onclick="do_stair_restart(2)" data="img/vernier.png" width="20px"> </object>
 					Restart Vernier Staircase
 				</button>
                 <br>
-				<button id="btnS" onclick="do_stair_restart(3)" style="border-radius:4px; width:15em">
+				<button mode="adv" id="btnS" onclick="do_stair_restart(3)" style="border-radius:4px; width:15em">
 					<object type="image/png" onclick="do_stair_restart(3)" data="img/spot.png" width="20px"> </object>
 					Restart Detection Staircase
 				</button>
 
-                <br mode="acuity">
+                <br mode="both">
 
-                    <span mode="acuity" id="lblStair">Staircase (0)</span>
-                    <input mode="acuity" type="checkbox" id="chkStair" style="display:none;">
+                    <span mode="both" id="lblStair">Staircase (0)</span>
+                    <input mode="both" type="checkbox" id="chkStair" style="display:none;">
 
                     <input mode="adv" type="checkbox" id="chkMOCS" style="display:none;">
                     <button mode="adv" type="button" id="btnMOCSStart" onclick="do_mocs_restart();">Restart MOCS</button>
@@ -449,8 +454,9 @@
             }
 
             function preset_contrast() {
-                document.getElementById("commands").value=
-                "clear('#ffffff');draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(1);";
+                document.getElementById("commands").value="clear('#c0c0c0');\nfixation(-400,0,16,4,'black','+');"+
+					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,-1,${size});flip(20);"+
+                	"\nclear('#c0c0c0');fixation(-400,0,16,4,'black','+');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
