@@ -1,7 +1,7 @@
 'use strict';
                 var scale=0.1;
                 const GAMMA=2.45;
-                const INVGAMMA=1/2.45;
+                const INVGAMMA=1/GAMMA;
                 
                 function clear(colr) {
                     ctx.fillStyle = colr;
@@ -10,29 +10,39 @@
 
                 var val; //global for debuggin
 				const con_background=0.5;
+				var d;
 
                 // https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast/34203206#34203206
                 function contrastImage(imgData, contrast){  //input range 0..1
-                        var d = imgData.data;
+						d = imgData.data;
+						var d0 = d[0];
                         for(var i=0;i<d.length;i+=4){   //r,g,b,a
                             val=d[i];
-                            if (val<255)  {   
-								// Just do for non-background pixels
-                                val=(255.0-val)/255.0;           // convert pix from 0..255 to 1..0 (tested: pix=0.0 or 1.0)
-                                val=val*(con_background+contrast);               // apply contrast
-                                //val=1.0-val;                    // we are using negative contrast
-                                val=Math.floor( (val*255.0)+Math.random()-0.5); // apply noisy bit
-                                val=255.0*Math.pow(val/255.0, INVGAMMA); // approx. gamma correct
-                                val=Math.max(0,Math.min(val,255));  // clamp to 0..255
-                                val=parseInt(val);              
+							var newval;
+                            if (val==0)  {   
+								// Anything except 255 (white) is considered foreground/target
+                                newval=(con_background+contrast);  			    // value is incr. above background
+
+								//Noisy bit:
+                                val=Math.floor( (newval*255.0)+Math.random()-0.5); // apply noisy bit
+
+								// Gamma correct:
+                                val=255.0*Math.pow(val/255.0, INVGAMMA);
+
+								// Clamp
+                                newval=Math.max(0,Math.min(val,255)); 
+                                val=parseInt(newval);              
                             } else {
-								val=255.0*Math.pow(con_background, INVGAMMA);
+								newval=255.0*Math.pow(con_background, INVGAMMA);
+								//newval=newval / 2.0;
 							};
 
-							d[i] = val;
-							d[i+1] = val;
-							d[i+2] = val;
+							d[i] = newval;
+							d[i+1] = newval;
+							d[i+2] = newval;
                         }
+						console.warn(d[0],d0,contrast);
+						document.imdat=d;
                         return imgData;
                 }
 
@@ -55,12 +65,15 @@
 					//ctx.save(); 
 					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
 					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
+
 					ctx.drawImage(image, -siz/2, -siz/2, siz, siz);
+
                     ctx.resetTransform();
+
+                    var imgData=ctx.getImageData(posx+xc-siz/2,posy+yc-siz/2, siz+1, siz+1);
+                    ctx.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2,posy+yc-siz/2);
+
     				//ctx.restore(); 
-                    
-                    var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
-                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
                 function draw_v_contrast(posx,posy,siz,rotation,contrast) {
