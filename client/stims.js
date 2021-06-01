@@ -20,7 +20,7 @@
                             val=d[i];
 							var newval;
                             if (val==0)  {   
-								// Anything except 255 (white) is considered foreground/target
+								// Black pixels are the target/foreground
                                 newval=(con_background+contrast);  			    // value is incr. above background
 
 								//Noisy bit:
@@ -54,8 +54,31 @@
                 image_e_flanker.src = 'img/tumbling_e.png'
                 const image_v = new Image();
                 image_v.src = 'img/vernier.png'
-                const image_noise = new Image();
-                image_noise.src = 'img/noise1.png'
+
+                const image_noise0 = new Image();
+                image_noise0.src = 'img/noise0.png'
+                const image_noise1 = new Image();
+                image_noise1.src = 'img/noise1.png'
+                const image_noise2 = new Image();
+                image_noise2.src = 'img/noise2.png'
+                const image_noise3 = new Image();
+                image_noise3.src = 'img/noise3.png'
+                const image_noise4 = new Image();
+                image_noise4.src = 'img/noise4.png'
+				var im_noises=[image_noise0,image_noise1,image_noise2,image_noise3,image_noise4];
+
+                const image_phased0 = new Image();
+                image_phased0.src = 'img/phased0.png'
+                const image_phased1 = new Image();
+                image_phased1.src = 'img/phased1.png'
+                const image_phased2 = new Image();
+                image_phased2.src = 'img/phased2.png'
+                const image_phased3 = new Image();
+                image_phased3.src = 'img/phased3.png'
+                const image_phased4 = new Image();
+                image_phased4.src = 'img/phased4.png'
+				var im_phaseds=[image_phased0,image_phased1,image_phased2,image_phased3,image_phased4];
+
                 const image_spot = new Image();
                 image_spot.src = 'img/spot.png'
 
@@ -67,15 +90,41 @@
                 }
 
                 function draw_flanker(posx,posy,str,siz,contrast,img_target) {
-                    if (parseInt(str)>=6) {
-                        draw_e_contrast(image_noise,posx,posy,siz,parseInt(str)*90,1.0);
+					if (str == '_') { //NOOP
+						return;
+					}
+					var code=str.charCodeAt(0);
+					//console.log(str,code);
+                    if (parseInt(str)>=0) {
+						var rota=(parseInt(str)-4)*90
+						if (parseInt(str)<4) {
+                        	draw_e_contrast(image_e_flanker,posx,posy,siz,rota,0.2);
+						} else {
+                        	draw_e_contrast(image_e_flanker,posx,posy,siz,rota,-0.2);
+						}
 					} else {
-						if (parseInt(str)>=0) {
-                        	draw_e_contrast(image_e_flanker,posx,posy,siz,parseInt(str)*90,0.2);
-                    	} else {
-                        	// Letter flanker
-                        	draw_string(posx,posy+siz/2.0,str,siz);
-                    	}
+						if ( (code>='a'.charCodeAt(0)) & (code<='z'.charCodeAt(0)) ) {
+							var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+							var noise_rot=noise_num % 4;
+							var noise_which=Math.floor(noise_num/4);
+							var imX=im_noises[noise_which];
+							//console.log(noise_num,noise_rot,noise_which);
+                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image
+						} else if ( (code>='A'.charCodeAt(0)) & (code<='Z'.charCodeAt(0)) ) {
+							var noise_num=str.charCodeAt(0)-'A'.charCodeAt(0);
+							var noise_rot=noise_num % 4;
+							var noise_which=Math.floor(noise_num/4);
+							console.log(code, noise_num,noise_rot,noise_which);
+							var imX=im_phaseds[noise_which];
+
+							document.imX=imX;
+
+                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image
+						} else {
+							// Letter flanker
+							//draw_string(posx,posy+siz/2.0,str,siz);
+							; // something weird/unknown
+						}
 					}
                 }
 
@@ -184,7 +233,7 @@
                     }
 
                     if (esep>=0) {
-						var im_flanker=image_noise;
+						var im_flanker=image_noise0; // TODO
 						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
 						draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
 						draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);

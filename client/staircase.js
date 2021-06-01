@@ -123,17 +123,26 @@
                     // Get next one:
                     var oriNew=generate_ori(this.nafc) 
                 
-					var flanker_code;
-					if (get_checked( "chkNFlankers" )) {
-						var oris=['6','7','8','9'];
+					var flanker_code="____";
+					if (get_checked( "chkNFlankers" )) { // Noise flankers
+						// TODO: ugh, range->char(values) didn't seem easy: map, etc.
+						var oris=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t'];
 						shuffleArray(oris);
-						flanker_code=oris.join('');
-					} 
-					if (get_checked( "chkEFlankers" )) {
+						flanker_code=oris.slice(0,4).join('');
+					} else if (get_checked( "chkEFlankers" )) { // E
 						var oris=['0','1','2','3'];
 						shuffleArray(oris);
 						flanker_code=oris.join('');
-					}
+					} else if (get_checked( "chkENegFlankers" )) { // E with negative contrast
+						var oris=['4','5','6','7'];
+						shuffleArray(oris);
+						flanker_code=oris.join('');
+					} else if (get_checked( "chkPhased")) {
+						var oris=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T'];
+						shuffleArray(oris);
+						flanker_code=oris.join('');
+					};
+					console.log(flanker_code);
 					
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},

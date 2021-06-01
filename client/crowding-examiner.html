@@ -17,9 +17,13 @@
 					Connect
 				</button>
 
-                <label mode="both" id="lblCode">Cond. code:</label>
-				<input type="text" value="Enter condition" id="condcode" title="Condition info" size="12">
+				<input type="text" value="_" id="condcode" title="Condition info" size="1">
                 <br>
+
+                <label mode="both" id="lblCode">Cond. code:</label>
+				<input type="text" value="Enter condition" id="XXcondcodeXX" title="Condition info" size="12" onchange="set_code(this.value);">
+				<br>
+
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
@@ -42,8 +46,12 @@
 
 	    <span mode="both" id="lblFlankers">E Flankers</span>
 	    <input mode="both" type="checkbox" id="chkEFlankers">
-	    <span mode="both" id="lblFlankers">Noise Flankers</span>
+	    <span mode="both" id="lblFlankers">E Neg. Flankers</span>
+	    <input mode="both" type="checkbox" id="chkENegFlankers">
+	    <span mode="both" id="lblFlankers">W. Noise Flankers</span>
 	    <input mode="both" type="checkbox" id="chkNFlankers">
+	    <span mode="both" id="lblFlankers">Phase-scrambled</span>
+	    <input mode="both" type="checkbox" id="chkPhased">
 
 	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
@@ -176,6 +184,43 @@
                 // TODO: A callback when it changes instead?
                 eval( document.getElementById("metap").value );
             }
+
+            function set_code(val) {
+                var num=parseInt(val.substr(0));
+				console.log(num);
+				switch(num) {
+					case 0:
+                    	set_checked('chkEFlankers',false);
+                    	set_checked('chkENegFlankers',false);
+                    	set_checked('chkNFlankers',false);
+                    	set_checked('chkPhased',false);
+						break;
+					case 1:
+                    	set_checked('chkEFlankers',true);
+                    	set_checked('chkENegFlankers',false);
+                    	set_checked('chkNFlankers',false);
+                    	set_checked('chkPhased',false);
+						break;
+					case 2:
+                    	set_checked('chkEFlankers',false);
+                    	set_checked('chkENegFlankers',true);
+                    	set_checked('chkNFlankers',false);
+                    	set_checked('chkPhased',false);
+						break;
+					case 3:
+                    	set_checked('chkEFlankers',false);
+                    	set_checked('chkENegFlankers',false);
+                    	set_checked('chkNFlankers',true);
+                    	set_checked('chkPhased',false);
+						break;
+					case 4:
+                    	set_checked('chkEFlankers',false);
+                    	set_checked('chkNFlankers',false);
+                    	set_checked('chkPhased',false);
+                    	set_checked('chkENegFlankers',true);
+						break;
+				};
+			};
 
             var dict_params = {} // GLOBAL
             function load_code() {
