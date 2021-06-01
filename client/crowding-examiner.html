@@ -505,9 +505,9 @@
             }
 
             function preset_contrast() {
-                document.getElementById("commands").value="clear('#c0c0c0');\nfixation(-300,0,16,4,'black','+');"+
+                document.getElementById("commands").value="clear('#808080');\nfixation(-300,0,16,4,'black','+');"+
 					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,1.4,${size},${flankers});flip(20);"+
-                	"\nclear('#c0c0c0');fixation(-300,0,16,4,'black','+');flip(1);"
+                	"\nclear('#808080');fixation(-300,0,16,4,'black','+');flip(1);"
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
