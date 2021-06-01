@@ -1,6 +1,6 @@
 'use strict';
                 var scale=0.1;
-                const GAMMA=2.45;
+                const GAMMA=1.0;
                 const INVGAMMA=1/GAMMA;
                 
                 function clear(colr) {
