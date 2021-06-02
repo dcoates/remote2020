@@ -317,6 +317,7 @@
     }
 
     function export_staircase() {
+		download("log.txt",get_value("log"));
 	}
 
     function iosCopyToClipboard(el) {
