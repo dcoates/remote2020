@@ -22,14 +22,14 @@
 
                 <label mode="both" id="lblCode">Cond. code:</label>
 				<select id="mySelect" onchange="set_code(this.selectedIndex);">
-					<option>Unflanked</option>
-					<option>Flanked</option>
-					<option>Flanked (-polarity)</option>
-					<option>White noise flankers</option>
-					<option>Letter noise flankers (phase scrambled)</option>
-					<option>Letter noise, full field</option>
-					<option>Letter noise donut</option>
-					<option>Letter noise overlap</option>
+					<option>1. Unflanked</option>
+					<option>2. Flanked</option>
+					<option>3. Flanked (-polarity)</option>
+					<option>4. White noise flankers</option>
+					<option>5. Letter noise flankers (phase scrambled)</option>
+					<option>6. Letter noise, full field</option>
+					<option>7. Letter noise donut</option>
+					<option>8. Letter noise overlap</option>
 				</select>
 
 				<input type="text" value="Enter condition" id="XXcondcodeXX" title="Condition info" size="12" onchange="set_code(this.value);" hidden=true>
@@ -50,7 +50,7 @@
 			<input type="text" id="box_size" title="screen_size" size="6" value="7.2" mode="both">
 
             <label mode="both" id="lblDist">Distance (cm):</label>
-			<input type="text" id="dist" title="dist" size="6" value="50" mode="both">
+			<input type="text" id="dist" title="dist" size="6" value="100" mode="both">
 
 			<br>
 

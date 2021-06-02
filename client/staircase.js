@@ -289,11 +289,11 @@
     function export_manual_table() {
         var s = "";
         s += "size,num_correct,num_presented";
-        s += ","+get_value("text_condition") + "\n";
+        //s += ","+get_value("text_condition") + "\n";
         for (var nrow = nrows_mocs_table; nrow>=0; nrow--) {
             var thisid='count_'+nrow;
-            strCurrent=get_html(thisid);
-            fields=strCurrent.split('/');
+            var strCurrent=get_html(thisid);
+            var fields=strCurrent.split('/');
             // Only output cells for which one has been presented
             if (parseInt(fields[1])>0) {
                 s+=nrow+","+fields[0]+","+fields[1]+"\n"
@@ -302,17 +302,22 @@
         log.info(s)
         set_html("log",s)
 
-        var owner=document.getElementById("table_text") 
-        owner.style.display="";
-        owner.hidden=false;
+        //var owner=document.getElementById("table_text") 
+        //owner.style.display="";
+        //owner.hidden=false;
 
-        var el=document.getElementById("log") //.select();
-        var success= iosCopyToClipboard(el);
+        //var el=document.getElementById("log") //.select();
+        //var success= iosCopyToClipboard(el);
         //success=navigator.clipboard.writeText(s);
 
-        owner.style.display="none";
-        owner.hidden=true;
+        //owner.style.display="none";
+        //owner.hidden=true;
+
+		download("log.txt",s,"log")
     }
+
+    function export_staircase() {
+	}
 
     function iosCopyToClipboard(el) {
         var range = document.createRange();
