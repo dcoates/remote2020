@@ -1,0 +1,4 @@
+staircase:
+- # of reversals comes from the list of step sizes in metap
+
+"Bex" expt. added the global_params structure to keep parameters to send to th etrial, which seems like a good way to do it.

@@ -143,11 +143,14 @@
 						flanker_code=oris.join('');
 					};
 					console.log(flanker_code);
+
+					var sep=parseFloat(get_value('txtSep'));
 					
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
-                        \n\tcontrast:${this.contrast},`+
+                        \n\tcontrast:${this.contrast},
+                        \n\tsep:${sep},` +
                         "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
 
                     // Finished ?
