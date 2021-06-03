@@ -15,10 +15,12 @@
                 // https://stackoverflow.com/questions/10521978/html5-canvas-image-contrast/34203206#34203206
                 function contrastImage(imgData, contrast){  //input range 0..1
 						d = imgData.data;
+						document.imdat=d;
 						var d0 = d[0];
                         for(var i=0;i<d.length;i+=4){   //r,g,b,a
                             val=d[i];
 							var newval;
+							var alpha=255;
                             if (val==0)  {   
 								// Black pixels are the target/foreground
                                 newval=(con_background+contrast);  			    // value is incr. above background
@@ -31,18 +33,19 @@
 
 								// Clamp
                                 newval=Math.max(0,Math.min(val,255)); 
-                                val=parseInt(newval);              
+                                //val=parseInt(newval);              
                             } else {
 								newval=255.0*Math.pow(con_background, INVGAMMA);
+								alpha=0;
 								//newval=newval / 2.0;
 							};
 
 							d[i] = newval;
 							d[i+1] = newval;
 							d[i+2] = newval;
+							d[i+3] = alpha;
                         }
 						//console.warn(d[0],d0,contrast);
-						document.imdat=d;
                         return imgData;
                 }
 
@@ -79,6 +82,10 @@
                 image_phased4.src = 'img/phased4.png'
 				var im_phaseds=[image_phased0,image_phased1,image_phased2,image_phased3,image_phased4];
 
+                const image_phased_full0 = new Image();
+                image_phased_full0.src = 'img/letter_full0.png'
+				var im_pfull=[image_phased_full0];
+
                 const image_spot = new Image();
                 image_spot.src = 'img/spot.png'
 
@@ -104,12 +111,21 @@
 						}
 					} else {
 						if ( (code>='a'.charCodeAt(0)) & (code<='z'.charCodeAt(0)) ) {
-							var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
-							var noise_rot=noise_num % 4;
-							var noise_which=Math.floor(noise_num/4);
-							var imX=im_noises[noise_which];
-							//console.log(noise_num,noise_rot,noise_which);
-                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image
+							if (code<'w'.charCodeAt(0))  {
+								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+								var noise_rot=noise_num % 4;
+								var noise_which=Math.floor(noise_num/4);
+								var imX=im_noises[noise_which];
+								//console.log(noise_num,noise_rot,noise_which);
+                        		draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							} else if (code<='z'.charCodeAt(0)) { // code==z 
+								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+								var noise_rot=noise_num % 4;
+								var noise_which=Math.floor(noise_num/4);
+								var imX=im_pfull[0];
+								//console.log(noise_num,noise_rot,noise_which);
+                        		draw_e_contrast(imX,posx,posy,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							}
 						} else if ( (code>='A'.charCodeAt(0)) & (code<='Z'.charCodeAt(0)) ) {
 							var noise_num=str.charCodeAt(0)-'A'.charCodeAt(0);
 							var noise_rot=noise_num % 4;
@@ -119,7 +135,7 @@
 
 							document.imX=imX;
 
-                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image
+                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
 						} else {
 							// Letter flanker
 							//draw_string(posx,posy+siz/2.0,str,siz);
@@ -222,6 +238,15 @@
 						target=image_t;
 					}
 
+					// Draw flankers first
+                    if (esep>=0) {
+						var im_flanker=image_noise0; // TODO
+						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
+						draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
+						draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
+						draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
+                    }
+
                     if (which=='E' || which=='U' || which=='T') {
 							draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
                     } else if (which=='|') {
@@ -232,13 +257,6 @@
 							draw_spot_contrast(posx,posy,siz*1.0,ori,contrast);
                     }
 
-                    if (esep>=0) {
-						var im_flanker=image_noise0; // TODO
-						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
-						draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
-						draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
-						draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
-                    }
                     if (barsep>=0) { // TODO: Untested; not centered well?
                         ctx.beginPath();
                         ctx.lineWidth=siz;

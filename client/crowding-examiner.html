@@ -70,6 +70,8 @@
 	    <input mode="both" type="checkbox" id="chkNFlankers">
 	    <span mode="both" id="lblFlankers">Phase-scrambled</span>
 	    <input mode="both" type="checkbox" id="chkPhased">
+	    <span mode="both" id="lblFlankers">Phase-scrambled Full</span>
+	    <input mode="both" type="checkbox" id="chkPhasedFull">
 
 	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
@@ -214,30 +216,42 @@
                     	set_checked('chkENegFlankers',false);
                     	set_checked('chkNFlankers',false);
                     	set_checked('chkPhased',false);
+                    	set_checked('chkPhasedFull',false);
 						break;
 					case 1:
                     	set_checked('chkEFlankers',true);
                     	set_checked('chkENegFlankers',false);
                     	set_checked('chkNFlankers',false);
                     	set_checked('chkPhased',false);
+                    	set_checked('chkPhasedFull',false);
 						break;
 					case 2:
                     	set_checked('chkEFlankers',false);
                     	set_checked('chkENegFlankers',true);
                     	set_checked('chkNFlankers',false);
                     	set_checked('chkPhased',false);
+                    	set_checked('chkPhasedFull',false);
 						break;
 					case 3:
                     	set_checked('chkEFlankers',false);
                     	set_checked('chkENegFlankers',false);
                     	set_checked('chkNFlankers',true);
                     	set_checked('chkPhased',false);
+                    	set_checked('chkPhasedFull',false);
 						break;
 					case 4:
                     	set_checked('chkEFlankers',false);
                     	set_checked('chkNFlankers',false);
                     	set_checked('chkPhased',true);
                     	set_checked('chkENegFlankers',false);
+                    	set_checked('chkPhasedFull',false);
+						break;
+					case 5:
+                    	set_checked('chkEFlankers',false);
+                    	set_checked('chkNFlankers',false);
+                    	set_checked('chkPhased',false);
+                    	set_checked('chkENegFlankers',false);
+                    	set_checked('chkPhasedFull',true);
 						break;
 				};
 			};

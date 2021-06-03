@@ -141,6 +141,10 @@
 						var oris=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T'];
 						shuffleArray(oris);
 						flanker_code=oris.join('');
+					} else if (get_checked( "chkPhasedFull")) {
+						var oris=['w','x','y','z'];
+						shuffleArray(oris);
+						flanker_code=oris[0]+'___';
 					};
 					console.log(flanker_code);
 
