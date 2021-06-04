@@ -49,6 +49,10 @@ function get_checked(html,value) {
     return document.getElementById(html).checked;
 }
 
+function get_index(html,value) {
+    return document.getElementById(html).selectedIndex;
+}
+
 
 function beep(vol, freq, duration){
 

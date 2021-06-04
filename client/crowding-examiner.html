@@ -21,7 +21,7 @@
                 <br>
 
                 <label mode="both" id="lblCode">Cond. code:</label>
-				<select id="mySelect" onchange="set_code(this.selectedIndex);">
+				<select id="select_cond" onchange="set_code(this.selectedIndex);">
 					<option>1. Unflanked</option>
 					<option>2. Flanked</option>
 					<option>3. Flanked (-polarity)</option>
@@ -31,6 +31,9 @@
 					<option>7. Letter noise donut</option>
 					<option>8. Letter noise overlap</option>
 				</select>
+
+                <label id="lblSub">Subject:</label>
+				<input type="text" value="S0" id="txtSub" size="5">
 
 				<input type="text" value="Enter condition" id="XXcondcodeXX" title="Condition info" size="12" onchange="set_code(this.value);" hidden=true>
 				<br>
@@ -55,7 +58,7 @@
 			<br>
 
             <label mode="both" id="lblEcc">Ecc (deg):</label>
-			<input type="text" id="dist" title="dist" size="6" value="5" mode="both">
+			<input type="text" id="ecc" size="6" value="5" mode="both">
 
             <label mode="both" id="lblSep">T-F Separation (x):</label>
 			<input type="text" id="txtSep" size="6" value="1.4" mode="both">
@@ -196,7 +199,7 @@
             var noSleep=null;
 
             function clear_log() {
-                set_html('log',"trial,size,ori,resp,correct,is_reversal,num_reversals");
+                set_html('log',"trial,value,ori,resp,correct,is_reversal,num_reversals,mean,flankers");
             }
 
             var metap = []; // GLOBAL
@@ -643,6 +646,7 @@
 
         function do_stair_restart(which) {
             graph_clear();
+			clear_log();
 
             set_checked('chkStair',true);
             set_checked('chkMOCS',false);

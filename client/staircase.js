@@ -103,10 +103,6 @@
                         this.nReversals += 1;
                     }
 
-                    // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
-                    set_html("log",get_html("log")+"\n"+
-                        this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+this.nReversals);
-
                     var trial1={'num':this.stair_trial, 'size':prev_size, 'ori': trial_params['orientation'],
                         'resp': ori_resp, 'is_correct': correct, 'is_reversal': isReversal, 'num_reversals':
                         this.nReversals, 'dir_reversal_down': this.prev_corr, 'x': this.stair_trial, 'y': prev_size};
@@ -121,6 +117,17 @@
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
+
+					// Hope this isn't too soon. Was farther down before 4-jun-2020
+                	this.compute_mean();
+                	var thresh=this.mean_cm/parseFloat(get_value('background')); 
+
+                    // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
+                    set_html("log",get_html("log")+"\n"+
+                        this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+
+						','+isReversal+','+this.nReversals+','+thresh+','+trial_params['flankers']);
+
+					// Start generating next one
                     var oriNew=generate_ori(this.nafc) 
                 
 					var flanker_code="____";
@@ -161,7 +168,7 @@
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
                 	var val=this.mean_cm/parseFloat(get_value('background'));
-                        set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
+                        set_html("lblStair",`FINISHED threshold=${thresh.toPrecision(4)}`);
                         //beep(1,440,80);
                     } else {
                         this.next(); // execute next
@@ -321,7 +328,8 @@
     }
 
     function export_staircase() {
-		download("log.txt",get_value("log"));
+		var strFilename=get_value("txtSub")+"_cond"+String(get_index("select_cond")+1)+".csv";
+		download(strFilename,get_value("log"));
 	}
 
     function iosCopyToClipboard(el) {
