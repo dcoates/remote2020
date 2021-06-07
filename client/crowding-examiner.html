@@ -30,6 +30,7 @@
 					<option>6. Letter noise, full field</option>
 					<option>7. Letter noise donut</option>
 					<option>8. Letter noise overlap</option>
+					<option>9. Flankers yoked</option>
 				</select>
 
                 <label id="lblSub">Subject:</label>
@@ -75,6 +76,12 @@
 	    <input mode="both" type="checkbox" id="chkPhased">
 	    <span mode="both" id="lblFlankers">Phase-scrambled Full</span>
 	    <input mode="both" type="checkbox" id="chkPhasedFull">
+	    <span mode="both" id="lblFlankers">Phase-scrambled Donut</span>
+	    <input mode="both" type="checkbox" id="chkPhasedDonut">
+	    <span mode="both" id="lblFlankers">Phase-scrambled Overlap</span>
+	    <input mode="both" type="checkbox" id="chkPhasedOverlap">
+	    <span mode="both" id="lblFlankers">Yoked</span>
+	    <input mode="both" type="checkbox" id="chkYoked">
 
 	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
@@ -213,48 +220,37 @@
 				if (typeof(val) == "string") {
                 	num=parseInt(val.substr(0));
 				}
+				set_checked('chkEFlankers',false);
+				set_checked('chkNFlankers',false);
+				set_checked('chkPhased',false);
+				set_checked('chkENegFlankers',false);
+				set_checked('chkPhasedFull',false);
+				set_checked('chkPhasedDonut',false);
+				set_checked('chkYoked',false);
 				switch(num) {
-					case 0:
-                    	set_checked('chkEFlankers',false);
-                    	set_checked('chkENegFlankers',false);
-                    	set_checked('chkNFlankers',false);
-                    	set_checked('chkPhased',false);
-                    	set_checked('chkPhasedFull',false);
-						break;
 					case 1:
                     	set_checked('chkEFlankers',true);
-                    	set_checked('chkENegFlankers',false);
-                    	set_checked('chkNFlankers',false);
-                    	set_checked('chkPhased',false);
-                    	set_checked('chkPhasedFull',false);
 						break;
 					case 2:
-                    	set_checked('chkEFlankers',false);
                     	set_checked('chkENegFlankers',true);
-                    	set_checked('chkNFlankers',false);
-                    	set_checked('chkPhased',false);
-                    	set_checked('chkPhasedFull',false);
 						break;
 					case 3:
-                    	set_checked('chkEFlankers',false);
-                    	set_checked('chkENegFlankers',false);
                     	set_checked('chkNFlankers',true);
-                    	set_checked('chkPhased',false);
-                    	set_checked('chkPhasedFull',false);
 						break;
 					case 4:
-                    	set_checked('chkEFlankers',false);
-                    	set_checked('chkNFlankers',false);
                     	set_checked('chkPhased',true);
-                    	set_checked('chkENegFlankers',false);
-                    	set_checked('chkPhasedFull',false);
 						break;
 					case 5:
-                    	set_checked('chkEFlankers',false);
-                    	set_checked('chkNFlankers',false);
-                    	set_checked('chkPhased',false);
-                    	set_checked('chkENegFlankers',false);
                     	set_checked('chkPhasedFull',true);
+						break;
+					case 6:
+                    	set_checked('chkPhasedDonut',true);
+						break;
+					case 7:
+                    	set_checked('chkPhasedOverlap',true);
+						break;
+					case 8:
+                    	set_checked('chkYoked',true);
 						break;
 				};
 			};
@@ -361,8 +357,8 @@
                 var height=parseInt(list_dims[2]);
 
                 // Make our 'shadow' canvas match theirs
-                canv.width=width;
-                canv.height=height;
+                canvas.width=width;
+                canvas.height=height;
                 reportSize(); // adjust our drawing stuff
 
                 set_html("dim_place",width+"x"+height);
@@ -376,8 +372,8 @@
             var thePeer2 = null; 
 
             function reportSize() {
-                wid=canv.width;
-                height=canv.height;
+                wid=canvas.width;
+                height=canvas.height;
                 xc=wid/2;
                 yc=height/2;
             }
@@ -446,9 +442,8 @@
             }
 
             // Global variables
-            var c = document.getElementById("canvas");
-            var canv = document.getElementById("canvas");
-            var ctx = canv.getContext("2d");
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
             var wid=768
             var height=768;
             var xc=wid/2;
@@ -470,10 +465,6 @@
 
             // shader grating stuff:
             var gl, program; // these are used in grating_shader.
-            // window.addEventListener("load", setupWebGL, false); //now we call explicit and swtich context
-
-            //c = document.getElementById("canvas");
-            //ctx = c.getContext("2d");
 
             function send_trial() {
                 // get commands
@@ -539,25 +530,8 @@
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tsep:1.4,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
-            function demo2() {
-                //document.getElementById("commands").value=
-                //"make_grating(20,2.0); clear('#c0c0c0');\nfixation(0,0,10,2,'green');\nflip(30);\nclear('#c0c0c0');\n//beep(1,880,30); flip(1); \
-                //animate_grating();\nflip(100);\nclear('#c0c0c0');fixation(0,0,10,2,'black');flip(1);"
-
-                // Clone the canvas to unhook the canvas
-                var newCvs = c.cloneNode(false);
-                c.parentNode.replaceChild(newCvs, c);
-                c = newCvs;
-
-                setupWebGL();
-                showShaderGrating();
-            }
 
             function animateLoop() {
-            	//var canv = document.getElementById("canvas");
-                //var ctx = canv.getContext("2d");
-
-                //var trial_params=document.getElementById("trial").value;
                 if (indexAction<actions.length) {
                     //stats.begin()
                     //filled=fillTemplate(actions[indexAction],eval(trial_params) )
