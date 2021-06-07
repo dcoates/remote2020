@@ -92,6 +92,10 @@
                         }
                     } else {
                         this.stair_size *= step_size;
+
+                        if (this.stair_size > 1) {
+                            this.stair_size=1; // clip at 1
+                        }
                         this.consecutive_corrects=0;
                         if (this.prev_corr) {
                             isReversal=true; // first wrong after previous correct is considered reversal
@@ -111,7 +115,7 @@
                     this.trial_history.push(trial1);
 
                     if (this.plot_log) {
-                        trial1.y = Math.log10(trial1.y)*25.0+100.0 
+                        trial1.y = Math.log10(trial1.y)*10.0+50.0 
                     };
 
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
