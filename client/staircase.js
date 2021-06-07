@@ -133,7 +133,7 @@
 					var flanker_code="____";
 					if (get_checked( "chkNFlankers" )) { // Noise flankers
 						// TODO: ugh, range->char(values) didn't seem easy: map, etc.
-						var oris=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t'];
+						var oris=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'];
 						shuffleArray(oris);
 						flanker_code=oris.slice(0,4).join('');
 					} else if (get_checked( "chkEFlankers" )) { // E
@@ -145,13 +145,25 @@
 						shuffleArray(oris);
 						flanker_code=oris.join('');
 					} else if (get_checked( "chkPhased")) {
-						var oris=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T'];
+						var oris=['A','B','C','D', 'E','F','G','H', 'I','J','K','L', 'M','N','O','P'];
 						shuffleArray(oris);
 						flanker_code=oris.join('');
 					} else if (get_checked( "chkPhasedFull")) {
 						var oris=['w','x','y','z'];
 						shuffleArray(oris);
 						flanker_code=oris[0]+'___';
+					} else if (get_checked( "chkPhasedDonut")) {
+						var oris=['W','X','Y','Z'];
+						shuffleArray(oris);
+						flanker_code=oris[0]+'___';
+					} else if (get_checked( "chkPhasedOverlap")) {
+						var oris=['S','T','U','V'];
+						shuffleArray(oris);
+						flanker_code=oris[0]+'___';
+					} else if (get_checked( "chkYoked")) {
+						var oris=['8','9','8','9'];
+						shuffleArray(oris);
+						flanker_code=oris.join('');
 					};
 					console.log(flanker_code);
 
