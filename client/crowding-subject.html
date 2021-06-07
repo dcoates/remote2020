@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=1024">
         <title>remote2020 - patient</title>
-        <link rel="stylesheet" href="sandbox_bare.css">
+        <link rel="stylesheet" href="crowding.css">
     </head>
     <body style="background-color:#808080" onload="load_code()">  
 
@@ -50,6 +50,7 @@
 		</div>
 
         <canvas id="canvas">Canvas</canvas>
+        <canvas id="canvas_background">Canvas_background</canvas>
 
         <script src="loglevel.min.js"></script>
         <script src="NoSleep.min.js"></script>
@@ -94,6 +95,11 @@
                 document.body.scrollTop = 0; // <-- pull the page back up to the top
                 document.body.style.overflow = 'hidden'; // <-- relevant addition
 
+				// Another canvas for the "background" (full-screen SF flankers)
+                canvas_background = document.getElementById("canvas_background");
+                canvas_background.width  = canvas.width;
+                canvas_background.height = canvas.height;
+
                 // set globals which are used by stims.js
                 wid=canvas.width;
                 height=canvas.height;
@@ -105,6 +111,7 @@
                 console.log(dims)
 
                 ctx = canvas.getContext("2d");
+                ctx_background = canvas_background.getContext("2d");
 
                 clear('white')
                 square(200,'black');
@@ -226,8 +233,8 @@
                 var rightcan = document.getElementById("rightcan");
                 wid=rightcan.clientWidth;
                 height=rightcan.clientHeight;
-                canv.width=wid;
-                canv.height=height;
+                canvas.width=wid;
+                canvas.height=height;
                 xc=wid/2;
                 yc=height/2;
 
@@ -239,10 +246,11 @@
             }
 
             // Global variables
-            var c = document.getElementById("canvas");
-            var canv = document.getElementById("canvas");
+            //var canv = document.getElementById("canvas");
             var canvas = document.getElementById("canvas");
-            var ctx = canv.getContext("2d");
+            var canvas_background = document.getElementById("canvas_background");
+            var ctx = canvas.getContext("2d");
+            var ctx_background = canvas_background.getContext("2d");
             var wid=768
             var height=768;
             var xc=wid/2;

@@ -3,9 +3,24 @@
                 const GAMMA=1.0;
                 const INVGAMMA=1/GAMMA;
                 
-                function clear(colr) {
+                function clear1(colr) {
                     ctx.fillStyle = colr;
                     ctx.fillRect(0, 0, wid, height);
+				}
+
+                function clear(colr) {
+                    //ctx.fillStyle = colr;
+                    //ctx.fillRect(0, 0, wid, height);
+
+                    //ctx.fillStyle = "rgba(0,0,0,0)"; // set to transparent alpha
+                    //ctx.fillRect(0, 0, wid, height);
+					// Clear everyone on the target canvas:
+                    ctx.clearRect(0, 0, wid, height);
+                    ctx.fillStyle = colr;
+
+					// TODO. This only works for crowding, will break others
+                    ctx_background.fillStyle = colr;
+                    ctx_background.fillRect(0, 0, wid, height);
                 }
 
                 var val; //global for debuggin
@@ -21,9 +36,9 @@
                             val=d[i];
 							var newval;
 							var alpha=255;
-                            if (val==0)  {   
-								// Black pixels are the target/foreground
-                                newval=(con_background+contrast);  			    // value is incr. above background
+                            if (val==255)  {   
+								// Pixels are the target/foreground
+                                newval=(con_background+contrast*con_background);  			    // value is incr. above background
 
 								//Noisy bit:
                                 val=Math.floor( (newval*255.0)+Math.random()-0.5); // apply noisy bit
@@ -50,11 +65,11 @@
                 }
 
                 const image = new Image();
-                image.src = 'img/tumbling_e.png'
+                image.src = 'img/tumbling_e_white.png'
                 const image_e = new Image();
-                image_e.src = 'img/tumbling_e.png'
+                image_e.src = 'img/tumbling_e_white.png'
                 const image_e_flanker = new Image();
-                image_e_flanker.src = 'img/tumbling_e.png'
+                image_e_flanker.src = 'img/tumbling_e_white.png'
                 const image_v = new Image();
                 image_v.src = 'img/vernier.png'
 
@@ -93,7 +108,7 @@
 
                 // Assume 100% contrast. Stub for compatibility
                 function draw_e(posx,posy,siz,rotation) {
-                    draw_e_contrast(image_e,posx,posy,siz,rotation,1.0);
+                    draw_e_contrast(ctx,image_e,posx,posy,siz,rotation,1.0);
                 }
 
                 function draw_flanker(posx,posy,str,siz,contrast,img_target) {
@@ -103,11 +118,13 @@
 					var code=str.charCodeAt(0);
 					//console.log(str,code);
                     if (parseInt(str)>=0) {
-						var rota=(parseInt(str)-4)*90
+						var rota=(parseInt(str)%4)*90
 						if (parseInt(str)<4) {
-                        	draw_e_contrast(image_e_flanker,posx,posy,siz,rota,0.2);
-						} else {
-                        	draw_e_contrast(image_e_flanker,posx,posy,siz,rota,-0.2);
+                        	draw_e_contrast(ctx,image_e_flanker,posx,posy,siz,rota,0.2);
+						} else if (parseInt(str)<8){
+                        	draw_e_contrast(ctx,image_e_flanker,posx,posy,siz,rota,-0.2);
+						}else{
+                        	draw_e_contrast(ctx,image_e_flanker,posx,posy,siz,rota,contrast);
 						}
 					} else {
 						if ( (code>='a'.charCodeAt(0)) & (code<='z'.charCodeAt(0)) ) {
@@ -117,25 +134,44 @@
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_noises[noise_which];
 								//console.log(noise_num,noise_rot,noise_which);
-                        		draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
-							} else if (code<='z'.charCodeAt(0)) { // code==z 
+                        		draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							} else if (code<='z'.charCodeAt(0)) { // code==w,x,y,z 
 								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
 								//console.log(noise_num,noise_rot,noise_which);
-                        		draw_e_contrast(imX,posx,posy,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+								// Centered and draw large:
+                        		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
 							}
 						} else if ( (code>='A'.charCodeAt(0)) & (code<='Z'.charCodeAt(0)) ) {
-							var noise_num=str.charCodeAt(0)-'A'.charCodeAt(0);
-							var noise_rot=noise_num % 4;
-							var noise_which=Math.floor(noise_num/4);
-							console.log(code, noise_num,noise_rot,noise_which);
-							var imX=im_phaseds[noise_which];
+							if (code<'W'.charCodeAt(0))  {
+								var noise_num=str.charCodeAt(0)-'A'.charCodeAt(0);
+								var noise_rot=noise_num % 4;
+								var noise_which=Math.floor(noise_num/4);
+								console.log(code, noise_num,noise_rot,noise_which);
+								var imX=im_phaseds[noise_which];
 
-							document.imX=imX;
+								document.imX=imX;
 
-                        	draw_e_contrast(imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+								draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							} else { // W,X,Y,Z
+								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+								var noise_rot=noise_num % 4;
+								var noise_which=Math.floor(noise_num/4);
+								var imX=im_pfull[0];
+
+								//
+								//console.log(noise_num,noise_rot,noise_which);
+								// Centered and draw large:
+                        		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+
+								console.log(posx,posy,siz);
+								var rad=posx-siz/2
+								// Draw a gray box in the foreground
+                    			ctx_background.fillStyle = "rgba(con_background,con_background,con_background,255)"; // set to transparent alpha
+                    			ctx_background.fillRect(xc-rad, yc-rad, rad*2,rad*2);
+							}
 						} else {
 							// Letter flanker
 							//draw_string(posx,posy+siz/2.0,str,siz);
@@ -152,19 +188,19 @@
                     ctx.fillText(str,xc+posx,yc+posy);
                 }
 
-                function draw_e_contrast(imx,posx,posy,siz,rotation,contrast) {
-                    ctx.imageSmoothingEnabled=false;
+                function draw_e_contrast(ctx_dest,imx,posx,posy,siz,rotation,contrast) {
+                    ctx_dest.imageSmoothingEnabled=false;
 					//ctx.save(); 
-					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
-					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
+					ctx_dest.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					ctx_dest.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 
-					ctx.drawImage(imx, -siz/2, -siz/2, siz, siz);
+					ctx_dest.drawImage(imx, -siz/2, -siz/2, siz, siz);
 
-                    ctx.resetTransform();
+                    ctx_dest.resetTransform();
 
 					if (contrast<1.0) {
-                    	var imgData=ctx.getImageData(posx+xc-siz/2-1,posy+yc-siz/2-1, siz+3, siz+3);
-                    	ctx.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2-1,posy+yc-siz/2-1);
+                    	var imgData=ctx_dest.getImageData(posx+xc-siz/2-1,posy+yc-siz/2-1, siz+3, siz+3);
+                    	ctx_dest.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2-1,posy+yc-siz/2-1);
 					}
 				}
 
@@ -238,7 +274,7 @@
 						target=image_t;
 					}
 
-					// Draw flankers first
+					// Draw flankers first, like for fullscreen one
                     if (esep>=0) {
 						var im_flanker=image_noise0; // TODO
 						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
