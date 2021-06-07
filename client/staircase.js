@@ -161,7 +161,7 @@
 						shuffleArray(oris);
 						flanker_code=oris[0]+'___';
 					} else if (get_checked( "chkYoked")) {
-						var oris=['8','9','8','9'];
+						var oris=['s','t','u','v'];
 						shuffleArray(oris);
 						flanker_code=oris.join('');
 					};

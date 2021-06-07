@@ -128,15 +128,21 @@
 						}
 					} else {
 						if ( (code>='a'.charCodeAt(0)) & (code<='z'.charCodeAt(0)) ) {
-							if (code<'w'.charCodeAt(0))  {
+							if (code<='p'.charCodeAt(0))  {
 								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_noises[noise_which];
 								//console.log(noise_num,noise_rot,noise_which);
                         		draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							} else if (code<'w'.charCodeAt(0))  { // s,t,u,v
+								var noise_num=str.charCodeAt(0)-'s'.charCodeAt(0);
+								var rot=noise_num % 4;
+								var imX=image_e_flanker;
+								var rad=posx-siz/2
+								draw_e_contrast(ctx,image_e_flanker,posx,posy,siz,rot*90,contrast);
 							} else if (code<='z'.charCodeAt(0)) { // code==w,x,y,z 
-								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+								var noise_num=str.charCodeAt(0)-'w'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
@@ -145,7 +151,7 @@
                         		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
 							}
 						} else if ( (code>='A'.charCodeAt(0)) & (code<='Z'.charCodeAt(0)) ) {
-							if (code<'W'.charCodeAt(0))  {
+							if (code<='P'.charCodeAt(0))  {
 								var noise_num=str.charCodeAt(0)-'A'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
@@ -155,13 +161,20 @@
 								document.imX=imX;
 
 								draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+							} else if (code<'W'.charCodeAt(0))  { // S,T,U,V
+								var noise_num=str.charCodeAt(0)-'S'.charCodeAt(0);
+								var noise_rot=noise_num % 4;
+								var noise_which=Math.floor(noise_num/4);
+								var imX=im_pfull[0];
+								var rad=posx-siz/2
+                        		draw_e_contrast(ctx_background,imX,0,0,rad*2,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+
 							} else { // W,X,Y,Z
-								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
+								var noise_num=str.charCodeAt(0)-'W'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
 
-								//
 								//console.log(noise_num,noise_rot,noise_which);
 								// Centered and draw large:
                         		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
