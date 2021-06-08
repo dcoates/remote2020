@@ -35,10 +35,10 @@
                         for(var i=0;i<d.length;i+=4){   //r,g,b,a
                             val=d[i];
 							var newval;
-							var alpha=255;
+							var alpha=128;
                             if (val==255)  {   
 								// Pixels are the target/foreground
-                                newval=(con_background+contrast*con_background);  			    // value is incr. above background
+                                newval=(con_background+2*contrast*con_background);  			    // value is incr. above background
 
 								//Noisy bit:
                                 val=Math.floor( (newval*255.0)+Math.random()-0.5); // apply noisy bit
@@ -128,20 +128,19 @@
 						}
 					} else {
 						if ( (code>='a'.charCodeAt(0)) & (code<='z'.charCodeAt(0)) ) {
-							if (code<='p'.charCodeAt(0))  {
+							if (code<='p'.charCodeAt(0))  { // Letter noise
 								var noise_num=str.charCodeAt(0)-'a'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_noises[noise_which];
 								//console.log(noise_num,noise_rot,noise_which);
                         		draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
-							} else if (code<'w'.charCodeAt(0))  { // s,t,u,v
+							} else if (code<'w'.charCodeAt(0))  { // s,t,u,v: yoked E flankers
 								var noise_num=str.charCodeAt(0)-'s'.charCodeAt(0);
 								var rot=noise_num % 4;
-								var imX=image_e_flanker;
 								var rad=posx-siz/2
 								draw_e_contrast(ctx,image_e_flanker,posx,posy,siz,rot*90,contrast);
-							} else if (code<='z'.charCodeAt(0)) { // code==w,x,y,z 
+							} else if (code<='z'.charCodeAt(0)) { // code==w,x,y,z : full-screen noise
 								var noise_num=str.charCodeAt(0)-'w'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
@@ -161,15 +160,15 @@
 								document.imX=imX;
 
 								draw_e_contrast(ctx,imX,posx,posy,siz,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
-							} else if (code<'W'.charCodeAt(0))  { // S,T,U,V
+							} else if (code<'W'.charCodeAt(0))  { // S,T,U,V: overlapping (donut hole)
 								var noise_num=str.charCodeAt(0)-'S'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
 								var rad=posx-siz/2
-                        		draw_e_contrast(ctx_background,imX,0,0,rad*2,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+                        		draw_e_contrast_subset(ctx_background,imX,0,0,rad*2,noise_rot*90,1.0,siz); // Contrast correction already in image (con=1.0)
 
-							} else { // W,X,Y,Z
+							} else { // W,X,Y,Z: donut
 								var noise_num=str.charCodeAt(0)-'W'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
@@ -208,6 +207,22 @@
 					ctx_dest.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 
 					ctx_dest.drawImage(imx, -siz/2, -siz/2, siz, siz);
+
+                    ctx_dest.resetTransform();
+
+					if (contrast<1.0) {
+                    	var imgData=ctx_dest.getImageData(posx+xc-siz/2-1,posy+yc-siz/2-1, siz+3, siz+3);
+                    	ctx_dest.putImageData( contrastImage(imgData,contrast), posx+xc-siz/2-1,posy+yc-siz/2-1);
+					}
+				}
+
+                function draw_e_contrast_subset(ctx_dest,imx,posx,posy,siz,rotation,contrast,letter_size) {
+                    ctx_dest.imageSmoothingEnabled=false;
+					//ctx.save(); 
+					ctx_dest.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					ctx_dest.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
+
+					ctx_dest.drawImage(imx, 0, 0, letter_size*8, letter_size*5, -siz/2, -siz/2, siz, siz);
 
                     ctx_dest.resetTransform();
 
