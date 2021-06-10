@@ -59,7 +59,7 @@
 							d[i] = newval;
 							d[i+1] = newval;
 							d[i+2] = newval;
-							d[i+3] = alpha;
+						d[i+3] = alpha;
                         }
 						//console.warn(d[0],d0,contrast);
                         return imgData;
@@ -322,7 +322,7 @@
                     if (esep>=0) {
 						var im_flanker=image_noise0; // TODO
 
-						if (flankers[0] in ['w','x','y','z']) {
+						if ((flankers[0]=='w')|(flankers[0]=='x')|(flankers[0]=='y')|(flankers[0]=='z')) {
 							draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker);
 						} else {
 							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
