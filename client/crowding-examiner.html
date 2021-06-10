@@ -546,6 +546,7 @@
                     if (indexFrame>=flip_durations[indexAction]) {
                         indexFrame = 0;
                         indexAction += 1;
+						jitterX=-1000;
                     }
 
                     globalAnimationID = requestAnimationFrame(animateLoop);

@@ -21,6 +21,7 @@
 					// TODO. This only works for crowding, will break others
                     ctx_background.fillStyle = colr;
                     ctx_background.fillRect(0, 0, wid, height);
+
                 }
 
                 var val; //global for debuggin
@@ -106,6 +107,9 @@
 
 				const TO_RADIANS = Math.PI/180; 
 
+				var jitterX=-1000;
+				var jitterY=-1000;
+
                 // Assume 100% contrast. Stub for compatibility
                 function draw_e(posx,posy,siz,rotation) {
                     draw_e_contrast(ctx,image_e,posx,posy,siz,rotation,1.0);
@@ -147,7 +151,14 @@
 								var imX=im_pfull[0];
 								//console.log(noise_num,noise_rot,noise_which);
 								// Centered and draw large:
-                        		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+								//
+								if (jitterX<=-100) {
+									jitterX=getRandomInt(20)-10;
+									jitterY=getRandomInt(20)-10;
+								}
+
+								// Contrast correction already in image (con=1.0)
+                        		draw_e_contrast(ctx_background,imX, jitterX, jitterY, siz*8,noise_rot*90,1.0); 
 							}
 						} else if ( (code>='A'.charCodeAt(0)) & (code<='Z'.charCodeAt(0)) ) {
 							if (code<='P'.charCodeAt(0))  {
@@ -165,7 +176,7 @@
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
-								var rad=posx-siz/2
+								var rad=posx-siz/2;
                         		draw_e_contrast_subset(ctx_background,imX,0,0,rad*2,noise_rot*90,1.0,siz); // Contrast correction already in image (con=1.0)
 
 							} else { // W,X,Y,Z: donut
@@ -174,9 +185,14 @@
 								var noise_which=Math.floor(noise_num/4);
 								var imX=im_pfull[0];
 
+								if (jitterX<=-100) {
+									jitterX=getRandomInt(20);
+									jitterY=getRandomInt(20);
+								}
+
 								//console.log(noise_num,noise_rot,noise_which);
 								// Centered and draw large:
-                        		draw_e_contrast(ctx_background,imX,0,0,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
+                        		draw_e_contrast(ctx_background,imX,jitterX,jitterY,siz*8,noise_rot*90,1.0); // Contrast correction already in image (con=1.0)
 
 								console.log(posx,posy,siz);
 								var rad=posx-siz/2
@@ -222,7 +238,7 @@
 					ctx_dest.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
 					ctx_dest.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 
-					ctx_dest.drawImage(imx, 0, 0, letter_size*8, letter_size*5, -siz/2, -siz/2, siz, siz);
+					ctx_dest.drawImage(imx, posx, posy, letter_size*8, letter_size*5, -siz/2, -siz/2, siz, siz);
 
                     ctx_dest.resetTransform();
 
@@ -305,10 +321,15 @@
 					// Draw flankers first, like for fullscreen one
                     if (esep>=0) {
 						var im_flanker=image_noise0; // TODO
-						draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
-						draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
-						draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
-						draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
+
+						if (flankers[0] in ['w','x','y','z']) {
+							draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker);
+						} else {
+							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
+							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
+							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
+							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
+						}
                     }
 
                     if (which=='E' || which=='U' || which=='T') {
@@ -341,6 +362,7 @@
                 }
 
                 function fixation(x,y,siz,wid,colr,style) {
+
                     ctx.beginPath();
                     ctx.lineWidth=wid;
                     ctx.strokeStyle=colr;
