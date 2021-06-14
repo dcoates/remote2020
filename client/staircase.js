@@ -93,8 +93,8 @@
                     } else {
                         this.stair_size *= step_size;
 
-                        if (this.stair_size > 1) {
-                            this.stair_size=1; // clip at 1
+                        if (this.stair_size>0.99) {
+                            this.stair_size=0.99; // clamp 
                         }
                         this.consecutive_corrects=0;
                         if (this.prev_corr) {
