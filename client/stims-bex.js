@@ -29,12 +29,8 @@
                         return imgData;
                 }
 
-                const image_e = new Image();
-                image_e.src = 'img/tumbling_e.png'
-                const image_u = new Image();
-                image_u.src = 'img/sloan-u.png'
-                const image_t = new Image();
-                image_t.src = 'img/sloan-t.png'
+                const image = new Image();
+                image.src = 'img/sloan-u.png'
                 const image_n = new Image();
                 image_n.src = 'img/sloan-n.png'
                 const image_v = new Image();
@@ -47,24 +43,6 @@
                 // Assume 100% contrast. Stub for compatibility
                 function draw_e(posx,posy,siz,rotation) {
                     draw_e_contrast(posx,posy,siz,rotation,1.0);
-                }
-
-                function draw_flanker(posx,posy,str,siz,contrast,img_target) {
-                    if (parseInt(str)>=0) {
-                        // It's a rotated U. 0=upright/normal
-                        draw_i_contrast(img_target,posx,posy,siz,parseInt(str)*90,contrast);
-                    } else {
-                        // Letter flanker
-                        draw_string(posx,posy+siz/2.0,str,siz);
-                    }
-                }
-
-                function draw_string(posx,posy,str,siz) {
-                    ctx.fillStyle="#000000";
-                    var newFont=siz+'px Sloan';
-                    ctx.font=newFont;
-                    ctx.textAlign="center";
-                    ctx.fillText(str,xc+posx,yc+posy);
                 }
 
                 function draw_e_contrast(posx,posy,siz,rotation,contrast) {
@@ -82,7 +60,7 @@
 
                 // Pass in arbitrary image as "i"
                 function draw_i_contrast(i,posx,posy,siz,rotation,contrast) {
-                    ctx.imageSmoothingEnabled=true;
+                    ctx.imageSmoothingEnabled=false;
 					//ctx.save(); 
 					ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
 					ctx.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
@@ -90,9 +68,8 @@
                     ctx.resetTransform();
     				//ctx.restore(); 
                     
-                    // Too slow -- Feb 2021 !
-                    //var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
-                    //ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
+                    var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
                 }
 
                 function draw_v_contrast(posx,posy,siz,rotation,contrast) {
@@ -135,23 +112,16 @@
                 }
 
                 // Assume 100% contrast. Stub for compatibility
-                function draw_letter(which,ori,posx,posy,siz,color,barsep,esep,flankers) {
-                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0,flankers);
+                function draw_letter(which,ori,posx,posy,siz,color,barsep,esep) {
+                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0);
                 }
 
                 // This one takes the contrast
-                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers) {
+                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
-					var target=image_e;
-					if (which=='U') {
-						target=image_u;
-					} else if (which=='T') {
-						target=image_t;
-					}
-
-                    if (which=='E' || which=='U' || which=='T') {
-							draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
+                    if (which=='E') {
+							draw_e_contrast(posx,posy,siz*5.0,ori,contrast);
                     } else if (which=='|') {
                             // Image for vernier is bigger to allow lines to be longer
 							draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
@@ -161,32 +131,31 @@
                     }
 
                     if (esep>=0) {
-							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,target);
-							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,target);
-							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,target);
-							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,target);
+                            var im_flank=image;
+                            if (esep==1.26||esep==1.76) {
+                                im_flank=image_n;
+                            }
+
+							draw_i_contrast(im_flank,posx-siz*5*esep,posy,siz*5,90,contrast);
+							draw_i_contrast(im_flank,posx+siz*5*esep,posy,siz*5,0,contrast);
+							draw_i_contrast(im_flank,posx,-siz*5*esep+posy,siz*5,180,contrast);
+							draw_i_contrast(im_flank,posx,+siz*5*esep+posy,siz*5,270,contrast);
                     }
                     if (barsep>=0) { // TODO: Untested; not centered well?
                         ctx.beginPath();
                         ctx.lineWidth=siz;
                         ctx.strokeStyle=color;
+                        ctx.moveTo(xc-siz*barsep+posx, yc-siz*barsep/2.0+posy);
+                        ctx.lineTo(xc-siz*barsep+posx, yc+siz*barsep/2.0+posy);
 
-						// Left
-                        ctx.moveTo(posx+xc-siz*3.0-siz*barsep, posy+yc-siz*5.0/2.0 );
-                        ctx.lineTo(posx+xc-siz*3.0-siz*barsep, posy+yc+siz*5.0/2.0 );
+                        ctx.moveTo(xc+siz*barsep+posx, yc-siz*barsep/2.0+posy);
+                        ctx.lineTo(xc+siz*barsep+posx, yc+siz*barsep/2.0+posy);
 
-						// Right
-                        ctx.moveTo(posx+xc+siz*3.0+siz*barsep, posy+yc-siz*5.0/2.0 );
-                        ctx.lineTo(posx+xc+siz*3.0+siz*barsep, posy+yc+siz*5.0/2.0 );
+                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc-siz*barsep+posy);
+                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc-siz*barsep+posy);
 
-						// Up
-                        ctx.moveTo(posx+xc-siz*5.0/2.0, posy+yc-siz*3.0-siz*barsep);
-                        ctx.lineTo(posx+xc+siz*5.0/2.0, posy+yc-siz*3.0-siz*barsep);
-
-						// Down
-                        ctx.moveTo(posx+xc-siz*5.0/2.0, posy+yc+siz*3.0+siz*barsep);
-                        ctx.lineTo(posx+xc+siz*5.0/2.0, posy+yc+siz*3.0+siz*barsep);
-
+                        ctx.moveTo(xc-siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
+                        ctx.lineTo(xc+siz*barsep/2.0+posx, yc+siz*barsep+siz+posy);
                         ctx.stroke()
                     }
                 }
