@@ -55,14 +55,24 @@
 				</div>
 
                 <br mode="acuity">
+
+
+<fieldset>
+<legend>Measure VA at 1 contrast</legend>
                 <label mode="acuity" id="lblContrast" style='display: inline-block; width: 7em; text-align: right;'>Contrast:</label>
 				<input mode="acuity" type="text" value="1.0" id="textContrast" title="Value" size="3">
-                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart E Acuity</button>
+                    <button mode="acuity" type="button" id="btnStairStart" onclick="do_stair_restart(0);">Restart VA Staircase</button>
+</fieldset>
 
-                <br mode="acuity">
-                    <label mode="acuity" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Size (MAR, cm)</label>
+<fieldset>
+<legend>Measure letter contrast sensitity</legend>
+
+                    <label mode="acuity" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Letter size (cm)</label>
                     <input mode="acuity" type="text" value="0.6" id="textSize" title="Value" size="3">
-                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+                    <button mode="acuity" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart LCS Staircase</button>
+
+</fieldset>
+<input type="text" id="background" title="Background" size="4" value="1.0" mode="adv">
 
                 <br mode="acuity">
 
@@ -124,7 +134,7 @@
 		</div>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="NoSleep.min.js"></script>
         <script src="drc-misc.js"></script>
@@ -565,10 +575,10 @@
  
             // TODO: Something fishy about the very first trial
 
-            if (dict_params['lab']=='acuity') {
+            if (true) { //dict_params['lab']=='acuity') {
 
-                document.getElementById("placeholder_td1").width="1px";
-                document.getElementById("placeholder_td2").width="1px";
+                document.getElementById("placeholder_td1").width="6em";
+                document.getElementById("placeholder_td2").width="6em";
 
                 if (which==0) {
                     preset_acuity(); 
@@ -699,6 +709,9 @@
                             allow_multiple=false;
                         }
                         process_manual(ori_resp, is_YN,allow_multiple);
+
+						var total_trials_completed=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].reduce((total,t1)=>parseInt(get_html("count_"+t1).split('/')[1])+total,0);
+						send_monitor(total_trials_completed);
                     }
                 }
             }

@@ -16,7 +16,9 @@
 					Connect
 				</button>
 
-				<input type="text" id="background" title="Value" value="0.0" size="8">
+				<input type="hidden" id="background" title="Value" value="0.0" size="8">
+
+				<input type="text" id="condcode" title="Value" value="-" size="6">
 
                 <div id="my-id" style="font-weight: bold; display:none;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:none;" title="status">Status:</div>
@@ -110,13 +112,13 @@
         <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.000000</label>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
         <script src="staircase.js"></script>
         <script src="stims.js"></script>
         <script src="mypeer.js" type="text/javascript"> </script>
-        <script src="graph2.js"></script>
+        <script src="da-graph.js"></script>
         <script src="grating_shader.js" type="text/javascript"></script>
         <script type="text/javascript" src="dat.gui.min.js"></script>
 
@@ -248,13 +250,54 @@
                 torch_on=false;
 
                 // If max is 30min (30*60), /20 goes from 0-90
-                var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos };
+                var trial1={'is_correct': false, 'x': timeSecElapsed/60.0, 'y':ypos, 'color':gColor,
+					'stim_size':gSize==(size_small)?0:1, 'stim_loc':gPeriph };
                 trial_log.push(trial1);
                 update_graph(trial1);
 
-                if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
-                    thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+ypos);
-                }
+				var condcode=get_value('condcode');
+				if (condcode=='-') {
+					// UHCO: Will send our ID# to 6x graphical display
+                	if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                    	thePeer2.send(thePeer.peer.id+' '+timeSecElapsed/60.0+' '+ypos);
+                	}
+				} else {
+					var group=get_value('condcode');
+					var trial_number=trial_log.length;
+
+					// GRoup will contain first digit of row, the others come from
+					// the trial number (mod 8). Rotating trial info
+					var s=thePeer.peer.id+' '+group+(trial_number%8+2);
+					s += ' '+trial_number+'_'+(timeSecElapsed/60.0).toFixed(1)+'_'+ypos.toFixed(2);
+					s += '\n';
+
+					// first entry (00 and 10) will be stimulus condition
+					var s_stim=thePeer.peer.id+' '+group+'1 ';
+					if (gColor==0)
+						s_stim += 'W';
+					else if (gColor==1)
+						s_stim += 'G';
+					else if (gColor==2)
+						s_stim += 'R';
+
+					if (gSize==size_small)
+						s_stim += 'S';
+					else
+						s_stim += 'L';
+
+					if (gPeriph)
+						s_stim += 'P';
+					else
+						s_stim += 'F';
+					console.log(s);
+					console.log(s_stim);
+					// UCB: Send real-time data to Table
+                	if (thePeer2 && thePeer2.conn && thePeer2.conn.open) {
+                    	thePeer2.send(s);
+                    	thePeer2.send(s_stim);
+					}
+				}
+				// New Tabular Monitor for UCB: show condition with letters [RGW][LS][FP]
 
 
                 if (timeSecElapsed==0) {
@@ -400,7 +443,7 @@
                 // get commands
                 var commands=document.getElementById("commands").value;
                 // Replace the meta parameters (since 1 string);
-                trial_params=eval(document.getElementById("trial").value);
+                var trial_params=eval(document.getElementById("trial").value);
                 commands=fillTemplate(commands,trial_params );
                 var msg="T "+commands;
                 if (thePeer && thePeer.conn && thePeer.conn.open) {
@@ -521,8 +564,11 @@
         var gColor=0; // Default
         var gPeriph=0; // Default
 
+		var size_small=0.025;
+		var size_large=0.23;
+
         function set_size(which){
-            gSize=which?0.23:0.025;
+            gSize=which?size_large:size_small;
             do_update();
         }
         function set_color(which){

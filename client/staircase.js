@@ -68,8 +68,6 @@
             update(correct,ori_resp) {
                 var isReversal = false;
 
-				get_metap();
-
                 // N-up-1-down logic
                 if (true) {
                     var step_size=metap.staircase_reversals[this.nReversals];
@@ -92,10 +90,6 @@
                         }
                     } else {
                         this.stair_size *= step_size;
-
-                        if (this.stair_size>0.99) {
-                            this.stair_size=0.99; // clamp 
-                        }
                         this.consecutive_corrects=0;
                         if (this.prev_corr) {
                             isReversal=true; // first wrong after previous correct is considered reversal
@@ -107,6 +101,10 @@
                         this.nReversals += 1;
                     }
 
+                    // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
+                    set_html("log",get_html("log")+"\n"+
+                        this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+','+isReversal+','+this.nReversals);
+
                     var trial1={'num':this.stair_trial, 'size':prev_size, 'ori': trial_params['orientation'],
                         'resp': ori_resp, 'is_correct': correct, 'is_reversal': isReversal, 'num_reversals':
                         this.nReversals, 'dir_reversal_down': this.prev_corr, 'x': this.stair_trial, 'y': prev_size};
@@ -115,76 +113,24 @@
                     this.trial_history.push(trial1);
 
                     if (this.plot_log) {
-                        trial1.y = Math.log10(trial1.y)*30.0+80.0 
+                        trial1.y = Math.log10(trial1.y)*25.0+100.0 
                     };
 
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
 					app1(this.trial_history); // TODO
                     // Get next one:
-
-					// Hope this isn't too soon. Was farther down before 4-jun-2020
-                	this.compute_mean();
-                	var thresh=this.mean_cm/parseFloat(get_value('background')); 
-
-                    // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
-                    set_html("log",get_html("log")+"\n"+
-                        this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+
-						','+isReversal+','+this.nReversals+','+thresh+','+trial_params['flankers']);
-
-					// Start generating next one
                     var oriNew=generate_ori(this.nafc) 
-                
-					var flanker_code="____";
-					if (get_checked( "chkNFlankers" )) { // Noise flankers
-						// TODO: ugh, range->char(values) didn't seem easy: map, etc.
-						var oris=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'];
-						shuffleArray(oris);
-						flanker_code=oris.slice(0,4).join('');
-					} else if (get_checked( "chkEFlankers" )) { // E
-						var oris=['0','1','2','3'];
-						shuffleArray(oris);
-						flanker_code=oris.join('');
-					} else if (get_checked( "chkENegFlankers" )) { // E with negative contrast
-						var oris=['4','5','6','7'];
-						shuffleArray(oris);
-						flanker_code=oris.join('');
-					} else if (get_checked( "chkPhased")) {
-						var oris=['A','B','C','D', 'E','F','G','H', 'I','J','K','L', 'M','N','O','P'];
-						shuffleArray(oris);
-						flanker_code=oris.join('');
-					} else if (get_checked( "chkPhasedFull")) {
-						var oris=['w','x','y','z'];
-						shuffleArray(oris);
-						flanker_code=oris[0]+'___';
-					} else if (get_checked( "chkPhasedDonut")) {
-						var oris=['W','X','Y','Z'];
-						shuffleArray(oris);
-						flanker_code=oris[0]+'___';
-					} else if (get_checked( "chkPhasedOverlap")) {
-						var oris=['S','T','U','V'];
-						shuffleArray(oris);
-						flanker_code=oris[0]+'___';
-					} else if (get_checked( "chkYoked")) {
-						var oris=['s','t','u','v'];
-						shuffleArray(oris);
-						flanker_code=oris.join('');
-					};
-					console.log(flanker_code);
-
-					var sep=parseFloat(get_value('txtSep'));
-					
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
-                        \n\tcontrast:${this.contrast},
-                        \n\tsep:${sep},` +
-                        "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
+                        \n\tcontrast:${this.contrast}
+                    }`);
 
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
                 	var val=this.mean_cm/parseFloat(get_value('background'));
-                        set_html("lblStair",`FINISHED threshold=${thresh.toPrecision(4)}`);
+                        set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
                         //beep(1,440,80);
                     } else {
                         this.next(); // execute next
@@ -211,7 +157,6 @@
                     remaining.push(level1);
                 });
                 this.remaining=remaining;
-				this.index_which=getRandomInt(this.remaining.length); // start with some random trial. Maybe necessary
                 };
 
             total_remaining() {
@@ -225,7 +170,7 @@
             update(correct,ori_resp) {
 
                 set_html("log",get_html("log")+"\n"+
-                    this.num_trial+","+this.remaining[this.index_which]['which']+","+trial_params['orientation']+','+ori_resp+','+correct+',0,0,'+trial_params["flankers"]);
+                    this.num_trial+","+this.remaining[this.index_which]['which']+","+trial_params['orientation']+','+ori_resp+','+correct+',0,0');
 
                 var spac=this.remaining[this.index_which]['which']
                 if (spac<10) {
@@ -260,20 +205,10 @@
 
                 // Get random orientation
                 var oriNew=getRandomInt(4)*90
-                
-                var flanker_code;
-                if (get_checked( "chkFlankers" )) {
-                    var oris=['0','1','2','3'];
-                    shuffleArray(oris);
-                    flanker_code=oris.join('');
-                } else {
-                    flanker_code='    ';
-                }
 
                 // Set up trial parameters, which are merged with the code to do 1 trial
                 set_value("trial",`trial_params={\n\torientation: ${oriNew},\n\tsize:`+
-                        this.remaining[this.index_which]['which']+
-                    ",\n\tflankers:'\\'"+flanker_code+"\\''\n}");
+                        this.remaining[this.index_which]['which']+"\n}");
 
                 do_trial(); // TODO: figure out better place for this
             };
@@ -316,7 +251,7 @@
     function export_manual_table() {
         var s = "";
         s += "size,num_correct,num_presented";
-        //s += ","+get_value("text_condition") + "\n";
+        s += ","+get_value("condcode") + "\n";
         for (var nrow = nrows_mocs_table; nrow>=0; nrow--) {
             var thisid='count_'+nrow;
             var strCurrent=get_html(thisid);
@@ -326,8 +261,9 @@
                 s+=nrow+","+fields[0]+","+fields[1]+"\n"
             }
         }
-        log.info(s)
-        set_html("log",s)
+		download("manual.csv",s)
+        //log.info(s)
+        //set_html("log",s)
 
         //var owner=document.getElementById("table_text") 
         //owner.style.display="";
@@ -339,14 +275,13 @@
 
         //owner.style.display="none";
         //owner.hidden=true;
-
-		download("log.txt",s,"log")
     }
 
     function export_staircase() {
-		var strFilename=get_value("txtSub")+"_cond"+String(get_index("select_cond")+1)+".csv";
+		var strFilename="staircase.csv";
 		download(strFilename,get_value("log"));
 	}
+
 
     function iosCopyToClipboard(el) {
         var range = document.createRange();

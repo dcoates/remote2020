@@ -1,29 +1,13 @@
-'use strict';
-
-function fillTemplate (templateString, templateVars) {
+fillTemplate = function (templateString, templateVars) {
     var parsed = templateString;
     Object.keys(templateVars).forEach(
         (key) => {
             const value = templateVars[key]
-            const keystr= '${'+key+'}';
-            while (parsed.search(key)>=0) {
-                // TODO: Like new replaceAll. Search doesn't work with braces like in keystr though
-                parsed = parsed.replace(keystr,value)
-            }
+            parsed = parsed.replace('${'+key+'}',value)
         }
     )
     return parsed
 }
-
-function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
-
 
 function set_html(html,value) {
     document.getElementById(html).innerHTML=value;
@@ -47,10 +31,6 @@ function get_value(html) {
 }
 function get_checked(html,value) {
     return document.getElementById(html).checked;
-}
-
-function get_index(html,value) {
-    return document.getElementById(html).selectedIndex;
 }
 
 

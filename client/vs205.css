@@ -292,3 +292,15 @@ span.clipboard {
     width: 24px;
 }
 
+fieldset {
+    margin: 8px;
+    border: 2px solid black;
+    padding: 8px;    
+    border-radius: 4px;
+	width: 22em;
+}
+
+legend {
+    padding: 2px;    
+}
+

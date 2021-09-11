@@ -159,10 +159,10 @@ function clearGrating(background_color) {
 
 var buffer;
 function initializeAttributes() {
-  gl.enable( gl.GL_BLEND );
+  gl.enable( gl.BLEND );
   //gl.blendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
-  gl.blendFunc(gl.GL_SRC_ALPHA, gl.GL_ZERO);
-  gl.blendEquation(gl.GL_FUNC_ADD);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ZERO);
+  gl.blendEquation(gl.FUNC_ADD);
 
   gl.enableVertexAttribArray(0);
   buffer = gl.createBuffer();  
