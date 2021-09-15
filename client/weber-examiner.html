@@ -17,6 +17,9 @@
 					Connect
 				</button>
 
+                <label mode="both" id="lblCode">Cond. code:</label>
+				<input type="text" id="condcode" title="Enter Code" size="4">
+
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
                 <br>
@@ -506,6 +509,7 @@
         //document.body.appendChild( stats.dom );
 
         var theStaircase=new staircase(8,4); // 3-up 1-down, default size of "8" (but hopefully never used)
+		theStaircase.dependent='weber';
         var theMOCS=new MOCS(); // 3-up 1-down, default size of "8" (but hopefully never used)
 
         function do_stair_restart() {

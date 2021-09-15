@@ -19,6 +19,7 @@
                 this.stair_N=stair_N; // N-up-1down
                 this.restart(size); 
                 this.plot_log=false;
+				this.dependent="contrast"; //default
             }
 
             restart(size,nafc) {
@@ -38,8 +39,14 @@
                 this.stair_trial += 1;
                 this.compute_mean();
 
-                var val=this.mean_cm/parseFloat(get_value('background'));
-                set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${val.toPrecision(4)}`);
+				var val;
+				if (this.dependent=="weber") { 
+                	// val=this.mean_cm/parseFloat(get_value('background')); val doesn't currently seem ok
+                	set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals}`);
+				} else { // 
+                	val=this.mean_cm/parseFloat(get_value('background'));
+                	set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${val.toPrecision(4)}`);
+				}
 
                 // Did enough reversals? 
                 if (this.nReversals>metap.staircase_reversals.length ) { // TODO: rmv from UI
@@ -58,6 +65,7 @@
                     this.mean_last=0;
                 }
 
+				// "weber"
                 if (this.plot_log==true) { // Hack: means probably contrast, don't divide out cm
                     this.mean_cm=this.mean_last;
                 } else {
@@ -129,8 +137,15 @@
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
-                	var val=this.mean_cm/parseFloat(get_value('background'));
-                        set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
+
+						var val;
+						if (this.dependent="weber") {
+							//val=this.mean_cm/parseFloat(get_value('background')); //doesn/t work
+                        	set_html("lblStair",`FINISHED`);
+						} else { // currently: Weber
+							val=this.mean_cm/parseFloat(get_value('background'));
+                        	set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
+						}
                         //beep(1,440,80);
                     } else {
                         this.next(); // execute next
