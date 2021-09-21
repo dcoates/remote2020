@@ -49,23 +49,22 @@
                     // Create own peer object with connection to shared PeerJS server
                     this.peer = new Peer(this.id_requested, { //'uh2', {
                         //host: '185.146.28.139',
-                        host: 'server.coateslab.org',
+                        host: 'server.remote2020.org',
                         port: '9000',
                         path: '/myapp',
-                        //secure: true,
+                        secure: true,
                         debug: 3,
 
                         config: {
                             iceServers: [
 
-                {urls: "stun:stun.l.google.com:19302"},
+                // {urls: "stun:stun.l.google.com:19302"},
 
-				{ urls: 'turn:turn.coateslab.org:3478','username':'turnuser','credential':'pw1234'}  ,
-				{ urls: 'stun:stun.coateslab.org:3478','username':'turnuser','credential':'pw1234'}  ,
-				{ urls: 'turn:turn.coateslab.org:5349','username':'turnuser','credential':'pw1234'}  ,
-				{ urls: 'stun:stun.coateslab.org:5349','username':'turnuser','credential':'pw1234'}  ,
-
-						],
+				{ urls: 'turn:turn.remote2020.org:3478' ,'username':'turnuser','credential':'pw1234'}  ,
+				{ urls: 'stun:stun.remote2020.org:3478'}  ,
+				{ urls: 'turn:turn.remote2020.org:993' ,'username':'turnuser','credential':'pw1234'}  ,
+				{ urls: 'stun:stun.remote2020.org:993' }  ,
+			    ],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
                             sdpSemantics: 'unified-plan',
