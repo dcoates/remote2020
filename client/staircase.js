@@ -139,7 +139,7 @@
                         set_checked( "chkStair", false); // TODO: out of UI
 
 						var val;
-						if (this.dependent="weber") {
+						if (this.dependent=="weber") {
 							//val=this.mean_cm/parseFloat(get_value('background')); //doesn/t work
                         	set_html("lblStair",`FINISHED`);
 						} else { // currently: Weber
