@@ -104,12 +104,12 @@
                 document.body.style.overflow = 'hidden'; // prevent scroll bars
 
                 document.addEventListener('click', function(event) {
-                    //openFullscreen();
+                    openFullscreen();
                     do_fullscreen(null); // for Mac IOS
                	//set_torch(false);
                 }, false);
 
-                if (false) {
+                if (true) {
                 document.addEventListener('touchstart', function(event) {
                     openFullscreen();
                     do_fullscreen(null); // for Mac IOS
