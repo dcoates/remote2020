@@ -34,14 +34,4 @@ I believe that our concerns are quite different.
 | ------------- | ------------- |
 | <img src="doc/clouds_openloop.png?raw=true"></img>  | <img src="doc/pairs.png?raw=true"></img>  |
 
-## Sensation & perception labs
 
-todo
-
-## Remote psychophysics experiments
-
-todo
-
-## Integration
-
-todo
