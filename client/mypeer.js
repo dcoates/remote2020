@@ -61,9 +61,9 @@
                 // {urls: "stun:stun.l.google.com:19302"},
 
 				{ urls: 'turn:turn.remote2020.org:3478' ,'username':'turnuser','credential':'pw1234'}  ,
-				{ urls: 'stun:stun.remote2020.org:3478'}  ,
-				{ urls: 'turn:turn.remote2020.org:993' ,'username':'turnuser','credential':'pw1234'}  ,
-				{ urls: 'stun:stun.remote2020.org:993' }  ,
+				//{ urls: 'stun:stun.remote2020.org:3478'}  ,
+				//{ urls: 'turn:turn.remote2020.org:993' ,'username':'turnuser','credential':'pw1234'}  ,
+				//{ urls: 'stun:stun.remote2020.org:993' }  ,
 			    ],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20

@@ -83,7 +83,6 @@
                     if (rotation==0) {
 					    ctx.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
 					    ctx.drawImage(image_spot, -siz/2, -siz/2, siz, siz);
-					    //ctx.drawImage(image_v, -siz/2, -siz/2, siz, siz);
                     } else {
                         ; //noop: don't draw
                     }
@@ -92,7 +91,7 @@
     				//ctx.restore(); 
                     
                     var imgData=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
-                    ctx.putImageData( contrastImage(imgData,contrast), 0, 0 );
+                    ctx.putImageData( contrastImage(imgData,1.0), 0, 0 );
                 }
 
                 // Assume 100% contrast. Stub for compatibility

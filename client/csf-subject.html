@@ -70,6 +70,7 @@
                 location.search.substr(1).split("&").forEach(function(item) {dict_params[item.split("=")[0]] = item.split("=")[1]})
 
                 noSleep=new NoSleep();
+                noSleep.enable();
 
                 peer_init();
                 // Get the canvas element form the page
@@ -103,19 +104,17 @@
                 document.body.scrollTop = 0; // <-- pull the page back up to the top
                 document.body.style.overflow = 'hidden'; // prevent scroll bars
 
-                document.addEventListener('click', function(event) {
-                    openFullscreen();
-                    do_fullscreen(null); // for Mac IOS
-               	//set_torch(false);
-                }, false);
+				document.addEventListener('click', function(event) {
+                    	//openFullscreen();
+                    	do_fullscreen(null); 
+               		//set_torch(false);
+                	}, false);
 
-                if (true) {
-                document.addEventListener('touchstart', function(event) {
-                    openFullscreen();
-                    do_fullscreen(null); // for Mac IOS
-               	//set_torch(false);
-                }, false);
-                    };
+				document.addEventListener('touchstart', function(event) {
+                    	openFullscreen();
+                    	do_fullscreen(null); // for Mac IOS
+               		//set_torch(false);
+                	}, false);
             }
 
             function setup_webgl() {

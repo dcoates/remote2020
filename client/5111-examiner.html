@@ -73,6 +73,8 @@
 					Restart Detection Staircase
 				</button>
 
+				<input type="text" id="background" title="background" size="1" value="1.00" mode="adv">
+
                 <br mode="adv">
                     <label mode="adv" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Size (MAR, cm)</label>
                     <input mode="adv" type="text" value="0.6" id="textSize" title="Value" size="3">
@@ -138,7 +140,7 @@
 		</div>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+        <script src="peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="NoSleep.min.js"></script>
         <script src="drc-misc.js"></script>
@@ -297,7 +299,7 @@
 
                 for (var nrow = 0; nrow <= nrows_mocs_table-1; nrow++) {
 
-                    tr = table.insertRow(-1);
+                    var tr = table.insertRow(-1);
                     var td = document.createElement('td');
                     td = tr.insertCell(0);
                     var button = document.createElement('input');
@@ -409,14 +411,14 @@
 
                 actions=commands.split("flip")
                 flip_durations=[];
-                for (i=1; i<actions.length; i++) {
+                for (var i=1; i<actions.length; i++) {
                     // Assume the first number in each item (except the first) looks like: (60)\n;...next...
                     // Since the 'flip' was stripped out
 
-                    dur=parseInt(actions[i].substr(1))
+                    var dur=parseInt(actions[i].substr(1))
                     flip_durations.push(dur);
 
-                    start_of_next_line=actions[i].indexOf(')');
+                    var start_of_next_line=actions[i].indexOf(')');
                     actions[i]=actions[i].substr(start_of_next_line+1);
                 }
                 // remote last flip (empty action) if we need to.
@@ -439,7 +441,7 @@
 
             function preset_spot() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');flip(20); draw_letter2('.',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                "clear('#ffffff');flip(20); draw_letter2('.',${orientation},0,0,${size},'white',-1,-1,${contrast}); flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
@@ -453,7 +455,7 @@
 
             function preset_acuity() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');flip(20); draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
+                "clear('#ffffff');flip(20); draw_letter2('E',${orientation},0,0,${size},'black',6,-1,${contrast});flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
@@ -604,7 +606,7 @@
             set_checked('chkStair',true);
             set_checked('chkMOCS',false);
             set_html("lblStair","Staircase 0 0");
-            nafc=get_checked('chkNafc')?4:2;
+            var nafc=get_checked('chkNafc')?4:2;
  
             // TODO: Something fishy about the very first trial
 
@@ -618,8 +620,10 @@
                     preset_acuity(); 
                     get_metap(); 
 
+                    // 200.0: box has size 200 pixels across
                     theStaircase.contrast=get_value('textContrast');
                     theStaircase.plot_log=false;
+					theStaircase.dependent="size";
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
                         \n\tcontrast:${theStaircase.contrast} }`);
@@ -631,6 +635,8 @@
 
                     theStaircase.contrast=get_value('textContrast');
                     theStaircase.plot_log=false;
+					theStaircase.dependent="size";
+
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
                         \n\tcontrast:${theStaircase.contrast} }`);
@@ -651,7 +657,7 @@
                     preset_contrast(); 
                     get_metap(); 
 
-                    // box has size 200 pixels across
+                    // 200.0: box has size 200 pixels across
                     theStaircase.contrast=get_value('textSize')/get_value("box_size")*200.0;
                     theStaircase.plot_log=true;
                     set_value("trial",`trial_params={\n\torientation: 0,
@@ -699,8 +705,8 @@
         }
         function table_button_click(which) {
             var thisid='count_'+which;
-            nafc=get_checked('chkNafc')?4:2;
-            is_YN=get_checked('chkYN')?false:true;
+            var nafc=get_checked('chkNafc')?4:2;
+            var is_YN=get_checked('chkYN')?false:true;
 
             log.info(thisid);
             update_manual_table_outof(which);
@@ -759,11 +765,10 @@
                 } else {
                     if (prev_manual_trial) {
                         // inside Fn: var correct=(ori_resp==prev_manual_trial['ori']);
-                        is_YN=get_checked('chkYN')?false:true;
+                        var is_YN=get_checked('chkYN')?false:true;
+						var allow_multiple=false;
                         if (thePeer.instructor) {
-                            allow_multiple=true;
-                        } else {
-                            allow_multiple=false;
+                            allow_multiple=false; // TODO: UHCO: UCB: Bad bug. instructor=true if there is an ID. But UHCO hard-codes the 6 IDs.
                         }
                         process_manual(ori_resp, is_YN,allow_multiple);
                     }

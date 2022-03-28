@@ -43,7 +43,12 @@
 				if (this.dependent=="weber") { 
                 	// val=this.mean_cm/parseFloat(get_value('background')); val doesn't currently seem ok
                 	set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals}`);
-				} else { // 
+				} else if (this.dependent=="size") { // 
+                	val=this.mean_cm;
+					val = val / 200.0 * parseFloat(get_value("box_size")); // Box is 200pix across, with measured size
+					val = val * 10.0  // cm to mm
+                	set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${val.toPrecision(4)} mm`);
+				} else {
                 	val=this.mean_cm/parseFloat(get_value('background'));
                 	set_html("lblStair",`Staircase ${this.stair_trial} ${this.nReversals} threshold=${val.toPrecision(4)}`);
 				}
@@ -65,12 +70,15 @@
                     this.mean_last=0;
                 }
 
-				// "weber"
-                if (this.plot_log==true) { // Hack: means probably contrast, don't divide out cm
-                    this.mean_cm=this.mean_last;
-                } else {
-                    this.mean_cm=this.mean_last/200.0*get_value("box_size");
-                }
+				if (this.dependent=="size") {
+						this.mean_cm=this.mean_last;
+				} else {
+					if (this.plot_log==true) { // Hack: means probably contrast, don't divide out cm
+						this.mean_cm=this.mean_last;
+					} else {
+						this.mean_cm=this.mean_last/200.0*get_value("box_size");
+					}
+				}
             }
 
             update(correct,ori_resp) {
@@ -142,6 +150,11 @@
 						if (this.dependent=="weber") {
 							//val=this.mean_cm/parseFloat(get_value('background')); //doesn/t work
                         	set_html("lblStair",`FINISHED`);
+						} else if (this.dependent=="size") { // 
+                			val=this.mean_cm;
+							val = val / 200.0 * parseFloat(get_value("box_size")); // Box is 200pix across, with measured size
+							val = val * 10.0  // cm to mm
+                			set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)} mm`);
 						} else { // currently: Weber
 							val=this.mean_cm/parseFloat(get_value('background'));
                         	set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);

@@ -12,7 +12,7 @@
 /* Control the left side */
 .left {
   left: 0;
-  background-color: teal;
+  background-color: black;
 }
 
 /* Control the right side */
@@ -22,7 +22,7 @@
   top: 5%;
   height: 90%;
   background-color: black;
-  border-color: teal;
+  border-color: black;
   border-style: solid;
 }
 
