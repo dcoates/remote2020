@@ -115,7 +115,7 @@
                     draw_e_contrast(ctx,image_e,posx,posy,siz,rotation,1.0);
                 }
 
-                function draw_flanker(posx,posy,str,siz,contrast,img_target) {
+                function draw_flanker(posx,posy,str,siz,contrast,img_target,ox,oy) {
 					if (str == '_') { //NOOP
 						return;
 					}
@@ -175,9 +175,11 @@
 								var noise_num=str.charCodeAt(0)-'S'.charCodeAt(0);
 								var noise_rot=noise_num % 4;
 								var noise_which=Math.floor(noise_num/4);
-								var imX=im_pfull[0];
+								var imX=im_pfull[0]; // take out pieces of the big noise
 								var rad=posx-siz/2;
-                        		draw_e_contrast_subset(ctx_background,imX,0,0,rad*2,noise_rot*90,1.0,siz); // Contrast correction already in image (con=1.0)
+								//var x_origin = 0*getRandomInt(1024-siz*5); // coords in big source image
+								//var y_origin = 0*getRandomInt(1024-siz*5);
+                        		draw_e_contrast_subset(ctx_background,imX,ox,oy,rad*2,noise_rot*90,1.0,siz); // Contrast correction already in image (con=1.0)
 
 							} else { // W,X,Y,Z: donut
 								var noise_num=str.charCodeAt(0)-'W'.charCodeAt(0);
@@ -235,10 +237,11 @@
                 function draw_e_contrast_subset(ctx_dest,imx,posx,posy,siz,rotation,contrast,letter_size) {
                     ctx_dest.imageSmoothingEnabled=false;
 					//ctx.save(); 
-					ctx_dest.setTransform(1.0, 0, 0, 1.0, posx+xc, posy+yc); // sets scale and origin
+					ctx_dest.setTransform(1.0, 0, 0, 1.0, xc, yc); // sets scale and origin
 					ctx_dest.rotate(-rotation * TO_RADIANS); // this is clockwise. We want typical polar (90 is straight up)
 
-					ctx_dest.drawImage(imx, posx, posy, letter_size*8, letter_size*5, -siz/2, -siz/2, siz, siz);
+					// First two siz were letter_size*8 and letter_size*5. Now use the correct number of pixels
+					ctx_dest.drawImage(imx, posx, posy, siz*5.0, siz*5.0, -siz/2, -siz/2, siz, siz);
 
                     ctx_dest.resetTransform();
 
@@ -304,11 +307,11 @@
 
                 // Assume 100% contrast. Stub for compatibility
                 function draw_letter(which,ori,posx,posy,siz,color,barsep,esep,flankers) {
-                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0,flankers);
+                    draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0,flankers,0,0);
                 }
 
                 // This one takes the contrast
-                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers) {
+                function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
 					var target=image_e;
@@ -323,12 +326,12 @@
 						var im_flanker=image_noise0; // TODO
 
 						if ((flankers[0]=='w')|(flankers[0]=='x')|(flankers[0]=='y')|(flankers[0]=='z')) {
-							draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker);
+							draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
 						} else {
-							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker);
-							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker);
-							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker);
-							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker);
+							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
+							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker,ox,oy);
+							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker,ox,oy);
+							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker,ox,oy);
 						}
                     }
 

@@ -67,6 +67,8 @@
 			<br>
 
 	    <span mode="both" id="lblFlankers">E Flankers</span>
+	    <input mode="both" type="checkbox" id="chkFlankers">
+	    <span mode="both" id="lblFlankers">E Flankers</span>
 	    <input mode="both" type="checkbox" id="chkEFlankers">
 	    <span mode="both" id="lblFlankers">E Neg. Flankers</span>
 	    <input mode="both" type="checkbox" id="chkENegFlankers">
@@ -479,7 +481,9 @@
                 var msg="T "+commands;
                 if (thePeer && thePeer.conn && thePeer.conn.open) {
 			        thePeer.send(msg);
-                }
+                } else {
+					console.log("Not connected");
+				}
             }
 
             function do_trial() {
@@ -521,14 +525,14 @@
                 indexAction=0;
                 indexFrame=0;
                 in_trial=true;
-                globalAnimationID = requestAnimationFrame(animateLoop);
+                //globalAnimationID = requestAnimationFrame(animateLoop);
             }
 
             function preset_contrast() {
                 document.getElementById("commands").value="clear('#808080');\nfixation(-242,0,16,4,'black','+');"+
-					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers});flip(20);"+
+					"draw_letter2('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy});flip(20);"+
                 	"\nclear('#808080');fixation(-242,0,16,4,'black','+');flip(1);"
-                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tsep:1.4,\n\tflankers:'\\'ABCD\\''\n}";
+                document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tsep:1.4,\n\tox:0,\n\toy:0,\n\tflankers:'\\'ABCD\\''\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
@@ -681,9 +685,11 @@
 
                     theStaircase.plot_log=true;
 					var flanker_code='0123';
+					var ox=0;
+					var oy=0;
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
-                        \n\tcontrast:${theStaircase.contrast}, sep:1.4,`+
+                        \n\tcontrast:${theStaircase.contrast}, sep:1.4,ox:0,oy:0,`+
                         "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
                 }
             }
@@ -719,7 +725,7 @@
             set_checked('chkStair',false);
             set_checked('chkMOCS',true);
             set_html("lblStair","MOCS X");
-            nafc=get_checked('chkNafc')?4:2;
+            var nafc=get_checked('chkNafc')?4:2;
 
             get_metap(); // make sure to load in meta parameters TODO:fixme
             theMOCS.restart(metap.mocs_spacings,metap.mocs_repeats,nafc);
@@ -727,7 +733,7 @@
         }
         function table_button_click(which) {
             var thisid='count_'+which;
-            nafc=get_checked('chkNafc')?4:2;
+            var nafc=get_checked('chkNafc')?4:2;
             is_YN=get_checked('chkYN')?false:true;
 
             log.info(thisid);

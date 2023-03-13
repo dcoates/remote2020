@@ -135,6 +135,12 @@
                     var oriNew=generate_ori(this.nafc) 
                 
 					var flanker_code="____";
+
+					var ox=0;
+					var oy=0;
+
+					var sep=parseFloat(get_value('txtSep'));
+
 					if (get_checked( "chkNFlankers" )) { // Noise flankers
 						// TODO: ugh, range->char(values) didn't seem easy: map, etc.
 						var oris=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'];
@@ -164,6 +170,8 @@
 						var oris=['S','T','U','V'];
 						shuffleArray(oris);
 						flanker_code=oris[0]+'___';
+						ox=getRandomInt(1024-40*sep*5);
+						oy=getRandomInt(1024-40*sep*5);
 					} else if (get_checked( "chkYoked")) {
 						var oris=['s','t','u','v'];
 						shuffleArray(oris);
@@ -171,13 +179,14 @@
 					};
 					console.log(flanker_code);
 
-					var sep=parseFloat(get_value('txtSep'));
 					
                     // Set up trial parameters, which are merged with the code to do 1 trial
                     set_value("trial",`trial_params={\n\torientation: ${oriNew},
                         \n\tsize:${this.stair_size},
                         \n\tcontrast:${this.contrast},
                         \n\tsep:${sep},` +
+                        "\n\tox:"+ox+"," +
+                        "\n\toy:"+oy+"," +
                         "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
 
                     // Finished ?
@@ -326,8 +335,9 @@
                 s+=nrow+","+fields[0]+","+fields[1]+"\n"
             }
         }
-        log.info(s)
-        set_html("log",s)
+		download("log.txt",s)
+        //log.info(s)
+        //set_html("log",s)
 
         //var owner=document.getElementById("table_text") 
         //owner.style.display="";
@@ -340,7 +350,7 @@
         //owner.style.display="none";
         //owner.hidden=true;
 
-		download("log.txt",s,"log")
+		//download("log.txt",s,"log")
     }
 
     function export_staircase() {
