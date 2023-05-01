@@ -19,6 +19,7 @@
                 this.stair_N=stair_N; // N-up-1down
                 this.restart(size); 
                 this.plot_log=false;
+                this.is_detection=false;
             }
 
             restart(size,nafc) {
@@ -109,13 +110,13 @@
 
                     var trial1={'num':this.stair_trial, 'size':prev_size, 'ori': trial_params['orientation'],
                         'resp': ori_resp, 'is_correct': correct, 'is_reversal': isReversal, 'num_reversals':
-                        this.nReversals, 'dir_reversal_down': this.prev_corr, 'x': this.stair_trial, 'y': prev_size};
+                                this.nReversals, 'dir_reversal_down': this.prev_corr, 'x': this.stair_trial, 'y': prev_size, 'interval': trial_params['interval']};
 						// Make aliases for x and y just to make drawing easier
 
                     this.trial_history.push(trial1);
 
                     if (this.plot_log) {
-                        trial1.y = Math.log10(trial1.y)*30.0+80.0 
+                        trial1.y = Math.log10(trial1.y)*30.0+80.0;
                     };
 
                     update_graph(trial1) //this.trial_history[this.trial_history.length-1]);
@@ -124,16 +125,16 @@
 
 					// Hope this isn't too soon. Was farther down before 4-jun-2020
                 	this.compute_mean();
-                	var thresh=this.mean_cm/parseFloat(get_value('background')); 
+                	var thresh=this.mean_cm/parseFloat(get_value('background'));
 
                     // Log response -- TODO move out bad UI spaghetti , maybe log elsewhere, not just UI
                     set_html("log",get_html("log")+"\n"+
                         this.stair_trial+","+prev_size+","+trial_params['orientation']+','+ori_resp+','+correct+
-						','+isReversal+','+this.nReversals+','+thresh+','+trial_params['flankers']);
+						                 ','+isReversal+','+this.nReversals+','+thresh+','+trial_params['flankers']+','+trial_params['interval']);
 
 					// Start generating next one
-                    var oriNew=generate_ori(this.nafc) 
-                
+        var oriNew=generate_ori(this.nafc);
+
 					var flanker_code="____";
 
 					var ox=0;
@@ -179,20 +180,42 @@
 					};
 					console.log(flanker_code);
 
-					
-                    // Set up trial parameters, which are merged with the code to do 1 trial
-                    set_value("trial",`trial_params={\n\torientation: ${oriNew},
-                        \n\tsize:${this.stair_size},
-                        \n\tcontrast:${this.contrast},
-                        \n\tsep:${sep},` +
-                        "\n\tox:"+ox+"," +
-                        "\n\toy:"+oy+"," +
-                        "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
+        if (!this.is_detection) {
+                // Set up trial parameters, which are merged with the code to do 1 trial
+                set_value("trial",`trial_params={\n\torientation: ${oriNew},
+                    \n\tsize:${this.stair_size},
+                    \n\tcontrast:${this.contrast},
+                    \n\tsep:${sep},` +
+                    "\n\tox:"+ox+"," +
+                    "\n\toy:"+oy+"," +
+                    "\n\tinterval:0," +
+                    "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
+        } else { //2IFC detection
+            var which_interval=getRandomInt(2); // 0 or 1
+            var target1=0;
+            var target2=0;
+            if (which_interval)
+                target2=1;
+            else
+                target1=1;
+
+            // Set up trial parameters, which are merged with the code to do 1 trial
+            set_value("trial",`trial_params={\n\torientation: ${oriNew},
+                    \n\tsize:${this.stair_size},
+                    \n\tcontrast:${this.contrast},
+                    \n\ttarget1:${target1},
+                    \n\ttarget2:${target2},
+                    \n\tsep:${sep},` +
+                      "\n\tox:"+ox+"," +
+                      "\n\toy:"+oy+"," +
+                      "\n\tinterval:"+which_interval+","+
+                      "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
+        }
 
                     // Finished ?
                     if (this.nReversals>=metap.staircase_reversals.length ) {
                         set_checked( "chkStair", false); // TODO: out of UI
-                	var val=this.mean_cm/parseFloat(get_value('background'));
+                      	var val=this.mean_cm/parseFloat(get_value('background'));
                         set_html("lblStair",`FINISHED threshold=${thresh.toPrecision(4)}`);
                         //beep(1,440,80);
                     } else {

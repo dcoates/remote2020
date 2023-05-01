@@ -57,14 +57,15 @@
 
                         config: {
                             iceServers: [
-				{ urls: 'turn:turn.coateslab.org:3478','username':'turnuser','credential':'pw1234' }],
+				{ urls: 'turn:turn.coateslab.org:3478','username':'turnuser','credential':'pw4321' },
+				{ urls: 'stun:stun.coateslab.org:3478','username':'turnuser','credential':'pw4321' }]
 			    //{ urls: 'stun:stun.coateslab.org:3478'} ,
                                 //{urls: 'turn:0.peerjs.com:3478', 'username': 'peerjs', 'credential': 'peerjsp'},
     				//{urls: "stun:stun.l.google.com:19302"} ],
 
                             // These are all attempts to get iPad/Macs working. Not sure if they work. 01-Aug-20
-                            sdpSemantics: 'unified-plan',
-                            iceTransportPolicy: 'all'
+                            //sdpSemantics: 'unified-plan',
+                            //iceTransportPolicy: 'all'
                         }
                     });
                     var peer=this.peer;

@@ -310,39 +310,51 @@
                     draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,1.0,flankers,0,0);
                 }
 
-                // This one takes the contrast
+
+                function draw_stimulus(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include) {
+                    // Allows whether to draw the target (or not)
+                    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include);
+                }
+
                 function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy) {
+                    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,1);
+                }
+
+                // This one takes the contrast
+                function draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,include_target) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
-					var target=image_e;
-					if (which=='U') {
-						target=image_u;
-					} else if (which=='T') {
-						target=image_t;
-					}
-
-					// Draw flankers first, like for fullscreen one
-                    if (esep>=0) {
-						var im_flanker=image_noise0; // TODO
-
-						if ((flankers[0]=='w')|(flankers[0]=='x')|(flankers[0]=='y')|(flankers[0]=='z')) {
-							draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
-						} else {
-							draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
-							draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker,ox,oy);
-							draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker,ox,oy);
-							draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker,ox,oy);
-						}
+                    var target=image_e;
+                    if (which=='U') {
+                        target=image_u;
+                    } else if (which=='T') {
+                        target=image_t;
                     }
 
-                    if (which=='E' || which=='U' || which=='T') {
-							draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
-                    } else if (which=='|') {
+                    // Draw flankers first, like for fullscreen one
+                    if (esep>=0) {
+                        var im_flanker=image_noise0; // TODO
+
+                        if ((flankers[0]=='w')|(flankers[0]=='x')|(flankers[0]=='y')|(flankers[0]=='z')) {
+                            draw_flanker(posx,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
+                        } else {
+                            draw_flanker(posx +siz*5*esep,posy,flankers[0],siz*5,contrast,im_flanker,ox,oy);
+                            draw_flanker(posx,-siz*5*esep+posy,flankers[1],siz*5,contrast,im_flanker,ox,oy);
+                            draw_flanker(posx -siz*5*esep,posy,flankers[2],siz*5,contrast,im_flanker,ox,oy);
+                            draw_flanker(posx,+siz*5*esep+posy,flankers[3],siz*5,contrast,im_flanker,ox,oy);
+                        }
+                    }
+
+                    if (include_target) {
+                        if (which=='E' || which=='U' || which=='T') {
+                            draw_i_contrast(target,posx,posy,siz*5.0,ori,contrast);
+                        } else if (which=='|') {
+                                        // Image for vernier is bigger to allow lines to be longer
+                            draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
+                        } else if (which=='.') {
                             // Image for vernier is bigger to allow lines to be longer
-							draw_v_contrast(posx,posy,siz*20.0,ori,contrast);
-                    } else if (which=='.') {
-                            // Image for vernier is bigger to allow lines to be longer
-							draw_spot_contrast(posx,posy,siz*1.0,ori,contrast);
+                            draw_spot_contrast(posx,posy,siz*1.0,ori,contrast);
+                        }
                     }
 
                     if (barsep>=0) { // TODO: Untested; not centered well?

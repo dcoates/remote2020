@@ -84,6 +84,8 @@
 	    <input mode="both" type="checkbox" id="chkPhasedOverlap">
 	    <span mode="both" id="lblFlankers">Yoked</span>
 	    <input mode="both" type="checkbox" id="chkYoked">
+	    <span mode="both" id="lbl">Detection</span>
+	    <input mode="both" type="checkbox" id="chkDetection">
 
 	    <input mode="adv" type="text" id="background" title="needed_for_staircase_spaghetti" size="1" value="1.0">
  
@@ -111,6 +113,7 @@
                     <label mode="both" id="lblSize" style='display: inline-block; width: 7em; text-align: right;'>Size (deg)</label>
                     <input mode="both" type="text" value="0.5" id="textSize" title="Value" size="3">
                     <button mode="both" type="button" id="btnStairContrast" onclick="do_stair_restart(1);">Restart E Contrast</button>
+                    <button mode="both" type="button" id="btnStairContrast" onclick="do_stair_restart(9);">Restart E Detection</button>
 
 
                 <br mode="adv"> 
@@ -230,7 +233,8 @@
 				set_checked('chkPhasedDonut',false);
 				set_checked('chkPhasedOverlap',false);
 				set_checked('chkYoked',false);
-				switch(num) {
+				set_checked('chkDetection',false);
+				switch(num) { // These numbers of zero-based ("unflanked" is 0)
 					case 1:
                     	set_checked('chkEFlankers',true);
 						break;
@@ -255,6 +259,9 @@
 					case 8:
                     	set_checked('chkYoked',true);
 						break;
+					case 9:
+                 set_checked('chkDetection',true);
+						     break;
 				};
 			};
 
@@ -491,6 +498,9 @@
                     send_trial(); 
                 }
 
+                // IIUC (May 2023), most of the remaining code is to also run the sequence
+                // locally.
+
                 //var chkFullScr = document.getElementById("chkFullScr");
                 //if (chkFullScr.checked) {
                     //openFullscreen();
@@ -536,6 +546,21 @@
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
 
+         function preset_E_detection() {
+             document.getElementById("commands").value="clear('#808080');\nfixation(-242,0,16,4,'black','+');flip(30);"+ // 500ms
+                                                       "clear('#808080');\nfixation(-242,0,16,4,'green','+');"+
+					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target1});flip(9);"+
+
+                                                       "clear('#808080');\nfixation(-242,0,16,4,'black','+');flip(30);"+ // 150ms
+
+                                                       "clear('#808080');\nfixation(-242,0,16,4,'green','+');"+ 
+					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target2});flip(9);"+
+                	                                     "\nclear('#808080');fixation(-242,0,16,4,'black','+');flip(1);"
+                                                       document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tsep:1.4,\n\tox:0,\n\toy:0,interval=0,target1=0.5,target2=0,\n\tflankers:'\\'ABCD\\''\n}";
+             document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
+         }
+
+
             function animateLoop() {
                 if (indexAction<actions.length) {
                     //stats.begin()
@@ -547,7 +572,7 @@
 
                     //stats.end()
                     indexFrame += 1;
-                    if (indexFrame>=flip_durations[indexAction]) {
+                    if (indexFrame>=flp_durations[indexAction]) {
                         indexFrame = 0;
                         indexAction += 1;
 						jitterX=-1000;
@@ -675,21 +700,28 @@
                         \n\tcontrast:${theStaircase.contrast} }`);
             
                 } else {
-                    preset_contrast(); 
+                    if (which==9) {
+                        preset_E_detection();
+                        theStaircase.is_detection=true;
+                    } else {
+                        preset_contrast();
+                        theStaircase.is_detection=false;
+                    }
+
                     get_metap(); 
 
-                    // box has size 200 pixels across
                     // box has size 200 pixels across . /5 since it expects bar size / MAR (not whole letter size)
                     theStaircase.contrast=200.0/get_value('box_size')*Math.tan(get_value("textSize")/180.0*3.1416)/5.0 * get_value('dist');
 					//console.log(theStaircase.contrast,get_value('box_size'),get_value("textSize"));
 
                     theStaircase.plot_log=true;
+
 					var flanker_code='0123';
 					var ox=0;
 					var oy=0;
                     set_value("trial",`trial_params={\n\torientation: 0,
                         \n\tsize:${metap.stair_start},
-                        \n\tcontrast:${theStaircase.contrast}, sep:1.4,ox:0,oy:0,`+
+                        \n\tcontrast:${theStaircase.contrast}, sep:1.4,ox:0,oy:0,interval:0,target1:1,target2:0,`+
                         "\n\tflankers:'\\'"+flanker_code+"\\''\n}");
                 }
             }
@@ -780,7 +812,16 @@
                 }
 
             if (get_checked("chkStair")) {
-                var correct=(ori_resp==trial_params['orientation']);
+                var correct;
+                if (!theStaircase.is_detection)
+                    correct=(ori_resp==trial_params['orientation']);
+                else{
+                    if (trial_params['interval']==0)
+                        correct=(ori_resp==180);
+                    else // interval 2
+                        correct=(ori_resp==0);
+                }
+
                 theStaircase.update(correct,ori_resp); // TODO: passing in ori_resp just for logging
                 // TODO: return boolean for finished from update and do stuff here, instead of spaghetti
 
