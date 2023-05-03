@@ -66,6 +66,9 @@
 
 			<br>
 
+	    <span mode="both" id="lblSmooth">Smoothed</span>
+	    <input mode="both" type="checkbox" id="chkSmooth">
+
 	    <span mode="both" id="lblFlankers">E Flankers</span>
 	    <input mode="both" type="checkbox" id="chkFlankers">
 	    <span mode="both" id="lblFlankers">E Flankers</span>
@@ -482,6 +485,7 @@
                 // Replace the meta parameters (since 1 string);
 
                 trial_params=eval(document.getElementById("trial").value);
+                tral_params['smooth']=get_checked("chkSmooth");
 
                 commands=fillTemplate(commands,trial_params );
 
@@ -549,12 +553,12 @@
          function preset_E_detection() {
              document.getElementById("commands").value="clear('#808080');\nfixation(-242,0,16,4,'black','+');flip(30);"+ // 500ms
                                                        "clear('#808080');\nfixation(-242,0,16,4,'green','+');"+
-					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target1});flip(9);"+
+					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target1},${smooth});flip(9);"+
 
                                                        "clear('#808080');\nfixation(-242,0,16,4,'black','+');flip(30);"+ // 150ms
 
                                                        "clear('#808080');\nfixation(-242,0,16,4,'green','+');"+ 
-					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target2});flip(9);"+
+					                                             "draw_stimulus('E',${orientation},0,0,${contrast},'black',-1,${sep},${size},${flankers},${ox},${oy},${target2},${smooth});flip(9);"+
                 	                                     "\nclear('#808080');fixation(-242,0,16,4,'black','+');flip(1);"
                                                        document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:1.0,\n\tcontrast:0.5,\n\tsep:1.4,\n\tox:0,\n\toy:0,interval=0,target1=0.5,target2=0,\n\tflankers:'\\'ABCD\\''\n}";
              document.getElementById("metap").value="metap={\n\tstaircase_reversals:[2.00,2.00,2.00,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:0.1,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";

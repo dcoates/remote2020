@@ -311,17 +311,17 @@
                 }
 
 
-                function draw_stimulus(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include) {
+function draw_stimulus(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include,do_smooth) {
                     // Allows whether to draw the target (or not)
-                    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include);
+    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,do_include,do_smooth);
                 }
 
                 function draw_letter2(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy) {
-                    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,1);
+                    draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,1,0);
                 }
 
                 // This one takes the contrast
-                function draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,include_target) {
+function draw_letter_full(which,ori,posx,posy,siz,color,barsep,esep,contrast,flankers,ox,oy,include_target,do_smooth) {
                     if (siz==0) {return;} // make sure noop for size 0, and no weirdness
 
                     var target=image_e;
