@@ -268,11 +268,11 @@
 					// GRoup will contain first digit of row, the others come from
 					// the trial number (mod 8). Rotating trial info
 					var s=thePeer.peer.id+' '+group+(trial_number%8+2);
-					s += ' '+trial_number+'_'+(timeSecElapsed/60.0).toFixed(1)+'_'+ypos.toFixed(2);
+					s += ' '+(trial_number+1)+'_'+(timeSecElapsed/60.0).toFixed(1)+'_'+ypos.toFixed(2);
 					s += '\n';
 
 					// first entry (00 and 10) will be stimulus condition
-					var s_stim=thePeer.peer.id+' '+group+'1 ';
+					var s_stim=thePeer.peer.id+' '+group+' 0_' + group + '_';
 					if (gColor==0)
 						s_stim += 'W';
 					else if (gColor==1)
@@ -311,7 +311,7 @@
                 var_timer=setTimeout(updateClock, 5000);
                 timer_reset=true;
                 set_html("time_elapsed",0);
-                graph_clear_dots();
+                //graph_clear_dots();
                 trial_log=[];
             }
 
