@@ -19,9 +19,9 @@
 				<input type="hidden" id="background" title="Value" value="0.0" size="8">
 
 				<input type="text" id="condcode" title="Value" value="-" size="6">
+                <div id="status" style="font-weight: bold; display:inline-block" title="status">Status:</div>
 
                 <div id="my-id" style="font-weight: bold; display:none;" title="my-id">ID:</div>
-                <div id="status" style="font-weight: bold; display:none;" title="status">Status:</div>
 
 				<br><br>
 
@@ -112,7 +112,7 @@
         <label id="lbl_text_value">Gamma-Cor Value: </label><label id="lbl_value2">0.000000</label>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script src="peerjs.min.js"></script>
+		<script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
         <script src="staircase.js"></script>
@@ -324,7 +324,7 @@
                         }
                     },
                     lost: function(s) {set_html('status',s);},
-                    error: function(s) {set_html('status',s);},
+                    error: function(s) {set_html('status',s); alert(s);},
                     connect: function(s) {
                         set_html('status','Paired:'+ s);
                         set_value('receiver-id',s+': OK');
