@@ -36,7 +36,7 @@
 
 	    var data = function () {
 //rows,cols
-			return Handsontable.helper.createEmptySpreadsheetData(90, 20);
+			return Handsontable.helper.createEmptySpreadsheetData(90, 26);
 		};
 
             var graphs=[];
@@ -277,11 +277,16 @@
                 	var row=parseInt(col.substr(1))-1;
                 	var dat=fields[2];
 
+					colnum = (colnum) * 2; // each group will take two cols (time, value)
+
+				 	var da_info = dat.split("_");	
+					row = parseInt(da_info[0]);
 	
-			//console.log(col);
-			//console.log(colnum);
-			//console.log(row);
-			//console.log(dat);
+			console.log(col);
+			console.log(colnum);
+			console.log(row);
+			console.log(dat);
+
 					if (dat.includes("START")) {
 						var prev=hot.getDataAtCell(row,colnum);
 						if (prev.length>0) {
@@ -290,7 +295,12 @@
 							hot.populateFromArray(row,colnum,[[dat]]);
 						}
 } else {
-                	hot.populateFromArray(row,colnum,[[dat]]);
+                	//hot.populateFromArray(row,colnum,[[dat]]);
+                	hot.populateFromArray(row,colnum,[[da_info[1]]]);
+                	hot.populateFromArray(row,colnum+1,[[da_info[2]]]);
+
+                	hot.populateFromArray(row+1,colnum, [[" "]]);
+                	hot.populateFromArray(row+1,colnum+1,[[" "]]);
 }
 		}
             }
