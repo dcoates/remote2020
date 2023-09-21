@@ -60,7 +60,8 @@
 
                 // {urls: "stun:stun.l.google.com:19302"},
 
-				{ urls: 'turn:turn.remote2020.org:3478' ,'username':'turnuser','credential':'pw1234'}  ,
+				{ url: 'stun:stun.remote2020.org:3478' ,'username':'turnuser','credential':'pw1234'}  ,
+				{ url: 'turn:turn.remote2020.org:3478' ,'username':'turnuser','credential':'pw1234'}  ,
 				//{ urls: 'stun:stun.remote2020.org:3478'}  ,
 				//{ urls: 'turn:turn.remote2020.org:993' ,'username':'turnuser','credential':'pw1234'}  ,
 				//{ urls: 'stun:stun.remote2020.org:993' }  ,
@@ -146,8 +147,8 @@
 
                     // Create connection to destination peer specified in the input field
                     this.conn = this.peer.connect(friend, {
-                        //reliable: true,
-                        serialization: "json" // this is recommended for iPhone/iPads
+                        reliable: true,
+                        //serialization: "json" // this is recommended for iPhone/iPads
                     });
                     var conn=this.conn;
 
