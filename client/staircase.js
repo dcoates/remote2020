@@ -150,14 +150,16 @@
 						if (this.dependent=="weber") {
 							//val=this.mean_cm/parseFloat(get_value('background')); //doesn/t work
                         	set_html("lblStair",`FINISHED`);
+							enable_stair_button(false); // Force them to enter a new condcode TODO: remove from UI
 						} else if (this.dependent=="size") { // 
                 			val=this.mean_cm;
 							val = val / 200.0 * parseFloat(get_value("box_size")); // Box is 200pix across, with measured size
 							val = val * 10.0  // cm to mm
                 			set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)} mm`);
-						} else { // currently: Weber
+						} else { // else: contrast?
 							val=this.mean_cm/parseFloat(get_value('background'));
                         	set_html("lblStair",`FINISHED threshold=${val.toPrecision(4)}`);
+							enable_stair_button(false); // Force them to enter a new condcode TODO: remove from UI
 						}
                         //beep(1,440,80);
                     } else {
