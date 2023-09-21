@@ -455,7 +455,7 @@
 
             function preset_acuity() {
                 document.getElementById("commands").value=
-                "clear('#ffffff');flip(20); draw_letter2('E',${orientation},0,0,${size},'black',6,-1,${contrast});flip(1);";
+                "clear('#ffffff');flip(20); draw_letter2('E',${orientation},0,0,${size},'black',-1,-1,${contrast});flip(1);";
                 document.getElementById("trial").value="trial_params={\n\torientation: 0,\n\tsize:32,\n\tcontrast:1.0\n}";
                 document.getElementById("metap").value="metap={\n\tstaircase_reversals:[1.26,1.26,1.26,1.26,1.12,1.12,1.12,1.12],\n\tstair_start:32,\nmocs_spacings:[1.25,1.75,2,2.5,3,5,99],\n\tmocs_repeats:10}";
             }
