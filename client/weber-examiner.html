@@ -17,8 +17,8 @@
 					Connect
 				</button>
 
-                <label mode="both" id="lblCode">Cond. code:</label>
-				<input type="text" id="condcode" title="Enter Code" size="4">
+                <label mode="both" id="lblCode";>Cond. code:</label>
+				<input type="text" id="condcode" title="Enter Code" onchange='enable_stair_button(true);' size="4">
 
                 <div id="my-id" style="font-weight: bold; display:inline-block;" title="my-id">ID:</div>
                 <div id="status" style="font-weight: bold; display:inline-block;" title="status">Status:</div>
@@ -66,7 +66,7 @@
                     <label mode="both" id="lblStair">Staircase (0)</label>
                     <input mode="adv" type="checkbox" id="chkStair" style="display:none;">
 
-                    <button mode="both" type="button" id="btnStairStart" onclick="do_stair_restart();">Restart
+                    <button mode="both" type="button" id="btnStairStart" disabled style="color:gray;" onclick="do_stair_restart();">Restart
                         <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-play-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                           <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
                         </svg>
@@ -154,7 +154,7 @@
 		<canvas id="canvas" hidden=true style="visibility:hidden">Canvas</canvas>
 
 		<script src="https://d3js.org/d3.v4.js"></script>
-        <script src="peerjs.min.js"></script>
+		<script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
         <script src="loglevel.min.js"></script>
         <script src="drc-misc.js"></script>
         <script src="staircase.js"></script>
@@ -166,6 +166,17 @@
 
         <script type="text/javascript">
             'use strict';
+
+			function enable_stair_button(doenable) {
+				if (doenable) {
+					document.getElementById("btnStairStart").disabled = false;
+					document.getElementById("btnStairStart").style.color = "black";
+				} else {
+					document.getElementById("btnStairStart").disabled = true;
+					document.getElementById("btnStairStart").style.color = "gray";
+				}
+
+			}
 
             function clear_log() {
                 set_html('log',"trial,size,ori,resp,correct,is_reversal,num_reversals");
